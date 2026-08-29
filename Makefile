@@ -21,4 +21,4 @@ clean:
 	rm -rf .mypy_cache .venv .vscode __pycache__ src/__pycache__ .install src/parser/__pycache__ src/pathfinding/__pycache__ src/visualization/__pycache__ src/parser/state/__pycache__
 
 .PHONY:
-	install run debug lint clean
+	help install run debug lint clean
