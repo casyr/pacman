@@ -1,5 +1,6 @@
 import sys
 import logging
+from utils.config_logging import setup_logging
 from exceptions import (
     PacmanError,
     ParsingError,
@@ -10,7 +11,8 @@ from exceptions import (
 
 
 def main() -> int:
-    logger = logging.getLogger("MAIN")
+    setup_logging()
+    logger = logging.getLogger(__name__)
     logger.info("Starting the application Pacman...")
     try:
         return 0
