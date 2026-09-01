@@ -3,12 +3,12 @@ class PacmanError(Exception):
     pass
 
 
-class ConfigError(PacmanError):
+class ParserError(PacmanError):
     """Raised during a argument read."""
     pass
 
 
-class ParsingError(PacmanError):
+class GameSettingsError(PacmanError):
     """Raised during a data read or validation error."""
     pass
 

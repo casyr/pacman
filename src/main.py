@@ -1,11 +1,11 @@
 import sys
 import logging
 from utils.config_logging import setup_logging
-from cli import parse_cli_args, load_and_validate_config
+from parsing.parser import ConfigParser
 from exceptions import (
     PacmanError,
-    ConfigError,
-    ParsingError,
+    ParserError,
+    GameSettingsError,
     ModelError,
     ViewError,
     ControllerError
@@ -18,14 +18,14 @@ def main() -> int:
     logger.info("Starting the application Pacman...")
 
     try:
-        config_path = parse_cli_args()
-        data = load_and_validate_config(config_path)
-        logger.debug({data})
+        loader = ConfigParser(sys.argv[1:])
+        config = loader.load()
+        logger.debug(config)
         return 0
-    except ConfigError as e:
+    except ParserError as e:
         logger.error(f"CLI failed: {e}")
         return 1
-    except ParsingError as e:
+    except GameSettingsError as e:
         logger.error(f"Parsing failed: {e}")
         return 1
 
