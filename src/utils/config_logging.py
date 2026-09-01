@@ -11,16 +11,19 @@ LOGGING_CONFIG = {
     "disable_existing_loggers": False,
     "formatters": {
         "console_format": {
-            "format": "%(levelname)s - %(name)s - %(message)s"
+            "format": "%(levelname)s - %(name)s - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S"
         },
         "file_format": {
-            "format": "%(asctime)s | %(name)s | [%(levelname)s] | %(message)s"
+            "format": "%(asctime)s | %(name)s | [%(levelname)s] | %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S"
         },
         "detailed format": {
             "format": (
                 "%(asctime)s | %(name)s | [%(levelname)s] | "
                 "%(filename)s:%(lineno)d | %(message)s"
-            )
+            ),
+            "datefmt": "%Y-%m-%d %H:%M:%S"
         }
     },
     "handlers": {
