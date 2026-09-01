@@ -3,6 +3,11 @@ class PacmanError(Exception):
     pass
 
 
+class ConfigError(PacmanError):
+    """Raised during a argument read."""
+    pass
+
+
 class ParsingError(PacmanError):
     """Raised during a data read or validation error."""
     pass
