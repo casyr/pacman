@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-from typing import TextIO
 from exceptions import ParserError, GameSettingsError
 from parsing.game_settings import GameSettings
 from pydantic import ValidationError
@@ -12,15 +11,47 @@ class ConfigParser:
     def __init__(self, args: list[str]):
         self.args = args
 
-    def _remove_all_comments(self, raw_text: TextIO) -> str:
+    def _remove_all_comments(self, raw_text: str) -> str:
         result: list[str] = []
-        for i, line in enumerate(raw_text):
-            clean_line: str = line.strip()
-            if clean_line == "" or clean_line.startswith("#"):
-                continue
-            clean_line_without_hash = clean_line.split("#")[0].strip()
+        in_string = False
+        in_comment = False
+        in_comment_hash = False
 
-        return "a"
+        i = 0
+        length = len(raw_text)
+
+        while i != length:
+            char = raw_text[i]
+            if in_string:
+                if char == '"':
+                    in_string = False
+                else:
+                    result.append(char)
+            elif in_comment:
+                if char == '*' and i + 1 < length and raw_text[i+1] == '/':
+                    in_comment = False
+                    i += 1
+                elif char == '/' and i + 1 < length and raw_text[i+1] == '/':
+                    in_comment = False
+                    i += 1
+            elif in_comment_hash:
+                if char == '\n':
+                    in_comment_hash = False
+            else:
+                if char == '/' and i + 1 < length and raw_text[i+1] == '*':
+                    in_comment = True
+                    i += 1
+                elif char == '/' and i + 1 < length and raw_text[i+1] == '/':
+                    in_comment = True
+                    i += 1
+                elif char == '#':
+                    in_comment_hash = True
+                else:
+                    result.append(char)
+            i += 1
+        json_str = "".join(result)
+        logger.debug(json_str)
+        return json_str
 
     def _check_json_format(self) -> Path:
         file_path = Path(self.args[0])
@@ -40,7 +71,8 @@ class ConfigParser:
         self._check_args()
         file_path = self._check_json_format()
         try:
-            with open(file_path, "r", encoding="utf-8") as raw_text:
+            with open(file_path, "r", encoding="utf-8") as text:
+                raw_text = text.read()
                 clean_text = self._remove_all_comments(raw_text)
                 game_config = GameSettings.model_validate_json(clean_text)
                 return game_config

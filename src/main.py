@@ -20,7 +20,6 @@ def main() -> int:
     try:
         loader = ConfigParser(sys.argv[1:])
         config = loader.load()
-        logger.debug(config)
         return 0
     except ParserError as e:
         logger.error(f"CLI failed: {e}")
