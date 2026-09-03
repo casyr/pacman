@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 from exceptions import ParserError, GameSettingsError
-from parsing.game_settings import GameSettings
+from parsing.game_validator import GameSettings
 from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
