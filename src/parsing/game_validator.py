@@ -1,13 +1,19 @@
 import logging
 from pydantic import BaseModel, Field, field_validator, ValidationError
 from typing import Any
+from parsing.game_settings import LevelSettings, GameSettings
 
 logger = logging.getLogger(__name__)
 
 
-class LevelConfig(BaseModel):
+class LevelValidator(BaseModel):
     width: int = Field(default=20, ge=10, le=100)
     height: int = Field(default=20, ge=10, le=100)
+
+    def to_dataclass(self) -> LevelSettings:
+        return LevelSettings(
+            width=self.width,
+            height=self.height)
 
     @field_validator("width", mode="before")
     @classmethod
@@ -30,15 +36,16 @@ class LevelConfig(BaseModel):
         return value
 
 
-class GameSettings(BaseModel):
+class GameValidator(BaseModel):
     highscore_filename: str = Field(default="highscore.json")
-    levels: list[LevelConfig] = Field(
-        default_factory=lambda: [LevelConfig() for _ in range(10)]
+    levels: list[LevelValidator] = Field(
+        default_factory=lambda: [LevelValidator() for _ in range(10)]
     )
     lives: int = Field(default=3, ge=1, le=10)
-    # WARNING : MAKE SURE PACGUM FILED MAZE NO IDEA FOR NOW 02/09
+    # WARNING : MAKE SURE PACGUM FILED MAZE INSIDE MODEL AND
+    # DISPLAY MESSAGE IF PACGUM NOT FIT 03/09
     #
-    pacgum: int = Field(default=42, ge=1)
+    pacgum: int
     #
     #
     points_per_pacgum: int = Field(default=10, ge=1, le=10)
@@ -47,41 +54,58 @@ class GameSettings(BaseModel):
     seed: int = Field(default=42)
     level_max_time: int = Field(default=90, ge=40, le=3600)
 
-    @field_validator("highscore_filename")
+    def to_dataclass(self) -> GameSettings:
+        return GameSettings(
+            highscore_filename=self.highscore_filename,
+            levels=[lvl.to_dataclass() for lvl in self.levels],
+            lives=self.lives,
+            pacgum=self.pacgum,
+            points_per_pacgum=self.points_per_pacgum,
+            points_per_super_pacgum=self.points_per_super_pacgum,
+            points_per_ghost=self.points_per_ghost,
+            seed=self.seed,
+            level_max_time=self.level_max_time,
+        )
+
+    @field_validator("highscore_filename", mode="before")
     @classmethod
-    def check_highscore_extension(cls, name_highscore: str) -> str:
-        if not name_highscore.lower().endswith(".json"):
+    def check_highscore_extension(cls, name_highscore: Any) -> str:
+        if (
+            not isinstance(name_highscore, str)
+            or not name_highscore.lower().endswith(".json")
+        ):
             logger.warning(
-                f"Invalid highscore filename '{name_highscore}'  (must "
-                "end with .json). Falling back to default: 'highscore.json'")
+                f"Invalid highscore filename '{name_highscore}' "
+                "(must be a string end with .json). "
+                "Falling back to default: 'highscore.json'")
             return "highscore.json"
         return name_highscore
 
     @staticmethod
-    def _single_level(item: Any) -> LevelConfig:
+    def _single_level(item: Any) -> LevelValidator:
         if isinstance(item, dict):
             try:
-                return LevelConfig.model_validate(item)
+                return LevelValidator.model_validate(item)
             except ValidationError:
                 logger.warning(
                     f"Invalid level {item}. Replaced with "
                     "default values. Width and Height = 20"
                 )
-                return LevelConfig()
+                return LevelValidator()
         logger.warning(
             f"Invalid level item '{item}'. Replaced with default."
         )
-        return LevelConfig()
+        return LevelValidator()
 
     @field_validator("levels", mode="before")
     @classmethod
-    def adjust_levels_count(cls, levels: Any) -> list[LevelConfig]:
+    def adjust_levels_count(cls, levels: Any) -> list[LevelValidator]:
         if not isinstance(levels, list):
             logger.warning(
                 "Levels format is not a list. Resetting to default.")
             levels = []
 
-        cleaned_levels: list[LevelConfig] = [
+        cleaned_levels: list[LevelValidator] = [
             cls._single_level(item) for item in levels
         ]
 
@@ -94,7 +118,7 @@ class GameSettings(BaseModel):
                 "Replaced with default levels."
                 )
         while len(cleaned_levels) < 10:
-            cleaned_levels.append(LevelConfig())
+            cleaned_levels.append(LevelValidator())
         return cleaned_levels
 
     @field_validator("lives", mode="before")
@@ -106,6 +130,16 @@ class GameSettings(BaseModel):
                 "(must be > 0 or < 11) Clamped to default: 3 lives")
             return 3
         return lives
+
+    @field_validator("pacgum", mode="before")
+    @classmethod
+    def make_sure_pacgum_integer(cls, pacgum: Any) -> int:
+        if not isinstance(pacgum, int) or pacgum < 1:
+            logger.warning(
+                "Pacgum must be a positif number > 0 "
+                "Clamped to default number")
+            return 1
+        return pacgum
 
     @field_validator("points_per_pacgum", mode="before")
     @classmethod
