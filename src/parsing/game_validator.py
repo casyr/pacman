@@ -1,3 +1,4 @@
+import sys
 import logging
 from pydantic import BaseModel, Field, field_validator, ValidationError
 from typing import Any
@@ -77,6 +78,11 @@ class GameValidator(BaseModel):
             logger.warning(
                 f"Invalid highscore filename '{name_highscore}' "
                 "(must be a string end with .json). "
+                "Falling back to default: 'highscore.json'")
+            return "highscore.json"
+        elif sys.argv[1] == name_highscore:
+            logger.warning(
+                f"Filename already used '{name_highscore}' "
                 "Falling back to default: 'highscore.json'")
             return "highscore.json"
         return name_highscore

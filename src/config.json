@@ -1,5 +1,4 @@
 {
-  # WARNING CONFIG.JSON INSIDE HIGHSCORE_FILENEMAME CANT BE THE SAME NAME ARGS/HIGHTSCORE
   "highscore_filename": "config.json",
   "lives": 3,
   "pacgum": 42,
