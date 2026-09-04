@@ -7,6 +7,7 @@ from exceptions import (
     ParserError,
     GameSettingsError,
     ModelError,
+    JsonLoadError,
     ViewError,
     ControllerError
 )
@@ -22,15 +23,21 @@ def main() -> int:
         game_config = loader.load()
         logger.debug(game_config.pacgum)
         return 0
+
     except ParserError as e:
         logger.error(f"CLI failed: {e}")
         return 1
+
     except GameSettingsError as e:
         logger.error(f"Parsing failed: {e}")
         return 1
 
     except ModelError as e:
         logger.error(f"Raised during a logic rule forbidden: {e}")
+        return 1
+
+    except JsonLoadError as e:
+        logger.error(f"Raised during a saving json file: {e}")
         return 1
 
     except ViewError as e:
