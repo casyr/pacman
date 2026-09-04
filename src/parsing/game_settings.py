@@ -1,10 +1,20 @@
-import logging
-from pydantic import BaseModel
-
-# from src.exceptions import ParsingError
-
-logger = logging.getLogger(__name__)
+from dataclasses import dataclass
 
 
-class GameSettings(BaseModel):
-    pass
+@dataclass(frozen=True)
+class LevelSettings:
+    width: int
+    height: int
+
+
+@dataclass(frozen=True)
+class GameSettings:
+    highscore_filename: str
+    levels: list[LevelSettings]
+    lives: int
+    pacgum: int
+    points_per_pacgum: int
+    points_per_super_pacgum: int
+    points_per_ghost: int
+    seed: int | str
+    level_max_time: int
