@@ -4,6 +4,7 @@ from pydantic import ValidationError
 from exceptions import ParserError, GameSettingsError
 from parsing.game_validator import GameValidator
 from parsing.game_settings import GameSettings
+from utils.file_loader_json import JsonModelLoader
 
 logger = logging.getLogger(__name__)
 
@@ -53,12 +54,6 @@ class ConfigParser:
         json_str = "".join(result)
         return json_str
 
-    def _check_json_format(self) -> Path:
-        file_path = Path(self.args[0])
-        if file_path.suffix.lower() != ".json":
-            raise ParserError("file must be a .json only !")
-        return file_path
-
     def _check_args(self) -> None:
         if len(self.args) == 0:
             raise ParserError("Missing argument: please provide a JSON "
@@ -69,18 +64,15 @@ class ConfigParser:
 
     def load(self) -> GameSettings:
         self._check_args()
-        file_path = self._check_json_format()
+        parser_json = JsonModelLoader(
+            error_cls=ParserError, file=self.args[0])
+        file_path: Path = parser_json.check_json_format()
+        raw_text: str = parser_json.open_json_file(file_path)
+        clean_text = self._remove_all_comments(raw_text)
         try:
-            with open(file_path, "r", encoding="utf-8") as text:
-                raw_text = text.read()
-                clean_text = self._remove_all_comments(raw_text)
-                pydantic_model = GameValidator.model_validate_json(clean_text)
-                game_config: GameSettings = pydantic_model.to_dataclass()
-                return game_config
-        except FileNotFoundError:
-            raise ParserError(f"File not found: '{file_path}'.")
-        except PermissionError:
-            raise ParserError(f"Permission reading denied: '{file_path}'.")
+            pydantic_model = GameValidator.model_validate_json(clean_text)
+            game_config: GameSettings = pydantic_model.to_dataclass()
+            return game_config
         except ValidationError as e:
             errors = ", ".join([err["msg"] for err in e.errors()])
             raise GameSettingsError(f"Validation failed: {errors}")
