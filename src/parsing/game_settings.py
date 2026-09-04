@@ -16,5 +16,5 @@ class GameSettings:
     points_per_pacgum: int
     points_per_super_pacgum: int
     points_per_ghost: int
-    seed: int
+    seed: int | str
     level_max_time: int
