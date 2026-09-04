@@ -1,6 +1,6 @@
 import sys
 import logging
-from pydantic import BaseModel, Field, field_validator, ValidationError
+from pydantic import (BaseModel, Field, field_validator, model_validator,)
 from typing import Any
 from parsing.game_settings import LevelSettings, GameSettings
 
@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class LevelValidator(BaseModel):
+    level_index: int = Field(default=0)
     width: int = Field(default=20, ge=10, le=100)
     height: int = Field(default=20, ge=10, le=100)
 
@@ -25,6 +26,18 @@ class LevelValidator(BaseModel):
                 " Clamped to default: 20")
             return 20
         return value
+
+    @model_validator(mode="after")
+    def check_missing_fields(self) -> 'LevelValidator':
+        missing_fields = (
+            set(self.__class__.model_fields.keys()) - self.model_fields_set)
+        for field in missing_fields:
+            default_value = getattr(self, field)
+            logger.warning(
+                f"[Level {self.level_index}] Missing field : '{field}'. "
+                f"Clamped default value : {default_value}"
+            )
+        return self
 
     @field_validator("height", mode="before")
     @classmethod
@@ -46,7 +59,7 @@ class GameValidator(BaseModel):
     # WARNING : MAKE SURE PACGUM FILED MAZE INSIDE MODEL AND
     # DISPLAY MESSAGE IF PACGUM NOT FIT 03/09
     #
-    pacgum: int
+    pacgum: int = Field(default=42)
     #
     #
     points_per_pacgum: int = Field(default=10, ge=1, le=10)
@@ -88,43 +101,42 @@ class GameValidator(BaseModel):
         return name_highscore
 
     @staticmethod
-    def _single_level(item: Any) -> LevelValidator:
-        if isinstance(item, dict):
-            try:
-                return LevelValidator.model_validate(item)
-            except ValidationError:
-                logger.warning(
-                    f"Invalid level {item}. Replaced with "
-                    "default values. Width and Height = 20"
-                )
-                return LevelValidator()
-        logger.warning(
-            f"Invalid level item '{item}'. Replaced with default."
-        )
-        return LevelValidator()
-
-    @field_validator("levels", mode="before")
-    @classmethod
-    def adjust_levels_count(cls, levels: Any) -> list[LevelValidator]:
+    def _check_level_isinstance(levels: Any) -> list[dict]:
         if not isinstance(levels, list):
             logger.warning(
                 "Levels format is not a list. Resetting to default.")
-            levels = []
+            return []
 
-        cleaned_levels: list[LevelValidator] = [
-            cls._single_level(item) for item in levels
-        ]
+        cleaned_levels: list[dict] = []
+        for item in levels:
+            if isinstance(item, dict):
+                cleaned_levels.append(item)
+            else:
+                logger.warning(
+                    f"Invalid level item '{item}'.")
+                cleaned_levels.append({})
+        return cleaned_levels
+
+    @field_validator("levels", mode="before")
+    @classmethod
+    def adjust_levels_count(cls, levels: Any) -> list[dict]:
+        cleaned_levels: list[dict] = cls._check_level_isinstance(levels)
 
         nb_levels: int = len(cleaned_levels)
         if nb_levels > 10:
             cleaned_levels = cleaned_levels[:10]
         if nb_levels < 10:
             logger.warning(
-                f"Invalid numbers of level '{nb_levels}' at least 10"
+                f"Invalid numbers of level '{nb_levels}' at least 10 "
                 "Replaced with default levels."
                 )
+
         while len(cleaned_levels) < 10:
-            cleaned_levels.append(LevelValidator())
+            cleaned_levels.append({})
+
+        for i, lvl_dict in enumerate(cleaned_levels):
+            lvl_dict["level_index"] = i + 1
+
         return cleaned_levels
 
     @field_validator("lives", mode="before")
@@ -199,3 +211,15 @@ class GameValidator(BaseModel):
                     " >= 40 or <= 3600. Clamped to default: 90 s")
             return 90
         return time
+
+    @model_validator(mode="after")
+    def check_missing_fields(self) -> 'GameValidator':
+        missing_fields = (
+            set(self.__class__.model_fields.keys()) - self.model_fields_set)
+        for field in missing_fields:
+            default_value = getattr(self, field)
+            logger.warning(
+                f"Missing field : '{field}'. "
+                f"Clamped default value : {default_value}"
+            )
+        return self
