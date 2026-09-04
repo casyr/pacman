@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from src.exceptions import JsonLoadError
+from exceptions import JsonLoadError
 
 
 class JsonModelLoader:
