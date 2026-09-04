@@ -52,7 +52,7 @@ class GameValidator(BaseModel):
     points_per_pacgum: int = Field(default=10, ge=1, le=10)
     points_per_super_pacgum: int = Field(default=50, ge=1, le=50)
     points_per_ghost: int = Field(default=200, ge=1, le=200)
-    seed: int = Field(default=42)
+    seed: int | str = Field(default=42)
     level_max_time: int = Field(default=90, ge=40, le=3600)
 
     def to_dataclass(self) -> GameSettings:
@@ -120,7 +120,7 @@ class GameValidator(BaseModel):
             cleaned_levels = cleaned_levels[:10]
         if nb_levels < 10:
             logger.warning(
-                f"Invalid numbers of level '{nb_levels}'. at least 10"
+                f"Invalid numbers of level '{nb_levels}' at least 10"
                 "Replaced with default levels."
                 )
         while len(cleaned_levels) < 10:
@@ -132,8 +132,8 @@ class GameValidator(BaseModel):
     def adjust_lives(cls, lives: Any) -> int:
         if not isinstance(lives, int) or lives < 1 or lives > 10:
             logger.warning(
-                "Do not try to be God. Lives"
-                "(must be > 0 or < 11) Clamped to default: 3 lives")
+                "Lives must be a positif integer "
+                "> 0 or < 11. Clamped to default: 3 lives")
             return 3
         return lives
 
@@ -142,8 +142,8 @@ class GameValidator(BaseModel):
     def make_sure_pacgum_integer(cls, pacgum: Any) -> int:
         if not isinstance(pacgum, int) or pacgum < 1:
             logger.warning(
-                "Pacgum must be a positif number > 0 "
-                "Clamped to default number")
+                "Pacgum must be a positif integer > 0. "
+                "Clamped to default integer")
             return 1
         return pacgum
 
@@ -152,7 +152,7 @@ class GameValidator(BaseModel):
     def adjust_pacgum_points(cls, pacgum_pts: Any) -> int:
         if not isinstance(pacgum_pts, int) or not (1 <= pacgum_pts <= 10):
             logger.warning(
-                "Pacgum_pts (must be > 0 or <= 10) "
+                "Pacgum_pts must be a positif integer > 0 or <= 10. "
                 "Clamped to default: 10 pacgum_pts")
             return 10
         return pacgum_pts
@@ -165,7 +165,7 @@ class GameValidator(BaseModel):
             or not (1 <= super_pacgum_pts <= 50)
         ):
             logger.warning(
-                "Collect super_pacgum_pts is fun (must be > 0 or <= 50) "
+                "Super_pacgum_pts must be a positif integer > 0 or <= 50. "
                 "Clamped to default: 50 super_pacgum_pts")
             return 50
         return super_pacgum_pts
@@ -175,17 +175,27 @@ class GameValidator(BaseModel):
     def adjust_ghost_points(cls, ghost_pts: Any) -> int:
         if not isinstance(ghost_pts, int) or not (1 <= ghost_pts <= 200):
             logger.warning(
-                "Collect ghost_pts is fun (must be > 0 or <= 200) "
+                "Ghost_pts must be a postif integer > 0 or <= 200). "
                 "Clamped to default: 200 ghost_pts")
             return 200
         return ghost_pts
+
+    @field_validator("seed", mode="before")
+    @classmethod
+    def adjust_seed(cls, seed: Any) -> int | str:
+        if not isinstance(seed, (int, str)):
+            logger.warning(
+                "Seed must be an integer or string. "
+                "Clamped to default: 42")
+            return 42
+        return seed
 
     @field_validator("level_max_time", mode="before")
     @classmethod
     def adjust_time(cls, time: Any) -> int:
         if not isinstance(time, int) or not (40 <= time <= 3600):
             logger.warning(
-                    "Are you trying to be a time-keeper ? time is precious"
-                    "(must be >= 40 or <= 3600) Clamped to default: 90 s")
+                    "Level_max_time must be a positif intger"
+                    " >= 40 or <= 3600. Clamped to default: 90 s")
             return 90
         return time
