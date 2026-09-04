@@ -18,6 +18,11 @@ class ModelError(PacmanError):
     pass
 
 
+class JsonLoadError(PacmanError):
+    """Raised during write a Json file."""
+    pass
+
+
 class ViewError(PacmanError):
     """Raised during an initialization or graphics rendering failure."""
     pass
