@@ -1,6 +1,9 @@
 import json
 from pathlib import Path
 from exceptions import JsonLoadError
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class JsonModelLoader:
@@ -12,7 +15,7 @@ class JsonModelLoader:
             self,
             file_path: Path,
             results: list[dict[str, int | str]]) -> None:
-
+        file_path.parent.mkdir(parents=True, exist_ok=True)
         try:
             with open(file_path, "w", encoding="utf-8") as output_file:
                 json.dump(results, output_file, indent=4, ensure_ascii=False)
@@ -20,10 +23,12 @@ class JsonModelLoader:
             raise JsonLoadError(
                 f"file at {file_path} could not save.") from e
 
-    def check_json_exist(self) -> None:
+    def check_json_exist(self) -> bool:
         file_path = Path(self.file)
         if not file_path.exists():
             file_path.touch()
+            return False
+        return True
 
     def check_json_format(self) -> Path:
         file_path = Path(self.file)
