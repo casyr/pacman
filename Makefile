@@ -17,10 +17,11 @@ debug: install
 
 lint: 
 	uv run flake8 . && uv run mypy src --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+
 clean:
 	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	@find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -type d -name "logs" -exec rm -rf {} +
 .PHONY:
-	install run debug lint clean
+	help install run debug lint clean
