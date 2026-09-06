@@ -15,44 +15,67 @@ class ConfigParser:
 
     def _remove_all_comments(self, raw_text: str) -> str:
         result: list[str] = []
-        in_string = False
-        in_comment = False
-        in_comment_hash = False
-
         i = 0
         length = len(raw_text)
 
-        while i != length:
+        while i < length:
             char = raw_text[i]
-            if in_string:
-                if char == '"':
-                    in_string = False
-                else:
-                    result.append(char)
-            elif in_comment:
-                if char == '*' and i + 1 < length and raw_text[i+1] == '/':
-                    in_comment = False
-                    i += 1
-                elif char == '/' and i + 1 < length and raw_text[i+1] == '/':
-                    in_comment = False
-                    i += 1
-            elif in_comment_hash:
-                if char == '\n':
-                    in_comment_hash = False
+            next_char = raw_text[i + 1] if i + 1 < length else ''
+
+            if char == '"':
+                i = self._handle_string(raw_text, i, length, result)
+            elif char == '/' and next_char == '*':
+                i = self._handle_block_comment(raw_text, i, length)
+            elif (char == '/' and next_char == '/') or char == '#':
+                i = self._handle_single_comment(raw_text, i, length)
             else:
-                if char == '/' and i + 1 < length and raw_text[i+1] == '*':
-                    in_comment = True
-                    i += 1
-                elif char == '/' and i + 1 < length and raw_text[i+1] == '/':
-                    in_comment = True
-                    i += 1
-                elif char == '#':
-                    in_comment_hash = True
-                else:
-                    result.append(char)
+                result.append(char)
+                i += 1
+        return "".join(result)
+
+    def _handle_string(
+            self, raw_text: str,
+            i: int, length: int, result: list[str]) -> int:
+        result.append(raw_text[i])
+        i += 1
+
+        while i < length:
+            char = raw_text[i]
+            next_char = raw_text[i + 1] if i + 1 < length else ''
+
+            result.append(char)
+            if char == '\\' and next_char:
+                result.append(next_char)
+                i += 2
+                continue
+
+            if char == '"':
+                return i + 1
             i += 1
-        json_str = "".join(result)
-        return json_str
+
+        return i
+
+    def _handle_block_comment(self, raw_text: str, i: int, length: int) -> int:
+        i += 2
+
+        while i < length:
+            char = raw_text[i]
+            next_char = raw_text[i + 1] if i + 1 < length else ''
+
+            if char == '*' and next_char == '/':
+                return i + 2
+            i += 1
+
+        return i
+
+    def _handle_single_comment(
+            self, raw_text: str, i: int, length: int) -> int:
+        while i < length:
+            char = raw_text[i]
+            if char == '\n':
+                return i
+            i += 1
+        return i
 
     def _check_args(self) -> None:
         if len(self.args) == 0:
