@@ -58,7 +58,7 @@ LOGGING_CONFIG = {
 }
 
 
-def setup_logging():
+def setup_logging() -> None:
     """
     Applies the logging configuration using dictConfig.
     """
