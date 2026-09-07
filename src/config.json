@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "highscore_filename": "highscore.json",
+=======
+  "highscore_filename": "config.txt",
+>>>>>>> e0720f9 (add: HighScores validation but still working on it , fix: .toml)
   "lives": 3,
   "pacgum": 42,
   "super_pacgum": 4,
