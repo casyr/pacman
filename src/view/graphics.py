@@ -10,29 +10,52 @@ class Graphics:
 
     @staticmethod
     def new_window(width: int, height: int):
-        pygame.display.set_mode((width, height))
+        return (pygame.display.set_mode((width, height)))
 
     @staticmethod
     def quit_window():
         pygame.display.quit()
 
     @staticmethod
-    def new_image(width: int, height: int):
-        pygame.Surface((width, height))
+    def new_image(width: int, height: int) -> pygame.Surface:
+        return (pygame.Surface((width, height)))
+
+    @staticmethod
+    def update_window() -> None:
+        pygame.display.update()
+
+    @staticmethod
+    def blit_img(image: pygame.Surface, dest_screen: pygame.Surface,
+                 coords: tuple[int, int]) -> None:
+        dest_screen.blit(image, coords)
 
     @staticmethod
     def load_sprite(path: str) -> pygame.Surface:
         return (pygame.image.load(path))
 
-    def put_sprite_in_image(self, sprite_path: str, sprite_pos_x: int,
-                            sprite_pos_y: int, sprite_width: int,
-                            sprite_height: int):
+    def put_sprite_in_image(self, dest_image: pygame.Surface,
+                            dest_x: int, dest_y: int,
+                            sprite_path: str, sprite_x: int, sprite_y: int,
+                            sprite_width: int, sprite_height: int):
+
         sprite = self.load_sprite(sprite_path)
-        sprite_buffer = sprite.get_buffer().raw
-        sprite_buffer = pygame.surfarray.pixels2d(sprite)
-        # binary_buffer_sprite = 
-        # print(format(sprite_buffer, "b"))
-        print(sprite_buffer[100])
+        sprite_buffer = pygame.surfarray.pixels2d(sprite).ravel()
+        dest_image_buffer = pygame.surfarray.pixels2d(dest_image).ravel()
+
+        for x_gap in range(sprite_height):
+            for y_gap in range(sprite_width):
+                sprite_pos = (sprite_x + x_gap * 124 + sprite_y + y_gap)
+                image_pos = (dest_x + x_gap * 800 + dest_y + y_gap)
+                dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
+
+        array = dest_image_buffer.reshape((800, 800))
+
+        return (pygame.surfarray.make_surface(array))
+
+        # print(sprite_buffer)
+        # for i in range(len(224)):
+        #     for j in range(len(124)):
+        #         dest_image[i][j]
         # to put sprite to window we need
         # to get the sprite :
             # identify his pos_x and pos_y in sprite image
@@ -41,6 +64,3 @@ class Graphics:
         #to put it in the image buffer:
             #paste in the image buffer the sprite copy:
                 # at pos_x, pox_y: paste each pixel in the buffer
-
-
-
