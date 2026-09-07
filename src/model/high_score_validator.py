@@ -1,12 +1,12 @@
-from pydantic import (BaseModel, Field, field_validator)
-from typing import Any
 import logging
+from typing import Any
+from pydantic import (BaseModel, Field, field_validator)
 
 logger = logging.getLogger(__name__)
 
 
-class HightScoreValidator(BaseModel):
-    player: str = Field(default="player")
+class HighScore(BaseModel):
+    player: str = Field(default="player_1")
     score: int = Field(default=0)
 
     @staticmethod
@@ -31,6 +31,7 @@ class HightScoreValidator(BaseModel):
                 "You not supposed to be here ! "
                 f"Invalid player_name '{value}'. Numbers of caracteres < 11 "
                 "Clamped to default: player_1")
+            return "player_1"
         return value
 
     @field_validator("score", mode="before")
@@ -43,3 +44,7 @@ class HightScoreValidator(BaseModel):
                 " Clamped to default: 0")
             return 0
         return value
+
+
+class HighScores(BaseModel):
+    scores: list[HighScore]

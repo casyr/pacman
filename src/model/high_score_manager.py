@@ -1,12 +1,19 @@
-from high_score_validator import HightScoreValidator
-from utils.file_loader_json import JsonModelLoader
+import logging
+from pathlib import Path
 from pydantic import ValidationError
+
+from model.high_score_validator import HighScore, HighScores
+from utils.file_loader_json import JsonModelLoader
+from exceptions import JsonLoadError
+
+logger = logging.getLogger(__name__)
 
 
 class HighScoreManager:
-    def __init__(self, json: JsonModelLoader, filename_score: str):
-        self.json_loader: JsonModelLoader = json
-        self.path_filename_score = self.load_score(filename_score)
+    def __init__(self, json: JsonModelLoader):
+        self.json_loader = json
+        self.file_path = Path(self.json_loader.file)
+        self.scores: list[HighScore] = self.load_score()
 
     def handle_player_names(slef, player: str) -> bool:
         if len(player) > 10:
@@ -20,24 +27,44 @@ class HighScoreManager:
             self,
             scores: list[dict[str, str | int]],
             new_game: dict[str, str | int],
-            ) -> list[dict[str, str | int]]:
+            ) -> list[HighScores]:
 
-        scores.append(new_game)
-        scores.sort(key=lambda item: int(item["score"]), reverse=True)
+        new_score_model = HighScore.model_validate(new_game)
+        self.scores.append(new_score_model)
+        self.scores.sort(key=lambda item: item.score, reverse=True)
+        self.scores = self.scores[:10]
+        self.save_scores()
+        return self.scores
 
-        return scores[:10]
+    def save_scores(self) -> None:
+        data_to_save = HighScores(scores=self.scores).model_dump()
+        self.json_loader.save_json_file(self.file_path, data_to_save)
 
-    def load_score(self, filename_score: str) -> str:
+    def _reset_corrupted_file(self, reason: str) -> list:
+        logger.warning(
+            "The score file '%s' is invalid (%s). Resetting.",
+            self.file_path,
+            reason,
+        )
+        empty_data = {"scores": []}
         try:
-            self.json_loader.check_json_exist(filename_score)
-        except (PermissionError, FileNotFoundError):
-            ## creat blank file 
+            self.json_loader.save_json_file(self.file_path, empty_data)
+        except JsonLoadError as e:
+            logger.error("Unable to reset score file: %s", e)
+        return []
+
+    def load_score(self) -> list[HighScores]:
+        if not self.file_path.exists():
+            return self._reset_corrupted_file("Missing file")
+
         try:
-            validate_scores = HightScoreValidator.model_validate_json(
-                old_score)
-            format_scores: list[dict[str, str | int]] = [score.model_dump() for score in validate_scores]
-            return validate_scores
-        except ValidationError as e:
-            errors = ", ".join([err["msg"] for err in e.errors()])
-            raise HightScoreValidator(f"Validation failed: {errors}")
-        return format_scores
+            raw_content = self.json_loader.open_json_file(self.file_path)
+        except Exception as e:
+            return self._reset_corrupted_file(f"Reading error: {e}")
+
+        try:
+            validated_data = HighScores.model_validate_json(raw_content)
+            validated_data.scores.sort(key=lambda item: item.score, reverse=True)
+            return validated_data.scores[:10]
+        except (ValidationError, Exception) as e:
+            return self._reset_corrupted_file(f"Corupts file: {e}")

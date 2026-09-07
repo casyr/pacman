@@ -1,5 +1,5 @@
 {
-  "highscore_filename": "config.json",
+  "highscore_filename": "config.txt",
   "lives": 3,
   "pacgum": 42,
   "points_per_pacgum": 10,

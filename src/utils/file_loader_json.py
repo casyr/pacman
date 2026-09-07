@@ -7,8 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class JsonModelLoader:
-    def __init__(self, error_cls: type[Exception], file: str):
-        self.error_cls = error_cls
+    def __init__(self, file: str):
         self.file = file
 
     def save_json_file(
@@ -33,7 +32,7 @@ class JsonModelLoader:
     def check_json_format(self) -> Path:
         file_path = Path(self.file)
         if file_path.suffix.lower() != ".json":
-            raise self.error_cls("file must be a .json only !")
+            raise JsonLoadError("file must be a .json only !")
         return file_path
 
     def open_json_file(self, file_path: Path) -> str:
@@ -42,6 +41,6 @@ class JsonModelLoader:
                 raw_text = text.read()
                 return raw_text
         except FileNotFoundError:
-            raise self.error_cls(f"File not found: '{file_path}'.")
+            raise JsonLoadError(f"File not found: '{file_path}'.")
         except PermissionError:
-            raise self.error_cls(f"Permission reading denied: '{file_path}'.")
+            raise JsonLoadError(f"Permission reading denied: '{file_path}'.")
