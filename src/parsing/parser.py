@@ -93,8 +93,9 @@ class ConfigParser:
         raw_text: str = parser_json.open_json_file(file_path)
         clean_text = self._remove_all_comments(raw_text)
         try:
-            pydantic_model = GameValidator.model_validate_json(clean_text)
-            game_config: GameSettings = pydantic_model.to_dataclass()
+            valid_game_settings = GameValidator.model_validate_json(clean_text)
+            game_config: GameSettings = valid_game_settings.to_dataclass()
+            logger.debug(valid_game_settings)
             return game_config
         except ValidationError as e:
             errors = ", ".join([err["msg"] for err in e.errors()])
