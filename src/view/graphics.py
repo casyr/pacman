@@ -1,6 +1,5 @@
 import pygame
 import numpy
-from screeninfo import get_monitors
 
 
 class Graphics:
@@ -37,7 +36,8 @@ class Graphics:
     def put_sprite_in_image(self, dest_image: pygame.Surface,
                             dest_x: int, dest_y: int,
                             sprite_path: str, sprite_x: int, sprite_y: int,
-                            sprite_width: int, sprite_height: int):
+                            sprite_width: int, sprite_height: int,
+                            sprite_file_width: int, sprite_scale: int):
 
         sprite = self.load_sprite(sprite_path)
         sprite = sprite.convert(dest_image)
@@ -45,25 +45,36 @@ class Graphics:
         sprite_buffer = pygame.surfarray.pixels2d(sprite).T.ravel()
         dest_image_buffer = pygame.surfarray.pixels2d(dest_image).T.ravel()
 
+        screen_width = pygame.display.Info().current_w
 
-
-        scale = screen_width // 1000
-
-        for y_gap in range(sprite_height * scale):
-            for x_gap in range(sprite_width * scale):
-                sprite_pos = ((((sprite_y + y_gap) // scale) * 225)
-                              + ((sprite_x + x_gap) // scale))
-                image_pos = ((dest_y + y_gap) * 800) + (dest_x + x_gap)
+        for y_gap in range(sprite_height * sprite_scale):
+            for x_gap in range(sprite_width * sprite_scale):
+                sprite_pos = ((((sprite_y + y_gap) // sprite_scale) *
+                               sprite_file_width) +
+                              ((sprite_x + x_gap) // sprite_scale))
+                image_pos = (((dest_y + y_gap) * screen_width) +
+                             (dest_x + x_gap))
                 dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
-        # print(sprite_buffer)
-        # for i in range(len(224)):
-        #     for j in range(len(124)):
-        #         dest_image[i][j]
-        # to put sprite to window we need
-        # to get the sprite :
-            # identify his pos_x and pos_y in sprite image
-            # identify his width and height in sprite image
-            # copy the pixel
-        #to put it in the image buffer:
-            #paste in the image buffer the sprite copy:
-                # at pos_x, pox_y: paste each pixel in the buffer
+
+#######main#######################################################################
+    #from screeninfo import get_monitors
+    #from src.view.graphics import Graphics
+
+    # screen_width = get_monitors()[0].width
+    #     screen_height = get_monitors()[0].height
+
+    #     graphic = Graphics()
+    #     graphic.initialisation()
+    #     screen = graphic.new_window(screen_width, screen_height)
+    #     image = graphic.new_image(screen_width, screen_height)
+    #     graphic.put_sprite_in_image(image, 100, 100,
+    #                                 "sprites/pacman_sprite.png",
+    #                                 0, 0, 16, 16, 225, screen_width//900)
+
+    #     run = True
+    #     while (run):
+    #         graphic.blit_img(image, screen, (0, 0))
+    #         graphic.update_window()
+
+    #     graphic.quit_window()
+    #     return 0

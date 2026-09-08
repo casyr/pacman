@@ -11,7 +11,6 @@ from src.exceptions import (
     ViewError,
     ControllerError
 )
-from src.view.graphics import Graphics
 
 
 def main() -> int:
@@ -23,21 +22,6 @@ def main() -> int:
         loader = ConfigParser(sys.argv[1:])
         game_config = loader.load()
         logger.debug(game_config.pacgum)
-
-        screen_width = get_monitors()[0].width
-        screen_height = get_monitors()[0].height
-
-        graphic = Graphics()
-        graphic.initialisation()
-        screen = graphic.new_window(800, 800)
-        image = graphic.new_image(800, 800)
-        graphic.put_sprite_in_image(image, 100, 100,
-                                    "sprites/pacman_sprite.png", 0, 0, 16, 16)
-        while (True):
-            graphic.blit_img(image, screen, (0, 0))
-            graphic.update_window()
-
-        graphic.quit_window()
         return 0
 
     except ParserError as e:
