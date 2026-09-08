@@ -108,18 +108,18 @@ class GameValidator(BaseGameValidator):
     @field_validator("highscore_filename", mode="before")
     @classmethod
     def check_highscore_extension(cls, name_highscore: Any) -> str:
-        if (
+        if sys.argv[1] == name_highscore:
+            logger.warning(
+                f"Filename already used '{name_highscore}' "
+                "Falling back to default: 'highscore.json'")
+            return f"1_{sys.argv[1]}"
+        elif (
             not isinstance(name_highscore, str)
             or not name_highscore.lower().endswith(".json")
         ):
             logger.warning(
                 f"Invalid highscore filename '{name_highscore}' "
                 "(must be a string end with .json). "
-                "Falling back to default: 'highscore.json'")
-            return "highscore.json"
-        elif sys.argv[1] == name_highscore:
-            logger.warning(
-                f"Filename already used '{name_highscore}' "
                 "Falling back to default: 'highscore.json'")
             return "highscore.json"
         return name_highscore
