@@ -27,12 +27,12 @@ def main() -> int:
         graphic.initialisation()
         screen = graphic.new_window(800, 800)
         image = graphic.new_image(800, 800)
-        new_image = graphic.put_sprite_in_image(image, 50, 50, "sprites/text_sprite.png", 5, 5, 50, 50)
+        graphic.put_sprite_in_image(image, 100, 100, "sprites/pacman_sprite.png", 0, 0, 16, 16)
         while(True):
-            graphic.blit_img(new_image, screen, (0, 0))
+            graphic.blit_img(image, screen, (0, 0))
             graphic.update_window()
 
-        # graphic.quit_window()
+        graphic.quit_window()
         return 0
 
     except ParserError as e:
