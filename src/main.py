@@ -1,8 +1,16 @@
 import sys
 import logging
+<<<<<<< HEAD
 from src.utils import setup_logging
 from src.parsing import ConfigParser
 from .exceptions import (
+=======
+from src.utils.config_logging import setup_logging
+from src.parsing.parser import ConfigParser
+from src.utils.file_loader_json import JsonModelLoader
+from src.model.high_score_manager import HighScoreManager
+from src.exceptions import (
+>>>>>>> 8bfac08 (style : norm , add: folder save high_score)
     PacmanError,
     ParserError,
     GameSettingsError,
@@ -21,7 +29,13 @@ def main() -> int:
     try:
         loader = ConfigParser(sys.argv[1:])
         game_config = loader.load()
+<<<<<<< HEAD
         logger.debug(game_config.pacgum)
+=======
+        score_json_loader = JsonModelLoader(game_config.highscore_filename)
+        score_manager = HighScoreManager(score_json_loader)
+        logger.debug(game_config)
+>>>>>>> 8bfac08 (style : norm , add: folder save high_score)
         return 0
 
     except ParserError as e:

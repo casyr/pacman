@@ -11,20 +11,37 @@ install:
 
 run: install
 <<<<<<< HEAD
+<<<<<<< HEAD
 	uv run python3 -m src.main src/config.json
 =======
+=======
+>>>>>>> 198e7d2 (style : norm , add: folder save high_score)
 <<<<<<< HEAD
 	uv run python3 -m src src/config.json
 =======
 	uv run python3 -m src.main
 >>>>>>> 0a35e3b (fix: add imoport inside __init__.py)
+<<<<<<< HEAD
 >>>>>>> 96df0c8 (fix: add imoport inside __init__.py)
+=======
+=======
+	uv run python3 -m src.main src/config.json
+>>>>>>> 8bfac08 (style : norm , add: folder save high_score)
+>>>>>>> 198e7d2 (style : norm , add: folder save high_score)
 
 debug: install 
 	uv run python3 -m pdb -m src src/config.json
 
 lint: 
+<<<<<<< HEAD
 	uv run flake8 src && uv run mypy src --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+=======
+<<<<<<< HEAD
+	uv run flake8 src/ && uv run mypy src/ --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+=======
+	uv run flake8 src && uv run mypy src --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+>>>>>>> 8bfac08 (style : norm , add: folder save high_score)
+>>>>>>> 198e7d2 (style : norm , add: folder save high_score)
 
 clean:
 	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
