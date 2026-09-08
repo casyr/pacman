@@ -10,7 +10,11 @@ install:
 	uv sync
 
 run: install
+<<<<<<< HEAD
 	uv run python3 -m src.main src/config.json
+=======
+	uv run python3 -m src.main
+>>>>>>> 0e5b8eb (fix: add imoport inside __init__.py)
 
 debug: install 
 	uv run python3 -m pdb -m src.main

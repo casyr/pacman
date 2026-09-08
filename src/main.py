@@ -1,10 +1,24 @@
 import sys
 import logging
+<<<<<<< HEAD
 from src.utils.config_logging import setup_logging
 from src.parsing.parser import ConfigParser
 from src.utils.file_loader_json import JsonModelLoader
 from src.model.high_score_manager import HighScoreManager
 from src.exceptions import (
+=======
+<<<<<<< HEAD
+from utils.config_logging import setup_logging
+from parsing.parser import ConfigParser
+from utils.file_loader_json import JsonModelLoader
+from model.high_score_manager import HighScoreManager
+from exceptions import (
+=======
+from src.utils import setup_logging
+from src.parsing import ConfigParser
+from .exceptions import (
+>>>>>>> 0a35e3b (fix: add imoport inside __init__.py)
+>>>>>>> 0e5b8eb (fix: add imoport inside __init__.py)
     PacmanError,
     ParserError,
     GameSettingsError,
