@@ -7,11 +7,9 @@ requires-python = ">=3.14"
 dependencies = [
     "flake8>=7.3.0",
     "mazegenerator",
-    "mlx",
     "mypy>=2.3.1",
     "pydantic>=2.13.4",
 ]
 
 [tool.uv.sources]
 mazegenerator = { path = "42_modules/mazegenerator/mazegenerator-2.1.0-py3-none-any.whl" }
-mlx = { path = "42_modules/mlx/mlx-2.2-py3-none-any.whl" }

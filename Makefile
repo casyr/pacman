@@ -10,7 +10,7 @@ install:
 	uv sync
 
 run: install
-	uv run python3 -m src.main $(MAP)
+	uv run python3 -m src.main
 
 debug: install 
 	uv run python3 -m pdb -m src.main
