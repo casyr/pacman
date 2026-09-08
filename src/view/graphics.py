@@ -1,5 +1,4 @@
 import pygame
-import numpy
 
 
 class Graphics:
@@ -55,26 +54,3 @@ class Graphics:
                 image_pos = (((dest_y + y_gap) * screen_width) +
                              (dest_x + x_gap))
                 dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
-
-#######main#######################################################################
-    #from screeninfo import get_monitors
-    #from src.view.graphics import Graphics
-
-    # screen_width = get_monitors()[0].width
-    #     screen_height = get_monitors()[0].height
-
-    #     graphic = Graphics()
-    #     graphic.initialisation()
-    #     screen = graphic.new_window(screen_width, screen_height)
-    #     image = graphic.new_image(screen_width, screen_height)
-    #     graphic.put_sprite_in_image(image, 100, 100,
-    #                                 "sprites/pacman_sprite.png",
-    #                                 0, 0, 16, 16, 225, screen_width//900)
-
-    #     run = True
-    #     while (run):
-    #         graphic.blit_img(image, screen, (0, 0))
-    #         graphic.update_window()
-
-    #     graphic.quit_window()
-    #     return 0

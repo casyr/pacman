@@ -14,5 +14,10 @@ dependencies = [
     "screeninfo>=0.8.1",
 ]
 
+[tool.mypy]
+mypy_path = "src"
+explicit_package_bases = true
+namespace_packages = true
+
 [tool.uv.sources]
 mazegenerator = { path = "42_modules/mazegenerator/mazegenerator-2.1.0-py3-none-any.whl" }
