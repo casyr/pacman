@@ -2,9 +2,9 @@ import logging
 from pathlib import Path
 from pydantic import ValidationError
 
-from model.high_score_validator import HighScore, HighScores
-from utils.file_loader_json import JsonModelLoader
-from exceptions import JsonLoadError
+from .high_score_validator import HighScore, HighScores
+from src.utils.file_loader_json import JsonModelLoader
+from src.exceptions import JsonLoadError
 
 logger = logging.getLogger(__name__)
 
@@ -39,12 +39,12 @@ class HighScoreManager:
 
     def _reset_corrupted_file(self, reason: str) -> list:
         logger.warning(
-            f"The score file {self.file_path} is invalid {reason}. Resetting.")
+            f"The score file {self.file_path} is {reason}. Resetting.")
         empty_data: HighScores = HighScores(scores=[])
         try:
             self.json_loader.save_json_file(self.file_path, empty_data)
         except JsonLoadError as e:
-            logger.error("Unable to reset score file: %s", e)
+            logger.error("Unable to reset score_file: %s", e)
         return []
 
     def load_score(self) -> list[HighScore]:

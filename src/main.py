@@ -1,10 +1,10 @@
 import sys
 import logging
-from utils.config_logging import setup_logging
-from parsing.parser import ConfigParser
-from utils.file_loader_json import JsonModelLoader
-from model.high_score_manager import HighScoreManager
-from exceptions import (
+from src.utils.config_logging import setup_logging
+from src.parsing.parser import ConfigParser
+from src.utils.file_loader_json import JsonModelLoader
+from src.model.high_score_manager import HighScoreManager
+from src.exceptions import (
     PacmanError,
     ParserError,
     GameSettingsError,
@@ -25,7 +25,6 @@ def main() -> int:
         game_config = loader.load()
         score_json_loader = JsonModelLoader(game_config.highscore_filename)
         score_manager = HighScoreManager(score_json_loader)
-        data = score_manager.load_score()
         logger.debug(game_config)
         return 0
 

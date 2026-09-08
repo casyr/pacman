@@ -1,5 +1,6 @@
 import sys
 import logging
+from pathlib import Path
 from pydantic import (
     BaseModel,
     Field,
@@ -108,7 +109,8 @@ class GameValidator(BaseGameValidator):
     @field_validator("highscore_filename", mode="before")
     @classmethod
     def check_highscore_extension(cls, name_highscore: Any) -> str:
-        if sys.argv[1] == name_highscore:
+        arg_file_name = Path(sys.argv[1]).name
+        if arg_file_name == name_highscore:
             logger.warning(
                 f"Filename already used '{name_highscore}' "
                 "Falling back to default: 'highscore.json'")

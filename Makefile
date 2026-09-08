@@ -10,18 +10,19 @@ install:
 	uv sync
 
 run: install
-	uv run python3 -m src.main
+	uv run python3 -m src.main src/config.json
 
 debug: install 
 	uv run python3 -m pdb -m src.main
 
 lint: 
-	uv run flake8 . && uv run mypy src --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	uv run flake8 src && uv run mypy src --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 clean:
 	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	@find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -type d -name "logs" -exec rm -rf {} +
+	@rm -rf data
 .PHONY:
 	help install run debug lint clean
