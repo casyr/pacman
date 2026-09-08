@@ -1,12 +1,8 @@
 import logging
 from pathlib import Path
-<<<<<<< HEAD
-from src.exceptions import JsonLoadError
-from src.model.high_score_validator import HighScores
-=======
 from model.high_score_validator import HighScores
 from ..errors import JsonLoadError
->>>>>>> c0730eb (fix : import , fix:  rather than)
+
 
 logger = logging.getLogger(__name__)
 

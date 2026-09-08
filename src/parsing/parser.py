@@ -3,8 +3,13 @@ from pathlib import Path
 from pydantic import ValidationError
 from .game_validator import GameValidator
 from .game_settings import GameSettings
+<<<<<<< HEAD
 from ..errors import ParserError, GameSettingsError
 from ..utils.file_loader_json import JsonModelLoader
+=======
+from src.exceptions import ParserError, GameSettingsError
+from src.utils.file_loader_json import JsonModelLoader
+>>>>>>> 0a35e3b (fix: add imoport inside __init__.py)
 
 logger = logging.getLogger(__name__)
 
