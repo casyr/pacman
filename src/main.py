@@ -42,7 +42,7 @@ def main() -> int:
         return 1
 
     except JsonLoadError as e:
-        logger.error(f"Raised during a saving json file: {e}")
+        logger.error(f"Raised during operation on json file: {e}")
         return 1
 
     except ViewError as e:
