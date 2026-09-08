@@ -130,4 +130,5 @@ Because MiniLibX relies on an event-driven hook system in C while Pygame uses an
 - [MLX functions](https://harm-smits.github.io/42docs/libs/minilibx/prototypes.html)
 - [pygame documentation](https://www.pygame.org/docs/)
 - [Game Programming Pattern - Robert Nystrom](https://gameprogrammingpatterns.com/contents.html)
+- [Pacman sprite](https://www.spriters-resource.com/arcade/pacman/asset/52631/)
  
