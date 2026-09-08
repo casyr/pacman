@@ -1,5 +1,6 @@
 import pygame
 import numpy
+from screeninfo import get_monitors
 
 
 class Graphics:
@@ -43,12 +44,16 @@ class Graphics:
 
         sprite_buffer = pygame.surfarray.pixels2d(sprite).T.ravel()
         dest_image_buffer = pygame.surfarray.pixels2d(dest_image).T.ravel()
-        # print(sprite_buffer.dtype)
 
-        for y_gap in range(sprite_height):
-            for x_gap in range(sprite_width):
-                sprite_pos = (((sprite_y + y_gap) * 224) + ((sprite_x + x_gap) * (64/8)))
-                image_pos = (((dest_y + y_gap) * 800) + ((dest_x + x_gap) * (64/8)))
+
+
+        scale = screen_width // 1000
+
+        for y_gap in range(sprite_height * scale):
+            for x_gap in range(sprite_width * scale):
+                sprite_pos = ((((sprite_y + y_gap) // scale) * 225)
+                              + ((sprite_x + x_gap) // scale))
+                image_pos = ((dest_y + y_gap) * 800) + (dest_x + x_gap)
                 dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
         # print(sprite_buffer)
         # for i in range(len(224)):
