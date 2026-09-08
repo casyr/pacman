@@ -1,24 +1,24 @@
-import json
+import logging
 from pathlib import Path
 from exceptions import JsonLoadError
-import logging
+from model.high_score_validator import HighScores
 
 logger = logging.getLogger(__name__)
 
 
 class JsonModelLoader:
-    def __init__(self, error_cls: type[Exception], file: str):
-        self.error_cls = error_cls
+    def __init__(self, file: str):
         self.file = file
 
     def save_json_file(
             self,
             file_path: Path,
-            results: list[dict[str, int | str]]) -> None:
+            results: HighScores) -> None:
         file_path.parent.mkdir(parents=True, exist_ok=True)
         try:
             with open(file_path, "w", encoding="utf-8") as output_file:
-                json.dump(results, output_file, indent=4, ensure_ascii=False)
+                json_string = results.model_dump_json(indent=4)
+                output_file.write(json_string)
         except OSError as e:
             raise JsonLoadError(
                 f"file at {file_path} could not save.") from e
@@ -33,7 +33,7 @@ class JsonModelLoader:
     def check_json_format(self) -> Path:
         file_path = Path(self.file)
         if file_path.suffix.lower() != ".json":
-            raise self.error_cls("file must be a .json only !")
+            raise JsonLoadError("file must be a .json only !")
         return file_path
 
     def open_json_file(self, file_path: Path) -> str:
@@ -42,6 +42,6 @@ class JsonModelLoader:
                 raw_text = text.read()
                 return raw_text
         except FileNotFoundError:
-            raise self.error_cls(f"File not found: '{file_path}'.")
+            raise JsonLoadError(f"File not found: '{file_path}'.")
         except PermissionError:
-            raise self.error_cls(f"Permission reading denied: '{file_path}'.")
+            raise JsonLoadError(f"Permission reading denied: '{file_path}'.")

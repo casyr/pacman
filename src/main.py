@@ -2,6 +2,8 @@ import sys
 import logging
 from utils.config_logging import setup_logging
 from parsing.parser import ConfigParser
+from utils.file_loader_json import JsonModelLoader
+from model.high_score_manager import HighScoreManager
 from exceptions import (
     PacmanError,
     ParserError,
@@ -21,7 +23,10 @@ def main() -> int:
     try:
         loader = ConfigParser(sys.argv[1:])
         game_config = loader.load()
-        logger.debug(game_config.pacgum)
+        score_json_loader = JsonModelLoader(game_config.highscore_filename)
+        score_manager = HighScoreManager(score_json_loader)
+        data = score_manager.load_score()
+        logger.debug(game_config)
         return 0
 
     except ParserError as e:
@@ -37,7 +42,7 @@ def main() -> int:
         return 1
 
     except JsonLoadError as e:
-        logger.error(f"Raised during a saving json file: {e}")
+        logger.error(f"Raised during operation on json file: {e}")
         return 1
 
     except ViewError as e:

@@ -87,8 +87,7 @@ class ConfigParser:
 
     def load(self) -> GameSettings:
         self._check_args()
-        parser_json = JsonModelLoader(
-            error_cls=ParserError, file=self.args[0])
+        parser_json = JsonModelLoader(file=self.args[0])
         file_path: Path = parser_json.check_json_format()
         raw_text: str = parser_json.open_json_file(file_path)
         clean_text = self._remove_all_comments(raw_text)
