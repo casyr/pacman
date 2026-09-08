@@ -1,7 +1,7 @@
 import sys
 import logging
-from src.utils.config_logging import setup_logging
-from src.parsing.parser import ConfigParser
+from .utils.config_logging import setup_logging
+from .parsing.parser import ConfigParser
 from src.exceptions import (
     PacmanError,
     ParserError,
