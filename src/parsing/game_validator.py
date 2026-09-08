@@ -10,7 +10,7 @@ from pydantic import (
     ValidationError)
 from abc import ABC, abstractmethod
 from typing import Any
-from parsing.game_settings import LevelSettings, GameSettings
+from .game_settings import LevelSettings, GameSettings
 
 logger = logging.getLogger(__name__)
 
