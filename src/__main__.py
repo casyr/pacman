@@ -5,18 +5,20 @@ from .parsing import ConfigParser
 from .errors import PacmanError
 
 from .view import Graphics
+from .view import SpriteSheetManager
 
 
 def main() -> int:
     setup_logging()
     logger = logging.getLogger(__name__)
     logger.info("Starting the application Pacman...")
+
     graphic = Graphics()
+    sprite_manager = SpriteSheetManager()
 
     graphic.initialisation()
     screen = graphic.new_window(800, 800)
     img = graphic.new_image(800, 800)
-    # graphic.load_sprite("sprites/pacman_sprite.bmp")
     while (True):
         graphic.put_sprite_in_image(
             img, 100, 100, "sprites/pacman_sprite.bmp",
