@@ -4,15 +4,15 @@ import pygame
 class Graphics:
 
     @staticmethod
-    def initialisation():
+    def initialisation() -> None:
         pygame.init()
 
     @staticmethod
-    def new_window(width: int, height: int):
+    def new_window(width: int, height: int) -> pygame.Surface:
         return (pygame.display.set_mode((width, height)))
 
     @staticmethod
-    def quit_window():
+    def quit_window() -> None:
         pygame.display.quit()
 
     @staticmethod
@@ -36,7 +36,8 @@ class Graphics:
                             dest_x: int, dest_y: int,
                             sprite_path: str, sprite_x: int, sprite_y: int,
                             sprite_width: int, sprite_height: int,
-                            sprite_file_width: int, sprite_scale: int):
+                            sprite_file_width: int, sprite_scale: int
+                            ) -> None:
 
         sprite = self.load_sprite(sprite_path)
         sprite = sprite.convert(dest_image)
