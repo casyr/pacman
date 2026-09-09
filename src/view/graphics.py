@@ -48,8 +48,6 @@ class Graphics:
 
         for y_gap in range(sprite_height * sprite_scale):
             for x_gap in range(sprite_width * sprite_scale):
-                sprite_pos_x_scale = (sprite_y + y_gap)
-                sprite_pos_y_scale = 
                 sprite_pos = ((((sprite_y + y_gap) // sprite_scale) *
                                sprite_file_width) +
                               ((sprite_x + x_gap) // sprite_scale))

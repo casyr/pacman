@@ -1,4 +1,4 @@
 from .graphics import Graphics
 
 
-__all__ = ["Graphic"]
+__all__ = ["Graphics"]
