@@ -5,7 +5,7 @@ from .parsing import ConfigParser
 from .errors import PacmanError
 
 from .view import Graphics
-from .view import SpriteSheetManager
+from .view import SpriteSheet
 
 
 def main() -> int:
@@ -14,16 +14,14 @@ def main() -> int:
     logger.info("Starting the application Pacman...")
 
     graphic = Graphics()
-    sprite_manager = SpriteSheetManager()
+    pacman = SpriteSheet("sprites/pacman_sprite.bmp")
 
     graphic.initialisation()
     screen = graphic.new_window(800, 800)
     img = graphic.new_image(800, 800)
     while (True):
         graphic.put_sprite_in_image(
-            img, 100, 100, "sprites/pacman_sprite.bmp",
-            0, 0, 16, 16, 225, 3
-        )
+            img, 100, 100, pacman.sprite_fill_data("pacman_right_1"))
         graphic.blit_img(img, screen, (100, 100))
         graphic.update_window()
 

@@ -1,4 +1,5 @@
 import pygame
+from .sprite_sheet_manager import Sprite
 
 
 class Graphics:
@@ -34,11 +35,11 @@ class Graphics:
 
     def put_sprite_in_image(self, dest_image: pygame.Surface,
                             dest_x: int, dest_y: int,
-                            sprite_path: str, sprite_x: int, sprite_y: int,
-                            sprite_width: int, sprite_height: int,
-                            sprite_file_width: int) -> None:
+                            sprite_data: Sprite,) -> None:
 
-        sprite = self.load_sprite(sprite_path)
+        scaling = 3
+
+        sprite = self.load_sprite(sprite_data.path)
         sprite = sprite.convert(dest_image)
 
         sprite_buffer = pygame.surfarray.pixels2d(sprite).T.ravel()
@@ -46,11 +47,11 @@ class Graphics:
 
         screen_width = pygame.display.Info().current_w
 
-        for y_gap in range(sprite_height * 3):
-            for x_gap in range(sprite_width * 3):
-                sprite_pos = ((((sprite_y + y_gap) // 3) *
-                               sprite_file_width) +
-                              ((sprite_x + x_gap) // 3))
+        for y_gap in range(sprite_data.height * scaling):
+            for x_gap in range(sprite_data.width * scaling):
+                sprite_pos = ((((sprite_data.pos_y + y_gap) // scaling) *
+                               sprite_data.file_width) +
+                              ((sprite_data.pos_x + x_gap) // scaling))
                 image_pos = (((dest_y + y_gap) * screen_width) +
                              (dest_x + x_gap))
                 dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
