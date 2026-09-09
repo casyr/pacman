@@ -1,8 +1,8 @@
 import sys
 import logging
-from src.utils import setup_logging
-from src.parsing import ConfigParser
-from .exceptions import (
+from .utils import setup_logging
+from .parsing import ConfigParser
+from .errors import (
     PacmanError,
     ParserError,
     GameSettingsError,
