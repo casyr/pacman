@@ -2,15 +2,7 @@ import sys
 import logging
 from .utils import setup_logging
 from .parsing import ConfigParser
-from .errors import (
-    PacmanError,
-    ParserError,
-    GameSettingsError,
-    ModelError,
-    JsonLoadError,
-    ViewError,
-    ControllerError
-)
+from .errors import (PacmanError)
 
 
 def main() -> int:
@@ -24,32 +16,8 @@ def main() -> int:
         logger.debug(game_config.pacgum)
         return 0
 
-    except ParserError as e:
-        logger.error(f"CLI failed: {e}")
-        return 1
-
-    except GameSettingsError as e:
-        logger.error(f"Parsing failed: {e}")
-        return 1
-
-    except ModelError as e:
-        logger.error(f"Raised during a logic rule forbidden: {e}")
-        return 1
-
-    except JsonLoadError as e:
-        logger.error(f"Raised during a saving json file: {e}")
-        return 1
-
-    except ViewError as e:
-        logger.error(f"Graphics subsystem error: {e}")
-        return 1
-
-    except ControllerError as e:
-        logger.error(f"Controller subsystem error: {e}")
-        return 1
-
-    except PacmanError as e:
-        logger.error(f"Application Pacman error: {e}")
+    except PacmanError as error:
+        logger.error(f"Application error [{type(error).__name__}]: {error}")
         return 1
 
     except KeyboardInterrupt:
