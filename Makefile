@@ -13,7 +13,7 @@ run: install
 	uv run python3 -m src src/config.json
 
 debug: install 
-	uv run python3 -m pdb -m src
+	uv run python3 -m pdb -m src src/config.json
 
 lint: 
 	uv run flake8 src/ && uv run mypy src/ --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
