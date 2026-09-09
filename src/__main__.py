@@ -2,7 +2,7 @@ import sys
 import logging
 from .utils import setup_logging
 from .parsing import ConfigParser
-from .errors import (PacmanError)
+from .errors import PacmanError
 
 
 def main() -> int:
