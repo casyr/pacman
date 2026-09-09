@@ -1,4 +1,5 @@
 from yaml import safe_load
+from ..errors import ViewError
 
 
 class Sprite:
@@ -15,9 +16,16 @@ class SpriteSheet:
 
     def __init__(self, path: str):
         self.path = path
-        with open("sprites/pacman_sprites.yaml", "r") as data:
-            self.sprite_dict = safe_load(data)
-        print(self.sprite_dict)
+        self.sprite_dict = {}
+
+    def get_sprite_data(self) -> None:
+        try:
+            with open("sprites/pacman_sprites.yaml", "r") as data:
+                self.sprite_dict = safe_load(data)
+        except (FileNotFoundError) as e:
+            raise ViewError(e)
+        except (PermissionError) as e:
+            raise ViewError(e)
 
     def get_sprite_file_width(self) -> int:
         return (int(self.sprite_dict["sprite_width"]))
