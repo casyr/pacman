@@ -1,5 +1,5 @@
 import pyyaml
-from .graphics import Graphics
+
 
 class Sprite:
 
@@ -23,7 +23,5 @@ class SpriteSheetManager:
         sprite.height = data["h"]
         return (sprite)
 
-    def get_sprite_file_width(path: str) -> int:
-        img = Graphics().load_sprite(path)
-        return (py)
-
+    def get_sprite_file_width(self, path: str) -> int:
+        return (int(self.sprite_dict["sprite_width"]))
