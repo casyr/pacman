@@ -3,15 +3,7 @@ import logging
 
 from .utils import setup_logging
 from .parsing import ConfigParser
-from .errors import (
-    PacmanError,
-    ParserError,
-    GameSettingsError,
-    ModelError,
-    JsonLoadError,
-    ViewError,
-    ControllerError
-)
+from .errors import PacmanError
 
 
 def main() -> int:
