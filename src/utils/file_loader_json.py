@@ -1,8 +1,7 @@
 import logging
 from pathlib import Path
-from model.high_score_validator import HighScores
+from ..model import HighScores
 from ..errors import JsonLoadError
-
 
 logger = logging.getLogger(__name__)
 

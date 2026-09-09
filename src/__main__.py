@@ -1,7 +1,8 @@
 import sys
 import logging
 
-from .utils import setup_logging
+from .model import HighScoreManager
+from .utils import setup_logging, JsonModelLoader
 from .parsing import ConfigParser
 from .errors import PacmanError
 
@@ -16,7 +17,7 @@ def main() -> int:
         game_config = loader.load()
         score_json_loader = JsonModelLoader(game_config.highscore_filename)
         score_manager = HighScoreManager(score_json_loader)
-        logger.debug(game_config)
+        logger.debug(score_manager)
         return 0
 
     except PacmanError as error:

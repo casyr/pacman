@@ -3,8 +3,8 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from .high_score_validator import HighScore, HighScores
-from src.utils.file_loader_json import JsonModelLoader
-from src.exceptions import JsonLoadError
+from ..utils import JsonModelLoader
+from ..errors import JsonLoadError
 
 logger = logging.getLogger(__name__)
 

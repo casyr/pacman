@@ -12,6 +12,7 @@ install:
 run: install
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	uv run python3 -m src.main src/config.json
 =======
 =======
@@ -28,11 +29,15 @@ run: install
 	uv run python3 -m src.main src/config.json
 >>>>>>> 8bfac08 (style : norm , add: folder save high_score)
 >>>>>>> 198e7d2 (style : norm , add: folder save high_score)
+=======
+	uv run python3 -m src src/config.json
+>>>>>>> 66c9195 (fix: rebase dev inside current branch)
 
 debug: install 
 	uv run python3 -m pdb -m src src/config.json
 
 lint: 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	uv run flake8 src && uv run mypy src --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 =======
@@ -42,6 +47,9 @@ lint:
 	uv run flake8 src && uv run mypy src --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 >>>>>>> 8bfac08 (style : norm , add: folder save high_score)
 >>>>>>> 198e7d2 (style : norm , add: folder save high_score)
+=======
+	uv run flake8 src/ && uv run mypy src/ --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+>>>>>>> 66c9195 (fix: rebase dev inside current branch)
 
 clean:
 	@find . -type d -name ".mypy_cache" -exec rm -rf {} +

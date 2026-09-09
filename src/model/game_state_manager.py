@@ -1,4 +1,4 @@
-from src.parsing.game_settings import GameSettings
+from ..parsing import GameSettings
 
 
 class GameStateManager:
