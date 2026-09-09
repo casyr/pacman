@@ -1,5 +1,6 @@
 import pygame
 from .sprite_sheet_manager import Sprite
+from ..errors import ViewError
 
 
 class Graphics:
@@ -31,7 +32,12 @@ class Graphics:
 
     @staticmethod
     def load_sprite(path: str) -> pygame.Surface:
-        return (pygame.image.load(path))
+        try:
+            return (pygame.image.load(path))
+        except FileNotFoundError as e:
+            raise ViewError(e)
+        except PermissionError as e:
+            raise ViewError(e)
 
     def put_sprite_in_image(self, dest_image: pygame.Surface,
                             dest_x: int, dest_y: int,
@@ -39,7 +45,11 @@ class Graphics:
 
         scaling = 3
 
-        sprite = self.load_sprite(sprite_data.path)
+        try:
+            sprite = self.load_sprite(sprite_data.path)
+        except Exception as e:
+            raise (e)
+
         sprite = sprite.convert(dest_image)
 
         sprite_buffer = pygame.surfarray.pixels2d(sprite).T.ravel()

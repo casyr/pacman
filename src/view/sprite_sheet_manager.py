@@ -1,5 +1,6 @@
 from yaml import safe_load
 from ..errors import ViewError
+from typing import Any
 
 
 class Sprite:
@@ -16,7 +17,7 @@ class SpriteSheet:
 
     def __init__(self, path: str):
         self.path = path
-        self.sprite_dict = {}
+        self.sprite_dict: dict[str, Any] = {}
 
     def get_sprite_data(self) -> None:
         try:
@@ -40,4 +41,3 @@ class SpriteSheet:
         sprite.path = self.path
         sprite.file_width = self.get_sprite_file_width()
         return (sprite)
-

@@ -12,23 +12,21 @@ def main() -> int:
     setup_logging()
     logger = logging.getLogger(__name__)
     logger.info("Starting the application Pacman...")
-
-    graphic = Graphics()
-    pacman = SpriteSheet("sprites/pacman_sprite.bmp")
-
-    graphic.initialisation()
-    screen = graphic.new_window(800, 800)
-    img = graphic.new_image(800, 800)
-    while (True):
-        graphic.put_sprite_in_image(
-            img, 100, 100, pacman.sprite_fill_data("pacman_right_1"))
-        graphic.blit_img(img, screen, (100, 100))
-        graphic.update_window()
-
     try:
         loader = ConfigParser(sys.argv[1:])
         game_config = loader.load()
         logger.debug(game_config.pacgum)
+        graphic = Graphics()
+        pacman = SpriteSheet("sprites/pacman_sprite.bmp")
+        pacman.get_sprite_data()
+        graphic.initialisation()
+        screen = graphic.new_window(800, 800)
+        img = graphic.new_image(800, 800)
+        while (True):
+            graphic.put_sprite_in_image(
+                img, 100, 100, pacman.sprite_fill_data("pacman_right_1"))
+            graphic.blit_img(img, screen, (100, 100))
+            graphic.update_window()
         return 0
 
     except PacmanError as error:
