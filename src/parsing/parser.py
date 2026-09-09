@@ -3,8 +3,8 @@ from pathlib import Path
 from pydantic import ValidationError
 from .game_validator import GameValidator
 from .game_settings import GameSettings
-from src.exceptions import ParserError, GameSettingsError
-from src.utils.file_loader_json import JsonModelLoader
+from ..errors import ParserError, GameSettingsError
+from ..utils.file_loader_json import JsonModelLoader
 
 logger = logging.getLogger(__name__)
 
