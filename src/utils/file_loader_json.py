@@ -1,7 +1,7 @@
+import logging
 import json
 from pathlib import Path
-from exceptions import JsonLoadError
-import logging
+from ..errors import JsonLoadError
 
 logger = logging.getLogger(__name__)
 
