@@ -10,14 +10,10 @@ install:
 	uv sync
 
 run: install
-<<<<<<< HEAD
 	uv run python3 -m src.main src/config.json
-=======
-	uv run python3 -m src.main
->>>>>>> 0e5b8eb (fix: add imoport inside __init__.py)
 
 debug: install 
-	uv run python3 -m pdb -m src.main
+	uv run python3 -m pdb -m src
 
 lint: 
 	uv run flake8 src && uv run mypy src --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
