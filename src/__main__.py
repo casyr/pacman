@@ -25,7 +25,6 @@ def main() -> int:
         graphic.blit_img(img, screen, (100, 100))
         graphic.update_window()
 
-
     try:
         loader = ConfigParser(sys.argv[1:])
         game_config = loader.load()
