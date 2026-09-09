@@ -24,7 +24,7 @@ def main() -> int:
         img = graphic.new_image(800, 800)
         while (True):
             graphic.put_sprite_in_image(
-                img, 100, 100, pacman.sprite_fill_data("pacman_right_1"))
+                img, 100, 100, pacman.sprite_fill_data("item_cherry"))
             graphic.blit_img(img, screen, (100, 100))
             graphic.update_window()
         return 0
