@@ -17,15 +17,26 @@ def main() -> int:
         game_config = loader.load()
         logger.debug(game_config.pacgum)
         graphic = Graphics()
-        pacman = SpriteSheet("sprites/pacman_sprite.bmp")
+
+        pacman = SpriteSheet("sprites/pacman_sprites/pacman_sprite.bmp",
+                             "sprites/pacman_sprites/pacman_sprites.yaml")
         pacman.get_sprite_data()
+
+        maze = SpriteSheet("sprites/maze_sprites/maze_sprite.bmp",
+                           "sprites/maze_sprites/maze_sprites.yaml")
+        maze.get_sprite_data()
+
         graphic.initialisation()
         screen = graphic.new_window(800, 800)
         img = graphic.new_image(800, 800)
+        pacman_sprite = pacman.sprite_fill_data("ghost_eyes_down")
+        maze_sprite = maze.sprite_fill_data("pacgum_small")
+        graphic.put_sprite_in_image(
+                img, 100, 100, pacman_sprite)
+        graphic.put_sprite_in_image(
+                img, 200, 100, maze_sprite)
         while (True):
-            graphic.put_sprite_in_image(
-                img, 100, 100, pacman.sprite_fill_data("ghost_eyes_down"))
-            graphic.blit_img(img, screen, (100, 100))
+            graphic.blit_img(img, screen, (0, 0))
             graphic.update_window()
         return 0
 

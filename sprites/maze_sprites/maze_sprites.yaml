@@ -1,270 +1,312 @@
-sprite_width: 225
+sprite_width: 143
 sprites:
-  # --- ROW 0: DOUBLE WALLS & CORNERS (TOP) ---
-  wall_double_corner_top_left:
+  # --- ROW 0: DOUBLE WALL OUTER CORNERS, VERTICALS & TOP/BOTTOM LINES ---
+  wall_double_outer_corner_top_right:
     sheet_id: 0
     x: 0
     y: 0
-    w: 16
-    h: 16
+    w: 8
+    h: 8
 
-  wall_double_vertical:
+  wall_double_outer_corner_top_left:
     sheet_id: 0
-    x: 16
+    x: 9
     y: 0
-    w: 16
-    h: 16
+    w: 8
+    h: 8
 
-  wall_double_corner_top_right:
+  wall_double_vertical_left:
     sheet_id: 0
-    x: 32
+    x: 18
     y: 0
-    w: 16
-    h: 16
+    w: 8
+    h: 8
 
-  wall_double_corner_bottom_left:
+  wall_double_vertical_right:
     sheet_id: 0
-    x: 48
+    x: 27
     y: 0
-    w: 16
-    h: 16
+    w: 8
+    h: 8
 
-  wall_double_corner_bottom_right:
+  wall_double_outer_corner_bottom_right:
     sheet_id: 0
-    x: 64
+    x: 36
     y: 0
-    w: 16
-    h: 16
+    w: 8
+    h: 8
 
-  wall_double_t_right:
+  wall_double_outer_corner_bottom_left:
     sheet_id: 0
-    x: 80
+    x: 45
     y: 0
-    w: 16
-    h: 16
+    w: 8
+    h: 8
 
-  wall_outer_corner_top_left:
+  wall_double_t_junction_top_right:
     sheet_id: 0
-    x: 96
+    x: 54
     y: 0
-    w: 16
-    h: 16
+    w: 8
+    h: 8
 
-  wall_outer_horizontal_top:
+  wall_double_t_junction_top_left:
     sheet_id: 0
-    x: 112
+    x: 63
     y: 0
-    w: 16
-    h: 16
+    w: 8
+    h: 8
 
-  wall_outer_corner_top_right:
+  wall_double_t_junction_bottom_right:
     sheet_id: 0
-    x: 128
+    x: 72
     y: 0
-    w: 16
-    h: 16
+    w: 8
+    h: 8
+
+  wall_double_t_junction_bottom_left:
+    sheet_id: 0
+    x: 81
+    y: 0
+    w: 8
+    h: 8
 
   wall_double_horizontal_top:
     sheet_id: 0
-    x: 144
+    x: 90
     y: 0
-    w: 16
-    h: 16
+    w: 8
+    h: 8
+
+  wall_double_horizontal_bottom:
+    sheet_id: 0
+    x: 108
+    y: 0
+    w: 8
+    h: 8
+
+  wall_single_horizontal_top:
+    sheet_id: 0
+    x: 126
+    y: 0
+    w: 8
+    h: 8
+
+  # --- ROW 1: SINGLE WALL CORNERS, ARCS & CONNECTORS ---
+  wall_single_corner_top_right:
+    sheet_id: 0
+    x: 0
+    y: 9
+    w: 8
+    h: 8
 
   wall_single_corner_top_left:
     sheet_id: 0
-    x: 160
-    y: 0
-    w: 16
-    h: 16
+    x: 9
+    y: 9
+    w: 8
+    h: 8
 
-  wall_single_vertical:
+  wall_single_corner_bottom_right:
     sheet_id: 0
-    x: 176
-    y: 0
-    w: 16
-    h: 16
+    x: 18
+    y: 9
+    w: 8
+    h: 8
 
-  wall_single_horizontal:
+  wall_single_corner_bottom_left:
     sheet_id: 0
-    x: 192
-    y: 0
-    w: 16
-    h: 16
+    x: 27
+    y: 9
+    w: 8
+    h: 8
 
-  wall_tunnel_horizontal:
+  wall_single_horizontal_top:
     sheet_id: 0
-    x: 208
-    y: 0
-    w: 16
-    h: 16
+    x: 36
+    y: 9
+    w: 8
+    h: 8
 
-  # --- ROW 1: JUNCTIONS & OUTER WALLS ---
-  wall_single_curve_top_left:
+  wall_inner_arc_top_right:
     sheet_id: 0
-    x: 0
-    y: 16
-    w: 16
-    h: 16
+    x: 54
+    y: 9
+    w: 8
+    h: 8
 
-  wall_single_curve_top_right:
+  wall_inner_arc_top_left:
     sheet_id: 0
-    x: 16
-    y: 16
-    w: 16
-    h: 16
+    x: 63
+    y: 9
+    w: 8
+    h: 8
 
-  wall_double_horizontal:
+  wall_single_vertical_left:
     sheet_id: 0
-    x: 32
-    y: 16
-    w: 16
-    h: 16
+    x: 72
+    y: 9
+    w: 8
+    h: 8
 
-  wall_double_t_down:
+  wall_single_vertical_right:
     sheet_id: 0
-    x: 48
-    y: 16
-    w: 16
-    h: 16
+    x: 81
+    y: 9
+    w: 8
+    h: 8
 
-  wall_double_t_up:
+  wall_inner_arc_bottom_right:
     sheet_id: 0
-    x: 64
-    y: 16
-    w: 16
-    h: 16
+    x: 90
+    y: 9
+    w: 8
+    h: 8
 
-  wall_double_t_left:
+  wall_inner_arc_bottom_left:
     sheet_id: 0
-    x: 80
-    y: 16
-    w: 16
-    h: 16
+    x: 99
+    y: 9
+    w: 8
+    h: 8
 
-  wall_outer_corner_bottom_left:
+  wall_end_cap_right:
     sheet_id: 0
-    x: 96
-    y: 16
-    w: 16
-    h: 16
+    x: 108
+    y: 9
+    w: 8
+    h: 8
 
-  wall_outer_horizontal_bottom:
+  wall_end_cap_left:
     sheet_id: 0
-    x: 112
-    y: 16
-    w: 16
-    h: 16
+    x: 117
+    y: 9
+    w: 8
+    h: 8
 
-  wall_outer_corner_bottom_right:
+  wall_t_connector_right:
     sheet_id: 0
-    x: 128
-    y: 16
-    w: 16
-    h: 16
+    x: 126
+    y: 9
+    w: 8
+    h: 8
 
-  wall_double_horizontal_middle:
+  wall_t_connector_left:
     sheet_id: 0
-    x: 144
-    y: 16
-    w: 16
-    h: 16
+    x: 135
+    y: 9
+    w: 8
+    h: 8
 
-  wall_junction_top_left:
-    sheet_id: 0
-    x: 160
-    y: 16
-    w: 16
-    h: 16
-
-  wall_junction_top_right:
-    sheet_id: 0
-    x: 176
-    y: 16
-    w: 16
-    h: 16
-
-  wall_tunnel_line:
-    sheet_id: 0
-    x: 192
-    y: 16
-    w: 16
-    h: 16
-
-  wall_tunnel_end:
-    sheet_id: 0
-    x: 208
-    y: 16
-    w: 16
-    h: 16
-
-  # --- ROW 2: INNER WALLS & PELLETS ---
-  wall_ghost_house_horizontal:
+  # --- ROW 2: GHOST HOUSE DOOR, INNER CURVES, CAPS & PACGUMS ---
+  ghost_house_door_left:
     sheet_id: 0
     x: 0
-    y: 32
-    w: 16
-    h: 16
+    y: 18
+    w: 8
+    h: 8
 
-  wall_inner_corner_bottom_left:
+  ghost_house_door_right:
     sheet_id: 0
-    x: 16
-    y: 32
-    w: 16
-    h: 16
+    x: 9
+    y: 18
+    w: 8
+    h: 8
 
-  wall_inner_corner_bottom_right:
+  wall_curve_large_top_left:
     sheet_id: 0
-    x: 32
-    y: 32
-    w: 16
-    h: 16
+    x: 18
+    y: 18
+    w: 8
+    h: 8
 
-  wall_curve_bottom_left:
+  wall_curve_large_top_right:
     sheet_id: 0
-    x: 48
-    y: 32
-    w: 16
-    h: 16
+    x: 27
+    y: 18
+    w: 8
+    h: 8
 
-  wall_curve_bottom_right:
+  wall_curve_large_bottom_left:
     sheet_id: 0
-    x: 64
-    y: 32
-    w: 16
-    h: 16
+    x: 36
+    y: 18
+    w: 8
+    h: 8
 
-  wall_curve_vertical:
+  wall_curve_large_bottom_right:
     sheet_id: 0
-    x: 80
-    y: 32
-    w: 16
-    h: 16
+    x: 45
+    y: 18
+    w: 8
+    h: 8
 
-  wall_junction_bottom:
+  wall_small_corner_top_right:
     sheet_id: 0
-    x: 96
-    y: 32
-    w: 16
-    h: 16
+    x: 54
+    y: 18
+    w: 8
+    h: 8
 
-  pellet_dot:
+  wall_small_corner_top_left:
     sheet_id: 0
-    x: 176
-    y: 32
-    w: 16
-    h: 16
+    x: 63
+    y: 18
+    w: 8
+    h: 8
 
-  energizer:
+  wall_small_corner_bottom_right:
     sheet_id: 0
-    x: 192
-    y: 32
-    w: 16
-    h: 16
+    x: 72
+    y: 18
+    w: 8
+    h: 8
 
-  large_pellet:
+  wall_small_corner_bottom_left:
     sheet_id: 0
-    x: 208
-    y: 32
-    w: 16
-    h: 16
+    x: 81
+    y: 18
+    w: 8
+    h: 8
+
+  wall_top_join_left:
+    sheet_id: 0
+    x: 90
+    y: 18
+    w: 8
+    h: 8
+
+  wall_top_join_right:
+    sheet_id: 0
+    x: 99
+    y: 18
+    w: 8
+    h: 8
+
+  empty_tile:
+    sheet_id: 0
+    x: 108
+    y: 18
+    w: 8
+    h: 8
+
+  pacgum_small:
+    sheet_id: 0
+    x: 117
+    y: 18
+    w: 8
+    h: 8
+
+  pacgum_energizer:
+    sheet_id: 0
+    x: 126
+    y: 18
+    w: 8
+    h: 8
+
+  pacgum_large:
+    sheet_id: 0
+    x: 135
+    y: 18
+    w: 8
+    h: 8

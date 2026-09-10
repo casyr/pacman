@@ -15,13 +15,14 @@ class Sprite:
 
 class SpriteSheet:
 
-    def __init__(self, path: str):
-        self.path = path
+    def __init__(self, sprite_path: str, sprite_path_data: str):
+        self.sprite_path = sprite_path
+        self.sprite_path_data = sprite_path_data
         self.sprite_dict: dict[str, Any] = {}
 
     def get_sprite_data(self) -> None:
         try:
-            with open("sprites/pacman_sprites.yaml", "r") as data:
+            with open(self.sprite_path_data, "r") as data:
                 self.sprite_dict = safe_load(data)
         except (FileNotFoundError) as e:
             raise ViewError(e)
@@ -38,6 +39,6 @@ class SpriteSheet:
         sprite.pos_y = data["y"]
         sprite.width = data["w"]
         sprite.height = data["h"]
-        sprite.path = self.path
+        sprite.path = self.sprite_path
         sprite.file_width = self.get_sprite_file_width()
         return (sprite)
