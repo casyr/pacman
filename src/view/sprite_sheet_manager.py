@@ -13,14 +13,18 @@ class Sprite:
     file_width: int
 
 
-class SpriteSheet:
+class SpriteSheetManager:
 
     def __init__(self, sprite_path: str, sprite_path_data: str):
         self.sprite_path = sprite_path
         self.sprite_path_data = sprite_path_data
         self.sprite_dict: dict[str, Any] = {}
+        try:
+            self.get_sprites_sheet_data()
+        except Exception as e:
+            raise (e)
 
-    def get_sprite_data(self) -> None:
+    def get_sprites_sheet_data(self) -> None:
         try:
             with open(self.sprite_path_data, "r") as data:
                 self.sprite_dict = safe_load(data)
@@ -32,7 +36,7 @@ class SpriteSheet:
     def get_sprite_file_width(self) -> int:
         return (int(self.sprite_dict["sprite_width"]))
 
-    def sprite_fill_data(self, sprite_name: str) -> Sprite:
+    def get_sprite(self, sprite_name: str) -> Sprite:
         data = self.sprite_dict["sprites"][sprite_name]
         sprite = Sprite()
         sprite.pos_x = data["x"]
