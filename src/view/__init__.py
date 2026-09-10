@@ -1,5 +1,6 @@
 from .graphics import Graphics
 from .sprite_sheet_manager import SpriteSheetManager
+from .maze_creator import MazeRenderer
 
 
-__all__ = ["Graphics", "SpriteSheetManager"]
+__all__ = ["Graphics", "SpriteSheetManager", "MazeRenderer"]

@@ -6,6 +6,7 @@ from .errors import PacmanError
 
 from .view import Graphics
 from .view import SpriteSheetManager
+from .view import MazeRenderer
 
 
 def main() -> int:
@@ -17,24 +18,12 @@ def main() -> int:
         game_config = loader.load()
         logger.debug(game_config.pacgum)
         graphic = Graphics()
-
-        pacman = SpriteSheetManager("sprites/pacman_sprites/pacman_sprite.bmp",
-                                    "sprites/pacman_sprites/pacman_sprites.yaml")
-
-        maze = SpriteSheetManager("sprites/maze_sprites/maze_sprite.bmp",
-                                  "sprites/maze_sprites/maze_sprites.yaml")
-
         graphic.initialisation()
-        screen = graphic.new_window(800, 800)
-        img = graphic.new_image(800, 800)
-        pacman_sprite = pacman.get_sprite("ghost_eyes_down")
-        maze_sprite = maze.get_sprite("pacgum_small")
-        graphic.put_sprite_in_image(
-                img, 100, 100, pacman_sprite)
-        graphic.put_sprite_in_image(
-                img, 200, 100, maze_sprite)
+        screen = graphic.new_window(1800, 1800)
+        Maze_renderer = MazeRenderer()
+        maze_img = Maze_renderer.render_in_img()
         while (True):
-            graphic.blit_img(img, screen, (0, 0))
+            graphic.blit_img(maze_img, screen, (0, 0))
             graphic.update_window()
         return 0
 
