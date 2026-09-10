@@ -15,15 +15,11 @@ class HighScoreManager:
         self.file_path = Path(self.json_loader.file)
         self.scores: list[HighScore] = self.load_score()
 
-    def handle_player_names(slef, player: str) -> bool:
+    def handle_player_names(self, player: str) -> bool:
         return HighScore._handle_player_names(player)
 
-    def maj_score(
-            self,
-            new_game: dict[str, str | int],
-            ) -> list[HighScore]:
-
-        new_score_model = HighScore.model_validate(new_game)
+    def update_score(self, player_name: str, score: int) -> list[HighScore]:
+        new_score_model = HighScore(player=player_name, score=score)
         self.scores.append(new_score_model)
         self.scores.sort(key=lambda item: item.score, reverse=True)
         self.scores = self.scores[:10]
