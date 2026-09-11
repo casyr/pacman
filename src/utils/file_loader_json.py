@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
-from exceptions import JsonLoadError
-from model.high_score_validator import HighScores
+from ..model import HighScores
+from ..errors import JsonLoadError
 
 logger = logging.getLogger(__name__)
 
@@ -12,8 +12,10 @@ class JsonModelLoader:
 
     def save_json_file(
             self,
-            file_path: Path,
+            file_name: Path,
             results: HighScores) -> None:
+        folder_path = Path("data")
+        file_path = folder_path / file_name
         file_path.parent.mkdir(parents=True, exist_ok=True)
         try:
             with open(file_path, "w", encoding="utf-8") as output_file:
@@ -21,7 +23,7 @@ class JsonModelLoader:
                 output_file.write(json_string)
         except OSError as e:
             raise JsonLoadError(
-                f"file at {file_path} could not save.") from e
+                f" {file_path} could not save.") from e
 
     def check_json_exist(self) -> bool:
         file_path = Path(self.file)

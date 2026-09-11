@@ -1,10 +1,10 @@
 import logging
 from pathlib import Path
 from pydantic import ValidationError
-from exceptions import ParserError, GameSettingsError
-from parsing.game_validator import GameValidator
-from parsing.game_settings import GameSettings
-from utils.file_loader_json import JsonModelLoader
+from .game_validator import GameValidator
+from .game_settings import GameSettings
+from ..errors import ParserError, GameSettingsError
+from ..utils.file_loader_json import JsonModelLoader
 
 logger = logging.getLogger(__name__)
 
