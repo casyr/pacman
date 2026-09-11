@@ -18,6 +18,10 @@ class JsonLoadError(PacmanError):
     """Raised during write a Json file."""
 
 
+class MazeError(ModelError):
+    """Raised during call to maze_generator"""
+
+
 class ViewError(PacmanError):
     """Raised during an initialization or graphics rendering failure."""
 

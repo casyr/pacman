@@ -4,6 +4,7 @@ from .exceptions import (
     GameSettingsError,
     ModelError,
     JsonLoadError,
+    MazeError,
     ViewError,
     ControllerError
 )
@@ -13,6 +14,7 @@ __all__ = [
     'ParserError',
     'GameSettingsError',
     'ModelError',
+    'MazeError',
     'JsonLoadError',
     'ViewError',
     'ControllerError'
