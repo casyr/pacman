@@ -2,55 +2,46 @@ sprite_width: 225
 sprites:
   # --- NORMAL PAC-MAN ---
   pacman_right_1:
-    sheet_id: 0
     x: 0
     y: 0
     w: 16
     h: 16
   pacman_right_2:
-    sheet_id: 0
     x: 16
     y: 0
     w: 16
     h: 16
   pacman_left_1:
-    sheet_id: 0
     x: 0
     y: 16
     w: 16
     h: 16
   pacman_left_2:
-    sheet_id: 0
     x: 16
     y: 16
     w: 16
     h: 16
   pacman_up_1:
-    sheet_id: 0
     x: 0
     y: 32
     w: 16
     h: 16
   pacman_up_2:
-    sheet_id: 0
     x: 16
     y: 32
     w: 16
     h: 16
   pacman_down_1:
-    sheet_id: 0
     x: 0
     y: 48
     w: 16
     h: 16
   pacman_down_2:
-    sheet_id: 0
     x: 16
     y: 48
     w: 16
     h: 16
   pacman_closed:
-    sheet_id: 0
     x: 32
     y: 0
     w: 16
@@ -58,67 +49,56 @@ sprites:
 
   # --- DEATH ANIMATION ---
   pacman_death_1:
-    sheet_id: 0
     x: 48
     y: 0
     w: 16
     h: 16
   pacman_death_2:
-    sheet_id: 0
     x: 64
     y: 0
     w: 16
     h: 16
   pacman_death_3:
-    sheet_id: 0
     x: 80
     y: 0
     w: 16
     h: 16
   pacman_death_4:
-    sheet_id: 0
     x: 96
     y: 0
     w: 16
     h: 16
   pacman_death_5:
-    sheet_id: 0
     x: 112
     y: 0
     w: 16
     h: 16
   pacman_death_6:
-    sheet_id: 0
     x: 128
     y: 0
     w: 16
     h: 16
   pacman_death_7:
-    sheet_id: 0
     x: 144
     y: 0
     w: 16
     h: 16
   pacman_death_8:
-    sheet_id: 0
     x: 160
     y: 0
     w: 16
     h: 16
   pacman_death_9:
-    sheet_id: 0
     x: 176
     y: 0
     w: 16
     h: 16
   pacman_death_10:
-    sheet_id: 0
     x: 192
     y: 0
     w: 16
     h: 16
   pacman_death_11:
-    sheet_id: 0
     x: 208
     y: 0
     w: 16
@@ -126,19 +106,16 @@ sprites:
 
   # --- BIG PAC-MAN ---
   big_pacman_right_1:
-    sheet_id: 0
     x: 48
     y: 16
     w: 32
     h: 32
   big_pacman_right_2:
-    sheet_id: 0
     x: 80
     y: 16
     w: 32
     h: 32
   big_pacman_closed:
-    sheet_id: 0
     x: 113
     y: 16
     w: 32
@@ -147,49 +124,41 @@ sprites:
 
   # --- ITEMS / FRUITS ---
   item_cherry:
-    sheet_id: 0
     x: 48
     y: 48
     w: 16
     h: 16
   item_strawberry:
-    sheet_id: 0
     x: 64
     y: 48
     w: 16
     h: 16
   item_peach:
-    sheet_id: 0
     x: 80
     y: 48
     w: 16
     h: 16
   item_apple:
-    sheet_id: 0
     x: 96
     y: 48
     w: 16
     h: 16
   item_melon:
-    sheet_id: 0
     x: 112
     y: 48
     w: 16
     h: 16
   item_galaxian:
-    sheet_id: 0
     x: 128
     y: 48
     w: 16
     h: 16
   item_bell:
-    sheet_id: 0
     x: 144
     y: 48
     w: 16
     h: 16
   item_key:
-    sheet_id: 0
     x: 160
     y: 48
     w: 16
@@ -198,196 +167,164 @@ sprites:
   # --- GHOSTS ---
   # Blinky
   ghost_blinky_right_1:
-    sheet_id: 0
     x: 0
     y: 64
     w: 16
     h: 16
   ghost_blinky_right_2:
-    sheet_id: 0
     x: 16
     y: 64
     w: 16
     h: 16
   ghost_blinky_left_1:
-    sheet_id: 0
     x: 32
     y: 64
     w: 16
     h: 16
   ghost_blinky_left_2:
-    sheet_id: 0
     x: 48
     y: 64
     w: 16
     h: 16
   ghost_blinky_up_1:
-    sheet_id: 0
     x: 64
     y: 64
     w: 16
     h: 16
   ghost_blinky_up_2:
-    sheet_id: 0
     x: 64
     y: 64
     w: 16
     h: 16
   ghost_blinky_down_1:
-    sheet_id: 0
     x: 96
     y: 64
     w: 16
     h: 16
   ghost_blinky_down_2:
-    sheet_id: 0
     x: 112
     y: 64
     w: 16
     h: 16
   # Pinky
   ghost_pinky_right_1:
-    sheet_id: 0
     x: 0
     y: 80
     w: 16
     h: 16
   ghost_pinky_right_2:
-    sheet_id: 0
     x: 16
     y: 80
     w: 16
     h: 16
   ghost_pinky_left_1:
-    sheet_id: 0
     x: 32
     y: 80
     w: 16
     h: 16
   ghost_pinky_left_2:
-    sheet_id: 0
     x: 48
     y: 80
     w: 16
     h: 16
   ghost_pinky_up_1:
-    sheet_id: 0
     x: 64
     y: 80
     w: 16
     h: 16
   ghost_pinky_up_2:
-    sheet_id: 0
     x: 80
     y: 80
     w: 16
     h: 16
   ghost_pinky_down_1:
-    sheet_id: 0
     x: 80
     y: 80
     w: 16
     h: 16
   ghost_pinky_down_2:
-    sheet_id: 0
     x: 112
     y: 80
     w: 16
     h: 16
   # Inky
   ghost_inky_right_1:
-    sheet_id: 0
     x: 0
     y: 96
     w: 16
     h: 16
   ghost_inky_right_2:
-    sheet_id: 0
     x: 16
     y: 96
     w: 16
     h: 16
   ghost_inky_left_1:
-    sheet_id: 0
     x: 32
     y: 96
     w: 16
     h: 16
   ghost_inky_left_2:
-    sheet_id: 0
     x: 48
     y: 96
     w: 16
     h: 16
   ghost_inky_up_1:
-    sheet_id: 0
     x: 64
     y: 96
     w: 16
     h: 16
   ghost_inky_up_2:
-    sheet_id: 0
     x: 80
     y: 96
     w: 16
     h: 16
   ghost_inky_down_1:
-    sheet_id: 0
     x: 96
     y: 96
     w: 16
     h: 16
   ghost_inky_down_2:
-    sheet_id: 0
     x: 96
     y: 96
     w: 16
     h: 16
   # Clyde
   ghost_clyde_right_1:
-    sheet_id: 0
     x: 0
     y: 112
     w: 16
     h: 16
   ghost_clyde_right_2:
-    sheet_id: 0
     x: 16
     y: 112
     w: 16
     h: 16
   ghost_clyde_left_1:
-    sheet_id: 0
     x: 32
     y: 112
     w: 16
     h: 16
   ghost_clyde_left_2:
-    sheet_id: 0
     x: 48
     y: 112
     w: 16
     h: 16
   ghost_clyde_up_1:
-    sheet_id: 0
     x: 64
     y: 112
     w: 16
     h: 16
   ghost_clyde_up_2:
-    sheet_id: 0
     x: 80
     y: 112
     w: 16
     h: 16
   ghost_clyde_down_1:
-    sheet_id: 0
     x: 96
     y: 112
     w: 16
     h: 16
   ghost_clyde_down_2:
-    sheet_id: 0
     x: 112
     y: 112
     w: 16
@@ -395,49 +332,41 @@ sprites:
 
   # --- SCARED GHOSTS & EYES ---
   ghost_scared_blue_1:
-    sheet_id: 0
     x: 128
     y: 64
     w: 16
     h: 16
   ghost_scared_blue_2:
-    sheet_id: 0
     x: 144
     y: 64
     w: 16
     h: 16
   ghost_scared_white_1:
-    sheet_id: 0
     x: 160
     y: 64
     w: 16
     h: 16
   ghost_scared_white_2:
-    sheet_id: 0
     x: 176
     y: 64
     w: 16
     h: 16
   ghost_eyes_right:
-    sheet_id: 0
     x: 128
     y: 80
     w: 16
     h: 16
   ghost_eyes_left:
-    sheet_id: 0
     x: 144
     y: 80
     w: 16
     h: 16
   ghost_eyes_up:
-    sheet_id: 0
     x: 160
     y: 80
     w: 16
     h: 16
   ghost_eyes_down:
-    sheet_id: 0
     x: 176
     y: 80
     w: 16

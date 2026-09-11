@@ -2,91 +2,78 @@ sprite_width: 143
 sprites:
   # --- ROW 0: DOUBLE WALL OUTER CORNERS, VERTICALS & TOP/BOTTOM LINES ---
   wall_double_outer_corner_top_right:
-    sheet_id: 0
     x: 0
     y: 0
     w: 8
     h: 8
 
   wall_double_outer_corner_top_left:
-    sheet_id: 0
     x: 9
     y: 0
     w: 8
     h: 8
 
-  wall_double_vertical_left:
-    sheet_id: 0
+  wall_double_vertical_right:
     x: 18
     y: 0
     w: 8
     h: 8
 
-  wall_double_vertical_right:
-    sheet_id: 0
+  wall_double_vertical_left:
     x: 27
     y: 0
     w: 8
     h: 8
 
   wall_double_outer_corner_bottom_right:
-    sheet_id: 0
     x: 36
     y: 0
     w: 8
     h: 8
 
   wall_double_outer_corner_bottom_left:
-    sheet_id: 0
     x: 45
     y: 0
     w: 8
     h: 8
 
   wall_double_t_junction_top_right:
-    sheet_id: 0
     x: 54
     y: 0
     w: 8
     h: 8
 
   wall_double_t_junction_top_left:
-    sheet_id: 0
     x: 63
     y: 0
     w: 8
     h: 8
 
   wall_double_t_junction_bottom_right:
-    sheet_id: 0
     x: 72
     y: 0
     w: 8
     h: 8
 
   wall_double_t_junction_bottom_left:
-    sheet_id: 0
     x: 81
     y: 0
     w: 8
     h: 8
 
   wall_double_horizontal_bottom:
-    sheet_id: 0
-    x: 90
-    y: 0
-    w: 8
-    h: 8
-
-  wall_double_horizontal_top:
-    sheet_id: 0
     x: 108
     y: 0
     w: 8
     h: 8
 
+  wall_double_horizontal_top:
+    x: 90
+    y: 0
+    w: 8
+    h: 8
+
   wall_single_horizontal_top:
-    sheet_id: 0
     x: 126
     y: 0
     w: 8
@@ -94,105 +81,90 @@ sprites:
 
   # --- ROW 1: SINGLE WALL CORNERS, ARCS & CONNECTORS ---
   wall_single_corner_top_right:
-    sheet_id: 0
     x: 0
     y: 9
     w: 8
     h: 8
 
   wall_single_corner_top_left:
-    sheet_id: 0
     x: 9
     y: 9
     w: 8
     h: 8
 
   wall_single_corner_bottom_right:
-    sheet_id: 0
     x: 18
     y: 9
     w: 8
     h: 8
 
   wall_single_corner_bottom_left:
-    sheet_id: 0
     x: 27
     y: 9
     w: 8
     h: 8
 
   wall_single_horizontal_top:
-    sheet_id: 0
     x: 36
     y: 9
     w: 8
     h: 8
 
   wall_inner_arc_top_right:
-    sheet_id: 0
     x: 54
     y: 9
     w: 8
     h: 8
 
   wall_inner_arc_top_left:
-    sheet_id: 0
     x: 63
     y: 9
     w: 8
     h: 8
 
   wall_single_vertical_left:
-    sheet_id: 0
     x: 72
     y: 9
     w: 8
     h: 8
 
   wall_single_vertical_right:
-    sheet_id: 0
     x: 81
     y: 9
     w: 8
     h: 8
 
   wall_inner_arc_bottom_right:
-    sheet_id: 0
     x: 90
     y: 9
     w: 8
     h: 8
 
   wall_inner_arc_bottom_left:
-    sheet_id: 0
     x: 99
     y: 9
     w: 8
     h: 8
 
   wall_end_cap_right:
-    sheet_id: 0
     x: 108
     y: 9
     w: 8
     h: 8
 
   wall_end_cap_left:
-    sheet_id: 0
     x: 117
     y: 9
     w: 8
     h: 8
 
   wall_t_connector_right:
-    sheet_id: 0
     x: 126
     y: 9
     w: 8
     h: 8
 
   wall_t_connector_left:
-    sheet_id: 0
     x: 135
     y: 9
     w: 8
@@ -200,112 +172,96 @@ sprites:
 
   # --- ROW 2: GHOST HOUSE DOOR, INNER CURVES, CAPS & PACGUMS ---
   ghost_house_door_left:
-    sheet_id: 0
     x: 0
     y: 18
     w: 8
     h: 8
 
   ghost_house_door_right:
-    sheet_id: 0
     x: 9
     y: 18
     w: 8
     h: 8
 
   wall_curve_large_top_left:
-    sheet_id: 0
     x: 18
     y: 18
     w: 8
     h: 8
 
   wall_curve_large_top_right:
-    sheet_id: 0
     x: 27
     y: 18
     w: 8
     h: 8
 
   wall_curve_large_bottom_left:
-    sheet_id: 0
     x: 36
     y: 18
     w: 8
     h: 8
 
   wall_curve_large_bottom_right:
-    sheet_id: 0
     x: 45
     y: 18
     w: 8
     h: 8
 
   wall_small_corner_top_right:
-    sheet_id: 0
     x: 54
     y: 18
     w: 8
     h: 8
 
   wall_small_corner_top_left:
-    sheet_id: 0
     x: 63
     y: 18
     w: 8
     h: 8
 
   wall_small_corner_bottom_right:
-    sheet_id: 0
     x: 72
     y: 18
     w: 8
     h: 8
 
   wall_small_corner_bottom_left:
-    sheet_id: 0
     x: 81
     y: 18
     w: 8
     h: 8
 
   wall_top_join_left:
-    sheet_id: 0
     x: 90
     y: 18
     w: 8
     h: 8
 
   wall_top_join_right:
-    sheet_id: 0
     x: 99
     y: 18
     w: 8
     h: 8
 
   empty_tile:
-    sheet_id: 0
     x: 108
     y: 18
     w: 8
     h: 8
 
   pacgum_small:
-    sheet_id: 0
     x: 117
     y: 18
     w: 8
     h: 8
 
   pacgum_energizer:
-    sheet_id: 0
     x: 126
     y: 18
     w: 8
     h: 8
 
   pacgum_large:
-    sheet_id: 0
     x: 135
     y: 18
     w: 8
