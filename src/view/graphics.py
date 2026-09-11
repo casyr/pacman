@@ -1,9 +1,9 @@
 import pygame
-from .sprite_sheet_manager import Sprite
 from ..errors import ViewError
-
+from .sprite_sheet_manager import Sprite
 
 class Graphics:
+
 
     @staticmethod
     def initialisation() -> None:
@@ -45,12 +45,7 @@ class Graphics:
 
         scaling = 3
 
-        try:
-            sprite = self.load_sprite(sprite_data.path)
-        except Exception as e:
-            raise (e)
-
-        sprite = sprite.convert(dest_image)
+        sprite = sprite_data.sprite_surface.convert(dest_image)
 
         sprite_buffer = pygame.surfarray.pixels2d(sprite).T.ravel()
         dest_image_buffer = pygame.surfarray.pixels2d(dest_image).T.ravel()
