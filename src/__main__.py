@@ -19,7 +19,8 @@ def main() -> int:
         graphic = Graphics()
 
         pacman = SpriteSheetManager("sprites/pacman_sprites/pacman_sprite.bmp",
-                                    "sprites/pacman_sprites/pacman_sprites.yaml")
+                                    "sprites/pacman_sprites/pacman_sprites"
+                                    ".yaml")
 
         maze = SpriteSheetManager("sprites/maze_sprites/maze_sprite.bmp",
                                   "sprites/maze_sprites/maze_sprites.yaml")

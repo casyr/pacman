@@ -5,7 +5,6 @@ from pydantic import BaseModel, ValidationError
 from pygame import Surface
 
 
-
 class SpriteSheetError(ViewError):
     """
     This error type in inheritance to ViewError
@@ -43,9 +42,9 @@ class SpriteSheetManager:
         self.sprite_path = sprite_path
         self.sprite_path_data = sprite_path_data
         self.sprite_dict: dict[str, Any] = {}
-        self.get_sprites_sheet_data()
+        self._get_sprites_sheet_data()
 
-    def get_sprites_sheet_data(self) -> None:
+    def _get_sprites_sheet_data(self) -> None:
         try:
             with open(self.sprite_path_data, "r") as data:
                 self.sprite_dict = safe_load(data)
@@ -54,7 +53,7 @@ class SpriteSheetManager:
         except (PermissionError) as e:
             raise SpriteSheetError(e)
 
-    def get_sprite_file_width(self) -> int:
+    def _get_sprite_file_width(self) -> int:
         return int(self.sprite_dict["sprite_width"])
 
     def get_sprite(self, sprite_name: str) -> Sprite:
@@ -68,11 +67,9 @@ class SpriteSheetManager:
             sprite.width = data["w"]
             sprite.height = data["h"]
             sprite.sprite_surface = Graphics.load_sprite(self.sprite_path)
-            sprite.file_width = self.get_sprite_file_width()
+            sprite.file_width = self._get_sprite_file_width()
             return (sprite)
         except ValidationError as e:
             raise SpriteSheetError(e.errors()[0]['msg'])
         except ViewError as e:
             raise SpriteSheetError(e)
-
-

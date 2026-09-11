@@ -2,8 +2,8 @@ import pygame
 from ..errors import ViewError
 from .sprite_sheet_manager import Sprite
 
-class Graphics:
 
+class Graphics:
 
     @staticmethod
     def initialisation() -> None:
