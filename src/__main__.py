@@ -18,10 +18,8 @@ def main() -> int:
         json_loader = JsonModelLoader(game_config.highscore_filename)
         file_score_manager = HighScoreManager(json_loader)
         game_state_manager = GameStateManager(game_config)
-        game_state_manager.cheat_mode.active = True
-        game_state_manager.cheat_extra_lives()
-        game_state_manager.loose_life()
-        # logger.info(game_state_manager.cheat_mode.NONE)
+        logger.info(file_score_manager)
+        logger.info(game_state_manager.cheat_mode.invincibility)
         return 0
 
     except PacmanError as error:
