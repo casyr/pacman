@@ -1,7 +1,7 @@
 import sys
 import logging
 
-from .model import HighScoreManager, GameStateManager
+from .model import HighScoreManager, GameSession
 from .utils import setup_logging, JsonModelLoader
 from .parsing import ConfigParser
 from .errors import PacmanError
@@ -17,7 +17,7 @@ def main() -> int:
         game_config = loader.load()
         json_loader = JsonModelLoader(game_config.highscore_filename)
         file_score_manager = HighScoreManager(json_loader)
-        game_state_manager = GameStateManager(game_config)
+        game_state_manager = GameSession(game_config)
         logger.info(file_score_manager)
         logger.info(game_state_manager.cheat_mode.invincibility)
         return 0

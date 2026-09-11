@@ -1,5 +1,5 @@
 from .high_score_validator import HighScore, HighScores
 from .high_score_manager import HighScoreManager
-from .game_state_manager import GameStateManager
+from .game_session_manager import GameSession
 
-__all__ = ["HighScoreManager", "HighScore", "HighScores", "GameStateManager"]
+__all__ = ["HighScoreManager", "HighScore", "HighScores", "GameSession"]

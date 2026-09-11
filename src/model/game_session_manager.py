@@ -17,7 +17,7 @@ class GameStatus(Enum):
     VICTORY = auto()
 
 
-class GameStateManager:
+class GameSession:
 
     def __init__(self, settings: GameSettings) -> None:
         self.settings: GameSettings = settings
@@ -25,13 +25,12 @@ class GameStateManager:
         self.current_level_index: int = 0
         self.current_score: int = 0
         self.lives_remaining: int = settings.lives
+
         self.time_remaining: float = settings.level_max_time
         self.pacgum_remaining: int = settings.pacgum
         self.super_pacgum_remaining: int = settings.super_pacgum
 
         self.active_power: bool = False
-        self.time_level: float = settings.level_max_time
-        self.time_start_super_mode: float = 0
         self.super_mode_timer: float = 0
         self.super_mode_duration: float = 8
 
@@ -54,6 +53,8 @@ class GameStateManager:
 
     def reset_level_data(self) -> None:
         self.time_remaining = float(self.settings.level_max_time)
+        # WARNING : self.settings.pacgum depend on level width lenght
+        # MAKE SURE THIS DATA IS UPDATE CORRECTLY
         self.pacgum_remaining = self.settings.pacgum
         self.super_pacgum_remaining = self.settings.super_pacgum
         self.active_power = False
@@ -69,13 +70,12 @@ class GameStateManager:
 
         if self.active_power:
             self.super_mode_timer = max(
-                0.0, self.super_mode_timer - elapsed_time)
+                0.0, self.super_mode_duration - elapsed_time)
             if self.super_mode_timer == 0.0:
                 self.active_power = False
 
     def activate_power_mode(self) -> None:
         self.active_power = True
-        self.super_mode_timer = self.super_mode_duration
 
     def lose_life(self) -> None:
         if self.cheat_mode.invincibility:
@@ -115,3 +115,9 @@ class GameStateManager:
 
     def switch_speed_boost(self) -> None:
         self.cheat_mode.speed = not self.cheat_mode.speed
+
+    def switch_status_paused(self) -> None:
+        if self.game_status == GameStatus.PLAYING:
+            GameStatus.PAUSED
+        elif self.game_status == GameStatus.PAUSED:
+            GameStatus.PLAYING
