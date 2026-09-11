@@ -19,10 +19,7 @@ class SpriteSheetManager:
         self.sprite_path = sprite_path
         self.sprite_path_data = sprite_path_data
         self.sprite_dict: dict[str, Any] = {}
-        try:
-            self.get_sprites_sheet_data()
-        except Exception as e:
-            raise (e)
+        self.get_sprites_sheet_data()
 
     def get_sprites_sheet_data(self) -> None:
         try:
