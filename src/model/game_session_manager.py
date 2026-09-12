@@ -22,8 +22,8 @@ class GameSession:
     def __init__(self, settings: GameSettings) -> None:
         self.settings: GameSettings = settings
         self.total_levels: int = len(settings.levels)
-        self.current_level_index: int = 0
-        self.current_score: int = 0
+        self.level_index: int = 0
+        self.score: int = 0
         self.lives_remaining: int = settings.lives
 
         self.time_remaining: float = settings.level_max_time
@@ -38,11 +38,11 @@ class GameSession:
         self.cheat_mode: CheatMode = CheatMode()
 
     def add_score(self, score: int) -> None:
-        self.current_score += max(0, score)
+        self.score += max(0, score)
 
     def _next_level(self) -> None:
-        if self.current_level_index + 1 < self.total_levels:
-            self.current_level_index += 1
+        if self.level_index + 1 < self.total_levels:
+            self.level_index += 1
             self.reset_level_data()
         else:
             self.game_status = GameStatus.VICTORY
