@@ -1,6 +1,6 @@
 import pygame
 from ..errors import ViewError
-from .sprite_sheet_manager import Sprite
+from .sprite_sheet_manager import SpriteModel
 
 
 class Graphics:
@@ -41,7 +41,7 @@ class Graphics:
 
     def put_sprite_in_image(self, dest_image: pygame.Surface,
                             dest_x: int, dest_y: int,
-                            sprite_data: Sprite,) -> None:
+                            sprite_data: SpriteModel,) -> None:
 
         scaling = 3
 

@@ -22,5 +22,14 @@ class ViewError(PacmanError):
     """Raised during an initialization or graphics rendering failure."""
 
 
+class SpriteSheetError(ViewError):
+    """
+    This error type in inheritance to ViewError
+    and raised his own error in case of:
+        - fail to laod sprite data
+        - malformed file
+    """
+
+
 class ControllerError(PacmanError):
     """Raised during n controller failure."""

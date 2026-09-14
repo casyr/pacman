@@ -1,27 +1,8 @@
 from yaml import safe_load
-from ..errors import ViewError
+from ..errors import SpriteSheetError, ViewError
 from typing import Any
 from pydantic import BaseModel, ValidationError
-from pygame import Surface
-
-
-class SpriteSheetError(ViewError):
-    """
-    This error type in inheritance to ViewError
-    and raised his own error in case of:
-        - fail to laod sprite data
-        - malformed file
-    """
-
-
-class Sprite:
-
-    pos_x: int
-    pos_y: int
-    width: int
-    height: int
-    file_width: int
-    sprite_surface: Surface
+from .sprite_model import SpriteModel
 
 
 class SpriteData(BaseModel):
@@ -56,12 +37,19 @@ class SpriteSheetManager:
     def _get_sprite_file_width(self) -> int:
         return int(self.sprite_dict["sprite_width"])
 
-    def get_sprite(self, sprite_name: str) -> Sprite:
+    def get_sprite(self, sprite_name: str) -> SpriteModel:
         from . import Graphics
         try:
             Sprites.model_validate(self.sprite_dict)
             data = self.sprite_dict["sprites"][sprite_name]
-            sprite = Sprite()
+            sprite = SpriteModel(
+                    data["x"],
+                    data["y"],
+                    data["w"],
+                    data["h"],
+                    self._get_sprite_file_width(),
+                    Graphics.load_sprite(self.sprite_path)
+            )
             sprite.pos_x = data["x"]
             sprite.pos_y = data["y"]
             sprite.width = data["w"]
