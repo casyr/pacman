@@ -21,8 +21,9 @@ def main() -> int:
         level_manager = LevelBuilder(game_session_manager)
         level_manager.build_level()
         logger.info(file_score_manager)
-        for pac in level_manager.super_pacgums:
-            logger.info(pac)
+        logger.info(level_manager.super_pacgums_pos)
+        logger.info(level_manager.pacgum_pos)
+        logger.info(game_session_manager.pacgum_remaining)
         return 0
 
     except PacmanError as error:

@@ -53,8 +53,6 @@ class GameSession:
 
     def reset_level_data(self) -> None:
         self.time_remaining = float(self.settings.level_max_time)
-        # WARNING : self.settings.pacgum depend on level width lenght
-        # MAKE SURE THIS DATA IS UPDATE CORRECTLY
         self.pacgum_remaining = self.settings.pacgum
         self.super_pacgum_remaining = self.settings.super_pacgum
         self.active_power = False
