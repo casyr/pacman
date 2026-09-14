@@ -22,6 +22,10 @@ class MazeError(ModelError):
     """Raised during call to maze_generator"""
 
 
+class LevelError(ModelError):
+    """Raised during build a level"""
+
+
 class ViewError(PacmanError):
     """Raised during an initialization or graphics rendering failure."""
 

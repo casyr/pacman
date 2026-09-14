@@ -94,7 +94,6 @@ class ConfigParser:
         try:
             valid_game_settings = GameValidator.model_validate_json(clean_text)
             game_config: GameSettings = valid_game_settings.to_dataclass()
-            logger.debug(valid_game_settings)
             return game_config
         except ValidationError as e:
             errors = ", ".join([err["msg"] for err in e.errors()])

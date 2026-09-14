@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class HighScoreManager:
+
     def __init__(self, json: JsonModelLoader):
         self.json_loader = json
         self.file_path = Path(self.json_loader.file)

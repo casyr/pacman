@@ -1,5 +1,8 @@
+import logging
 from mazegenerator import MazeGenerator
 from ..errors import MazeError
+
+logger = logging.getLogger(__name__)
 
 
 class MazeAdapter:
@@ -8,15 +11,15 @@ class MazeAdapter:
         self.width = width
         self.height = height
         self.seed = seed
+        self.grid: list[list[int]] = []
 
-    def generate_level(self) -> list[list[int]]:
+    def generate_level(self) -> None:
         try:
-            generator = MazeGenerator(
+            generate_maze = MazeGenerator(
                 size=(self.width, self.height),
                 perfect=False,
                 seed=self.seed
             )
-            grid: list[list[int]] = generator.maze
-            return grid
+            self.grid = generate_maze.maze
         except Exception as error:
             raise MazeError(f"Maze generator module error: {error}")
