@@ -188,9 +188,9 @@ class GameValidator(BaseGameValidator):
     @field_validator("seed", mode="before")
     @classmethod
     def adjust_seed(cls, seed: Any) -> int:
-        if not isinstance(seed, int):
+        if not isinstance(seed, int) or seed <= 0:
             logger.warning(
-                "Seed must be an integer or string. "
+                "Seed must be an integer > 0. "
                 "Clamped to default: 42")
             return 42
         return seed
