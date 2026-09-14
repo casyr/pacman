@@ -50,12 +50,6 @@ class SpriteSheetManager:
                     self._get_sprite_file_width(),
                     Graphics.load_sprite(self.sprite_path)
             )
-            sprite.pos_x = data["x"]
-            sprite.pos_y = data["y"]
-            sprite.width = data["w"]
-            sprite.height = data["h"]
-            sprite.sprite_surface = Graphics.load_sprite(self.sprite_path)
-            sprite.file_width = self._get_sprite_file_width()
             return (sprite)
         except ValidationError as e:
             raise SpriteSheetError(e.errors()[0]['msg'])
