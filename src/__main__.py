@@ -1,6 +1,8 @@
 import sys
 import logging
-from .utils import setup_logging
+
+from .model import HighScoreManager, GameSession, LevelBuilder
+from .utils import setup_logging, JsonModelLoader
 from .parsing import ConfigParser
 from .errors import PacmanError
 
@@ -13,7 +15,14 @@ def main() -> int:
     try:
         loader = ConfigParser(sys.argv[1:])
         game_config = loader.load()
-        logger.debug(game_config.pacgum)
+        json_loader = JsonModelLoader(game_config.highscore_filename)
+        file_score_manager = HighScoreManager(json_loader)
+        game_session_manager = GameSession(game_config)
+        level_manager = LevelBuilder(game_session_manager)
+        level_manager.build_level()
+        logger.info(file_score_manager)
+        logger.info(level_manager.pacgum_pos)
+        logger.info(level_manager.pacgum)
         return 0
 
     except PacmanError as error:

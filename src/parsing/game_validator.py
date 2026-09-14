@@ -1,5 +1,6 @@
 import sys
 import logging
+from pathlib import Path
 from pydantic import (
     BaseModel,
     Field,
@@ -83,14 +84,15 @@ class GameValidator(BaseGameValidator):
     # WARNING : MAKE SURE PACGUM FILED MAZE INSIDE MODEL AND
     # DISPLAY MESSAGE IF PACGUM NOT FIT 03/09
     #
-    pacgum: int = Field(default=42)
+    pacgum: int = Field(default=42, ge=1)
+    super_pacgum: int = Field(default=4, ge=1)
     #
     #
     points_per_pacgum: int = Field(default=10, ge=1, le=10)
     points_per_super_pacgum: int = Field(default=50, ge=1, le=50)
     points_per_ghost: int = Field(default=200, ge=1, le=200)
-    seed: int | str = Field(default=42)
-    level_max_time: int = Field(default=90, ge=40, le=3600)
+    seed: int = Field(default=42)
+    level_max_time: float = Field(default=90, ge=40, le=3600)
 
     def to_dataclass(self) -> GameSettings:
         return GameSettings(
@@ -98,6 +100,7 @@ class GameValidator(BaseGameValidator):
             levels=[lvl.to_dataclass() for lvl in self.levels],
             lives=self.lives,
             pacgum=self.pacgum,
+            super_pacgum=self.super_pacgum,
             points_per_pacgum=self.points_per_pacgum,
             points_per_super_pacgum=self.points_per_super_pacgum,
             points_per_ghost=self.points_per_ghost,
@@ -108,18 +111,19 @@ class GameValidator(BaseGameValidator):
     @field_validator("highscore_filename", mode="before")
     @classmethod
     def check_highscore_extension(cls, name_highscore: Any) -> str:
-        if (
+        arg_file_name = Path(sys.argv[1]).name
+        if arg_file_name == name_highscore:
+            logger.warning(
+                f"Filename already used '{name_highscore}' "
+                "Falling back to default: 'highscore.json'")
+            return f"1_{sys.argv[1]}"
+        elif (
             not isinstance(name_highscore, str)
             or not name_highscore.lower().endswith(".json")
         ):
             logger.warning(
                 f"Invalid highscore filename '{name_highscore}' "
                 "(must be a string end with .json). "
-                "Falling back to default: 'highscore.json'")
-            return "highscore.json"
-        elif sys.argv[1] == name_highscore:
-            logger.warning(
-                f"Filename already used '{name_highscore}' "
                 "Falling back to default: 'highscore.json'")
             return "highscore.json"
         return name_highscore
@@ -164,6 +168,8 @@ class GameValidator(BaseGameValidator):
         return cleaned_levels
 
     @field_validator(
+        "pacgum",
+        "super_pacgum",
         "points_per_pacgum",
         "points_per_super_pacgum",
         "points_per_ghost",
@@ -181,10 +187,10 @@ class GameValidator(BaseGameValidator):
 
     @field_validator("seed", mode="before")
     @classmethod
-    def adjust_seed(cls, seed: Any) -> int | str:
-        if not isinstance(seed, (int, str)):
+    def adjust_seed(cls, seed: Any) -> int:
+        if not isinstance(seed, int) or seed <= 0:
             logger.warning(
-                "Seed must be an integer or string. "
+                "Seed must be an integer > 0. "
                 "Clamped to default: 42")
             return 42
         return seed
