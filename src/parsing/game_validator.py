@@ -91,7 +91,7 @@ class GameValidator(BaseGameValidator):
     points_per_pacgum: int = Field(default=10, ge=1, le=10)
     points_per_super_pacgum: int = Field(default=50, ge=1, le=50)
     points_per_ghost: int = Field(default=200, ge=1, le=200)
-    seed: int | str = Field(default=42)
+    seed: int = Field(default=42)
     level_max_time: float = Field(default=90, ge=40, le=3600)
 
     def to_dataclass(self) -> GameSettings:
@@ -187,10 +187,10 @@ class GameValidator(BaseGameValidator):
 
     @field_validator("seed", mode="before")
     @classmethod
-    def adjust_seed(cls, seed: Any) -> int | str:
-        if not isinstance(seed, (int, str)):
+    def adjust_seed(cls, seed: Any) -> int:
+        if not isinstance(seed, int) or seed <= 0:
             logger.warning(
-                "Seed must be an integer or string. "
+                "Seed must be an integer > 0. "
                 "Clamped to default: 42")
             return 42
         return seed
