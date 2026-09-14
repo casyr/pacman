@@ -18,11 +18,11 @@ class MazeRenderer:
         maze_generator.generate()
         maze = maze_generator.maze
         graphic = Graphics()
-        maze_sprites = SpriteSheetManager("sprites/maze_sprites/maze_sprite.bmp",
+        maze_sprites = SpriteSheetManager("sprites/maze_sprites/maze_sprites.bmp",
                                   "sprites/maze_sprites/maze_sprites.yaml")
 
-        img_width = 1800
-        img_height = 1800
+        img_width = 900
+        img_height = 900
 
         img = graphic.new_image(img_width, img_height)
 
@@ -73,15 +73,15 @@ class MazeRenderer:
                     continue
 
                 if maze[y][x] & 1:
-                    sprite = maze_sprites.get_sprite("wall_double_horizontal_top")
+                    sprite = maze_sprites.get_sprite("wall_single_horizontal_top")
                     graphic.put_sprite_in_image(img, x_dest + x * 8 * 3, y_dest + y * 8 * 3, sprite)
                 if maze[y][x] & 2:
-                    sprite = maze_sprites.get_sprite("wall_double_vertical_right")
+                    sprite = maze_sprites.get_sprite("wall_single_vertical_right")
                     graphic.put_sprite_in_image(img, x_dest + x * 8 * 3, y_dest + y * 8 * 3, sprite)
                 if maze[y][x] & 3:
-                    sprite = maze_sprites.get_sprite("wall_double_horizontal_bottom")
+                    sprite = maze_sprites.get_sprite("wall_single_horizontal_bottom")
                     graphic.put_sprite_in_image(img, x_dest + x * 8 * 3, y_dest + y * 8 * 3, sprite)
                 if maze[y][x] & 4:
-                    sprite = maze_sprites.get_sprite("wall_double_vertical_left")
+                    sprite = maze_sprites.get_sprite("wall_single_vertical_left")
                     graphic.put_sprite_in_image(img, x_dest + x * 8 * 3, y_dest + y * 8 * 3, sprite)
         return (img)

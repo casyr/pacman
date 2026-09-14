@@ -19,9 +19,12 @@ def main() -> int:
         logger.debug(game_config.pacgum)
         graphic = Graphics()
         graphic.initialisation()
-        screen = graphic.new_window(1800, 1800)
+        screen = graphic.new_window(900, 900)
         Maze_renderer = MazeRenderer()
+        pacman = SpriteSheetManager("sprites/pacman_sprites/pacman_sprites.bmp",
+                                    "sprites/pacman_sprites/pacman_sprites.yaml")
         maze_img = Maze_renderer.render_in_img()
+        graphic.put_sprite_in_image(maze_img, 250, 250, pacman.get_sprite("pacman_right_1"))
         while (True):
             graphic.blit_img(maze_img, screen, (0, 0))
             graphic.update_window()

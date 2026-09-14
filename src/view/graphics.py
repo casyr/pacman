@@ -61,4 +61,8 @@ class Graphics:
                               ((sprite_data.pos_x + x_gap) // scaling))
                 image_pos = (((dest_y + y_gap) * screen_width) +
                              (dest_x + x_gap))
-                dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
+                if (sprite_buffer[sprite_pos] == 0):
+                    dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
+                    dest_image_buffer[image_pos] += 255
+                else:
+                    dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]

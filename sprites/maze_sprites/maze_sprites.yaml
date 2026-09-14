@@ -73,12 +73,6 @@ sprites:
     w: 8
     h: 8
 
-  wall_single_horizontal_top:
-    x: 126
-    y: 0
-    w: 8
-    h: 8
-
   # --- ROW 1: SINGLE WALL CORNERS, ARCS & CONNECTORS ---
   wall_single_corner_top_right:
     x: 0
@@ -107,6 +101,12 @@ sprites:
   wall_single_horizontal_top:
     x: 36
     y: 9
+    w: 8
+    h: 8
+
+  wall_single_horizontal_bottom:
+    x: 126
+    y: 0
     w: 8
     h: 8
 
