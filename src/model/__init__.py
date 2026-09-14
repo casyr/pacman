@@ -3,6 +3,7 @@ from .high_score_manager import HighScoreManager
 from .game_session_manager import GameSession
 from .maze_adaptater import MazeAdapter
 from .level_builder import LevelBuilder
+from .entities import Ghost
 
 __all__ = [
     "HighScoreManager",
@@ -10,5 +11,6 @@ __all__ = [
     "HighScores",
     "GameSession",
     "MazeAdapter",
-    "LevelBuilder"
+    "LevelBuilder",
+    "Ghost"
     ]

@@ -1,7 +1,6 @@
 import sys
 import logging
-
-from .model import HighScoreManager, GameSession, LevelBuilder
+from .model import HighScoreManager, GameSession, LevelBuilder, Ghost
 from .utils import setup_logging, JsonModelLoader
 from .parsing import ConfigParser
 from .errors import PacmanError
@@ -20,6 +19,13 @@ def main() -> int:
         game_session_manager = GameSession(game_config)
         level_manager = LevelBuilder(game_session_manager)
         level_manager.build_level()
+        ghost_factory = {
+            "blinky": Blinky,
+            "pinky": Pinky,
+            "inky": Inky,
+            "clyde": Clyde
+        }
+
         logger.info(file_score_manager)
         logger.info(level_manager.pacgum_pos)
         logger.info(level_manager.pacgum)
