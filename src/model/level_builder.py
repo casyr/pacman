@@ -2,7 +2,7 @@ import logging
 import random
 from .game_session_manager import GameSession, GameStatus
 from .maze_adaptater import MazeAdapter
-from ..errors import LevelError, GameSettingsError
+from ..errors import LevelError
 
 logger = logging.getLogger(__name__)
 
@@ -92,32 +92,36 @@ class LevelBuilder:
 
     def _setup_collectibles_pacgums(self) -> None:
         ignore: set[tuple[int, int]] = set()
+        available_positions: list[tuple[int, int]] = []
         pos_x: int = 0
         pos_y: int = 0
 
         ignore.update(self.super_pacgums_pos, [self.player_pos])
 
         while pos_x < self.width:
-            pos_x += 1
-            pos_y == 0
+            pos_y = 0
             while pos_y < self.height:
                 if (
                     self.maze.grid[pos_y][pos_x] != 15
                     and (pos_y, pos_x) not in ignore
                 ):
-                    self.pacgum_pos.add((pos_y, pos_x))
+                    available_positions.append((pos_y, pos_x))
                 pos_y += 1
-        try:
-            if len(self.pacgum_pos) < self.pacgum:
-                raise GameSettingsError(
-                    f"Requested pacgums {self.pacgum}"
-                    " exceeds available positions "
-                    f"{len(self.pacgum_pos)}."
-                    f"Clamped to default: {len(self.pacgum_pos)} ")
-        except GameSettingsError as e:
-            logger.warning(f"{e.__class__.__name__} {e}")
-            self.pacgum = len(self.pacgum_pos)
-            self.current_game.pacgum_remaining = len(self.pacgum_pos)
+            pos_x += 1
+
+        total_available: int = len(available_positions)
+
+        if total_available < self.pacgum:
+            logger.warning(
+                "GameSettingsError:"
+                f"Requested pacgums {self.pacgum} exceeds available "
+                f"positions {len(available_positions)}. "
+                f"Clamped to default: {len(available_positions)} ")
+            self.pacgum = total_available
+            self.current_game.pacgum_remaining = total_available
+
+        selected_coords = random.sample(available_positions, k=self.pacgum)
+        self.pacgum_pos = set(selected_coords)
 
     def _check_first_coordonate(
             self, pos_y: int, pos_x: int) -> tuple[int, int] | None:
