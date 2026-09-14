@@ -19,7 +19,7 @@ def main() -> int:
         logger.debug(game_config.pacgum)
         graphic = Graphics()
         graphic.initialisation()
-        screen = graphic.new_window(900, 900)
+        screen = graphic.new_window(1900, 1900)
         Maze_renderer = MazeRenderer()
         pacman = SpriteSheetManager("sprites/pacman_sprites/pacman_sprites.bmp",
                                     "sprites/pacman_sprites/pacman_sprites.yaml")

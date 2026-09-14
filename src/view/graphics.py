@@ -52,8 +52,8 @@ class Graphics:
 
         screen_width = pygame.display.Info().current_w
 
-        sprite_data.pos_y *= scaling
-        sprite_data.pos_x *= scaling
+        # sprite_data.pos_y *= scaling
+        # sprite_data.pos_x *= scaling
         for y_gap in range(sprite_data.height * scaling):
             for x_gap in range(sprite_data.width * scaling):
                 sprite_pos = ((((sprite_data.pos_y + y_gap) // scaling) *
@@ -61,8 +61,9 @@ class Graphics:
                               ((sprite_data.pos_x + x_gap) // scaling))
                 image_pos = (((dest_y + y_gap) * screen_width) +
                              (dest_x + x_gap))
-                if (sprite_buffer[sprite_pos] == 0):
-                    dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
-                    dest_image_buffer[image_pos] += 255
-                else:
-                    dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
+                # if (sprite_buffer[sprite_pos] == 0):
+                #     dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
+                #     dest_image_buffer[image_pos] += 255
+                # else:
+                #     dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
+                dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
