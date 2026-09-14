@@ -1,4 +1,6 @@
 import pygame
+from ..errors import ViewError
+from .sprite_sheet_manager import SpriteModel
 
 
 class Graphics:
@@ -30,28 +32,33 @@ class Graphics:
 
     @staticmethod
     def load_sprite(path: str) -> pygame.Surface:
-        return (pygame.image.load(path))
+        try:
+            return (pygame.image.load(path))
+        except FileNotFoundError as e:
+            raise ViewError(e)
+        except PermissionError as e:
+            raise ViewError(e)
 
     def put_sprite_in_image(self, dest_image: pygame.Surface,
                             dest_x: int, dest_y: int,
-                            sprite_path: str, sprite_x: int, sprite_y: int,
-                            sprite_width: int, sprite_height: int,
-                            sprite_file_width: int, sprite_scale: int
-                            ) -> None:
+                            sprite_data: SpriteModel,) -> None:
 
-        sprite = self.load_sprite(sprite_path)
-        sprite = sprite.convert(dest_image)
+        scaling = 3
+
+        sprite = sprite_data.sprite_surface.convert(dest_image)
 
         sprite_buffer = pygame.surfarray.pixels2d(sprite).T.ravel()
         dest_image_buffer = pygame.surfarray.pixels2d(dest_image).T.ravel()
 
         screen_width = pygame.display.Info().current_w
 
-        for y_gap in range(sprite_height * sprite_scale):
-            for x_gap in range(sprite_width * sprite_scale):
-                sprite_pos = ((((sprite_y + y_gap) // sprite_scale) *
-                               sprite_file_width) +
-                              ((sprite_x + x_gap) // sprite_scale))
+        sprite_data.pos_y *= scaling
+        sprite_data.pos_x *= scaling
+        for y_gap in range(sprite_data.height * scaling):
+            for x_gap in range(sprite_data.width * scaling):
+                sprite_pos = ((((sprite_data.pos_y + y_gap) // scaling) *
+                               sprite_data.file_width) +
+                              ((sprite_data.pos_x + x_gap) // scaling))
                 image_pos = (((dest_y + y_gap) * screen_width) +
                              (dest_x + x_gap))
                 dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]

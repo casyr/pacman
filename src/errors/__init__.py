@@ -5,7 +5,8 @@ from .exceptions import (
     ModelError,
     JsonLoadError,
     ViewError,
-    ControllerError
+    ControllerError,
+    SpriteSheetError
 )
 
 __all__ = [
@@ -15,5 +16,6 @@ __all__ = [
     'ModelError',
     'JsonLoadError',
     'ViewError',
-    'ControllerError'
+    'ControllerError',
+    'SpriteSheetError'
 ]
