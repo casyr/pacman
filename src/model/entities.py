@@ -33,6 +33,10 @@ class Entity(ABC):
         self.spawn_x: int = current_x
         self.spawn_y: int = current_y
         self.grid: list[list[int]] = current_level.maze.grid
+        self.width_max: int = current_level.width
+        self.height_max: int = current_level.height
+        self.ghost = current_level.ghosts
+        self.pacman = current_level.player
         self.speed: float = 1
 
     def respawn(self) -> None:
@@ -41,7 +45,37 @@ class Entity(ABC):
         self.dir_x = 0
         self.dir_y = 0
 
+    def can_move(self, dir_y: int, dir_x: int) -> bool:
+
+        next_move_y = self.current_pos_y + dir_y
+        next_move_x = self.current_pos_x + dir_x
+        if 0 < next_move_y >= self.height_max:
+            return False
+        if 0 < next_move_x >= self.width_max:
+            return False
+
+        move_masks: dict[tuple[int, int], int] = {
+            (-1, 0): 1,
+            (1, 0): 4,
+            (0, -1): 8,
+            (0, 1): 2,
+        }
+        mask = move_masks.get((dir_y, dir_x))
+        if mask is None:
+            return False
+        cell_value: int = self.grid[self.current_pos_y][self.current_pos_x]
+        return (cell_value & mask) != 0
+
     @abstractmethod
+    def update(self, elapsed_time: float) -> None:
+        pass
+
+
+class PacMan(Entity):
+    def __init__(self, y: int, x: int, current_level: LevelBuilder) -> None:
+        super().__init__(y, x, current_level)
+
+
     def update(self, elapsed_time: float) -> None:
         pass
 
@@ -83,16 +117,22 @@ class Ghost(Entity, ABC):
 
 class Blinky(Ghost):
 
-    def can_move(
-            self,
-            current_y: int,
-            current_x: int,
-            dir_y: int,
-            dir_x: int) -> bool:
-        
-
     def chase_behavior(self) -> None:
-        pass
+        if self.pacman is None:
+            return
+        target_y, target_x = (
+            self.pacman.current_pos_y, self.pacman.current_pos_x)
+        possible_directions = [
+            (-1, 0),
+            (1, 0),
+            (0, -1),
+            (0, 1),
+        ]
+        for dir_y, dir_x in possible_directions:
+            if self.can_move(dir_y, dir_x):
+                next_y = dir_y + self.current_pos_y
+                next_x = dir_x + self.current_pos_x
+            
 
     def flee_behavior(self) -> None:
         pass

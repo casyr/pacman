@@ -3,7 +3,7 @@ import random
 from .game_session_manager import GameSession, GameStatus
 from .maze_adaptater import MazeAdapter
 from .ghost_factory import GhostFactory
-from .entities import Ghost, GhostName
+from .entities import Ghost, PacMan, GhostName
 from ..errors import LevelError
 
 logger = logging.getLogger(__name__)
@@ -27,6 +27,7 @@ class LevelBuilder:
         self.ghosts_spawn_pos: dict[GhostName, tuple[int, int]] = {}
         self.ghosts: list[Ghost] = []
         self.player_spawn_pos: tuple[int, int] = (0, 0)
+        self.player: PacMan | None = None
 
     def _seed_using(self, current_game: GameSession) -> int:
         seed: int = current_game.settings.seed
@@ -86,7 +87,7 @@ class LevelBuilder:
                 new_ghost = GhostFactory.create(name, pos_y, pos_x, self)
                 self.ghosts.append(new_ghost)
 
-    def _setup_entities_player(self) -> None:
+    def _setup_entities_player_position(self) -> None:
         ignore: set[tuple[int, int]] = set()
 
         ignore.update(self.super_pacgums_pos, self.ghosts_spawn_pos.values())
@@ -100,6 +101,13 @@ class LevelBuilder:
                 self.player_spawn_pos = positions
         except LevelError as err:
             raise LevelError(f"{err}Pacman must be present to play")
+
+    def _setup_entities_player(self) -> None:
+        self._setup_entities_player_position()
+        self.player = PacMan(
+            self.player_spawn_pos[0],
+            self.player_spawn_pos[1],
+            self)
 
     def _setup_collectibles_pacgums(self) -> None:
         ignore: set[tuple[int, int]] = set()

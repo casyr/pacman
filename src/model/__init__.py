@@ -3,7 +3,7 @@ from .high_score_manager import HighScoreManager
 from .game_session_manager import GameSession
 from .maze_adaptater import MazeAdapter
 from .level_builder import LevelBuilder
-from .entities import Ghost, Blinky, Pinky, Inky, Clyde
+from .entities import Ghost, PacMan, Blinky, Pinky, Inky, Clyde
 
 __all__ = [
     "HighScoreManager",
@@ -13,6 +13,7 @@ __all__ = [
     "MazeAdapter",
     "LevelBuilder",
     "Ghost",
+    "PacMan",
     "Blinky",
     "Pinky",
     "Inky",
