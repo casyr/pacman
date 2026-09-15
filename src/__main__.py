@@ -27,7 +27,7 @@ def main() -> int:
                                     "sprites/maze_sprites/maze_sprites.yaml")
         maze_img = Maze_renderer.render_in_img()
         graphic.put_sprite_in_image(maze_img, 250, 250, pacman.get_sprite("pacman_right_1"))
-        graphic.put_sprite_in_image(maze_img, 350, 350, maze.get_sprite("wall_double_outer_corner_bottom_right"))
+        graphic.put_sprite_in_image(maze_img, 350, 350, maze.get_sprite("wall_small_corner_bottom_right"))
         while (True):
             graphic.blit_img(maze_img, screen, (0, 0))
             graphic.update_window()
