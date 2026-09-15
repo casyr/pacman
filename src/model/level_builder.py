@@ -2,6 +2,8 @@ import logging
 import random
 from .game_session_manager import GameSession, GameStatus
 from .maze_adaptater import MazeAdapter
+from .ghost_factory import GhostFactory
+from .entities import Ghost, GhostName
 from ..errors import LevelError
 
 logger = logging.getLogger(__name__)
@@ -22,8 +24,9 @@ class LevelBuilder:
         self.maze: MazeAdapter = MazeAdapter(
             self.width, self.height, self._seed_using(current_game))
         self.super_pacgums_pos: set[tuple[int, int]] = set()
-        self.ghosts_pos: list[tuple[int, int]] = []
-        self.player_pos: tuple[int, int] = (0, 0)
+        self.ghosts_spawn_pos: dict[GhostName, tuple[int, int]] = {}
+        self.ghosts: list[Ghost] = []
+        self.player_spawn_pos: tuple[int, int] = (0, 0)
 
     def _seed_using(self, current_game: GameSession) -> int:
         seed: int = current_game.settings.seed
@@ -56,7 +59,7 @@ class LevelBuilder:
             except LevelError as err:
                 logging.warning(f"{err}Superpacgum")
 
-    def _setup_entities_ghost(self) -> None:
+    def _setup_entities_ghost_position(self) -> None:
         ignore: set[tuple[int, int]] = set()
         ignore.update(self.super_pacgums_pos)
 
@@ -67,26 +70,34 @@ class LevelBuilder:
             (self.height - 1, self.width - 1),
             ]
 
-        for pos_y, pos_x in corners:
+        for name, (pos_y, pos_x) in zip(GhostName, corners):
             try:
                 positions = self._available_space(
                     [(pos_y, pos_x)], {(pos_y, pos_x)}, ignore)
                 if positions is not None:
-                    self.ghosts_pos.append(positions)
+                    self.ghosts_spawn_pos[name] = positions
             except LevelError as err:
                 logging.warning(f"{err}Ghost")
+
+    def _setup_entities_ghost(self) -> None:
+        self._setup_entities_ghost_position()
+        if self.ghosts_spawn_pos:
+            for name, (pos_y, pos_x) in self.ghosts_spawn_pos.items():
+                new_ghost = GhostFactory.create(name, pos_y, pos_x, self)
+                self.ghosts.append(new_ghost)
 
     def _setup_entities_player(self) -> None:
         ignore: set[tuple[int, int]] = set()
 
-        ignore.update(self.super_pacgums_pos, self.ghosts_pos)
+        ignore.update(self.super_pacgums_pos, self.ghosts_spawn_pos.values())
+
         pos_x: int = self.width // 2
         pos_y: int = self.height // 2
         try:
             positions = self._available_space(
                     [(pos_y, pos_x)], {(pos_y, pos_x)}, ignore)
             if positions is not None:
-                self.player_pos = positions
+                self.player_spawn_pos = positions
         except LevelError as err:
             raise LevelError(f"{err}Pacman must be present to play")
 
@@ -96,7 +107,7 @@ class LevelBuilder:
         pos_x: int = 0
         pos_y: int = 0
 
-        ignore.update(self.super_pacgums_pos, [self.player_pos])
+        ignore.update(self.super_pacgums_pos, [self.player_spawn_pos])
 
         while pos_x < self.width:
             pos_y = 0

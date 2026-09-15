@@ -1,6 +1,16 @@
+import logging
 from abc import ABC, abstractmethod
 from enum import Enum, auto
 from .level_builder import LevelBuilder
+
+logger = logging.getLogger(__name__)
+
+
+class GhostName(Enum):
+    BLINKY = "blinky"
+    PINKY = "pinky"
+    INKY = "inky"
+    CLYDE = "clyde"
 
 
 class GhostState(Enum):
@@ -18,8 +28,8 @@ class Entity(ABC):
 
         self.current_pos_x: int = current_x
         self.current_pos_y: int = current_y
-        self.moove_x: int = 0
-        self.moove_y: int = 0
+        self.move_x: int = 0
+        self.move_y: int = 0
         self.spawn_x: int = current_x
         self.spawn_y: int = current_y
         self.grid: list[list[int]] = current_level.maze.grid
@@ -67,5 +77,46 @@ class Ghost(Entity, ABC):
         pass
 
     @abstractmethod
+    def flee_behavior(self) -> None:
+        pass
+
+
+class Blinky(Ghost):
+
+    def can_move(
+            self,
+            current_y: int,
+            current_x: int,
+            dir_y: int,
+            dir_x: int) -> bool:
+        
+
+    def chase_behavior(self) -> None:
+        pass
+
+    def flee_behavior(self) -> None:
+        pass
+
+
+class Pinky(Ghost):
+    def chase_behavior(self) -> None:
+        pass
+
+    def flee_behavior(self) -> None:
+        pass
+
+
+class Inky(Ghost):
+    def chase_behavior(self) -> None:
+        pass
+
+    def flee_behavior(self) -> None:
+        pass
+
+
+class Clyde(Ghost):
+    def chase_behavior(self) -> None:
+        pass
+
     def flee_behavior(self) -> None:
         pass
