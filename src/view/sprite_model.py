@@ -11,3 +11,4 @@ class SpriteModel:
     height: int
     file_width: int
     sprite_surface: Surface
+    sprite_name: str

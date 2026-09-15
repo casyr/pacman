@@ -50,20 +50,16 @@ class Graphics:
         sprite_buffer = pygame.surfarray.pixels2d(sprite).T.ravel()
         dest_image_buffer = pygame.surfarray.pixels2d(dest_image).T.ravel()
 
-        screen_width = pygame.display.Info().current_w
+        dest_width = dest_image.get_width()
 
-        # sprite_data.pos_y *= scaling
-        # sprite_data.pos_x *= scaling
-        for y_gap in range(sprite_data.height * scaling):
-            for x_gap in range(sprite_data.width * scaling):
-                sprite_pos = ((((sprite_data.pos_y + y_gap) // scaling) *
-                               sprite_data.file_width) +
-                              ((sprite_data.pos_x + x_gap) // scaling))
-                image_pos = (((dest_y + y_gap) * screen_width) +
-                             (dest_x + x_gap))
-                # if (sprite_buffer[sprite_pos] == 0):
-                #     dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
-                #     dest_image_buffer[image_pos] += 255
-                # else:
-                #     dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
+        scaled_w = sprite_data.width * scaling
+        scaled_h = sprite_data.height * scaling
+
+        for y_gap in range(scaled_h):
+            for x_gap in range(scaled_w):
+                src_x = sprite_data.pos_x + (x_gap // scaling)
+                src_y = sprite_data.pos_y + (y_gap // scaling)
+                sprite_pos = (src_y * sprite_data.file_width) + src_x
+                image_pos = ((dest_y + y_gap) * dest_width) + (dest_x + x_gap)
+
                 dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]

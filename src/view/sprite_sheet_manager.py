@@ -48,8 +48,10 @@ class SpriteSheetManager:
                     data["w"],
                     data["h"],
                     self._get_sprite_file_width(),
-                    Graphics.load_sprite(self.sprite_path)
+                    Graphics.load_sprite(self.sprite_path),
+                    sprite_name
             )
+            print("sprite: ", sprite, "\n")
             return (sprite)
         except ValidationError as e:
             raise SpriteSheetError(e.errors()[0]['msg'])
