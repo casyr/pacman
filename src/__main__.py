@@ -20,8 +20,7 @@ def main() -> int:
         level_manager = LevelBuilder(game_session_manager)
         level_manager.build_level()
         logger.info(file_score_manager)
-        logger.info(level_manager.pacgum_pos)
-        logger.info(level_manager.pacgum)
+        logger.info(level_manager.ghosts[0].current_pos_y)
         return 0
 
     except PacmanError as error:

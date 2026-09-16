@@ -1,7 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from .level_builder import LevelBuilder
+from . import level_builder
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class Entity(ABC):
             self,
             current_y: int,
             current_x: int,
-            current_level: LevelBuilder) -> None:
+            current_level: "level_builder.LevelBuilder") -> None:
 
         self.current_pos_x: int = current_x
         self.current_pos_y: int = current_y
@@ -32,6 +32,7 @@ class Entity(ABC):
         self.move_y: int = 0
         self.spawn_x: int = current_x
         self.spawn_y: int = current_y
+        self.previous_pos: tuple[int, int] = (current_y, current_x)
         self.grid: list[list[int]] = current_level.maze.grid
         self.width_max: int = current_level.width
         self.height_max: int = current_level.height
@@ -42,8 +43,8 @@ class Entity(ABC):
     def respawn(self) -> None:
         self.x = self.spawn_x
         self.y = self.spawn_y
-        self.dir_x = 0
-        self.dir_y = 0
+        self.move_x = 0
+        self.move_y = 0
 
     def can_move(self, dir_y: int, dir_x: int) -> bool:
 
@@ -72,9 +73,13 @@ class Entity(ABC):
 
 
 class PacMan(Entity):
-    def __init__(self, y: int, x: int, current_level: LevelBuilder) -> None:
-        super().__init__(y, x, current_level)
 
+    def __init__(
+            self,
+            y: int,
+            x: int,
+            current_level: "level_builder.LevelBuilder") -> None:
+        super().__init__(y, x, current_level)
 
     def update(self, elapsed_time: float) -> None:
         pass
@@ -82,8 +87,13 @@ class PacMan(Entity):
 
 class Ghost(Entity, ABC):
 
-    def __init__(self, y: int, x: int, current_level: LevelBuilder) -> None:
+    def __init__(
+            self,
+            y: int,
+            x: int,
+            current_level: "level_builder.LevelBuilder") -> None:
         super().__init__(y, x, current_level)
+
         self.state: GhostState = GhostState.NORMAL
         self.respawn_timer: float = 0.0
 
@@ -102,61 +112,131 @@ class Ghost(Entity, ABC):
                 self.respawn()
             return
         if self.state == GhostState.NORMAL:
-            self.chase_behavior()
+            target = self.get_target()
+            if target is not None:
+                self.chase_behavior(target[0], target[1])
         elif self.state == GhostState.FRIGHTENED:
             self.flee_behavior()
 
     @abstractmethod
-    def chase_behavior(self) -> None:
+    def get_target(self) -> tuple[int, int]:
         pass
 
-    @abstractmethod
+    def chase_behavior(self, target_y: int, target_x: int) -> None:
+        possible_directions: list[tuple[int, int]] = [
+            (-1, 0), (0, -1), (1, 0), (0, 1)]
+        best_direction: tuple[int, int] = (0, 0)
+        valid_choice: bool = False
+        min_distance = float('inf')
+        dist = float('inf')
+
+        for dir_y, dir_x in possible_directions:
+            if not self.can_move(dir_y, dir_x):
+                continue
+            next_y: int = dir_y + self.current_pos_y
+            next_x: int = dir_x + self.current_pos_x
+
+            if (next_y, next_x) != self.previous_pos:
+                valid_choice = True
+                dist = (next_y - target_y) ** 2 + (next_x - target_x) ** 2
+                if dist < min_distance:
+                    min_distance = dist
+                    best_direction = (dir_y, dir_x)
+
+        if not valid_choice:
+            best_direction = (
+                (self.previous_pos[0] - self.current_pos_y),
+                (self.previous_pos[1] - self.current_pos_x)
+            )
+
+        self.previous_pos = (self.current_pos_y, self.current_pos_x)
+        self.current_pos_y += best_direction[0]
+        self.current_pos_x += best_direction[1]
+
     def flee_behavior(self) -> None:
-        pass
+        possible_directions: list[tuple[int, int]] = [
+            (-1, 0), (0, -1), (1, 0), (0, 1)]
+        best_direction: tuple[int, int] = (0, 0)
+        valid_choice: bool = False
+        max_distance = float('-inf')
+        dist = float('-inf')
+
+        if self.pacman is None:
+            return
+
+        target_y, target_x = (
+            self.pacman.current_pos_y, self.pacman.current_pos_x)
+
+        for dir_y, dir_x in possible_directions:
+            if not self.can_move(dir_y, dir_x):
+                continue
+            next_y: int = dir_y + self.current_pos_y
+            next_x: int = dir_x + self.current_pos_x
+
+            if (next_y, next_x) != self.previous_pos:
+                valid_choice = True
+                dist = (next_y - target_y) ** 2 + (next_x - target_x) ** 2
+                if dist >= max_distance:
+                    max_distance = dist
+                    best_direction = (dir_y, dir_x)
+
+        if not valid_choice:
+            best_direction = (
+                (self.previous_pos[0] - self.current_pos_x),
+                (self.previous_pos[1] - self.current_pos_y)
+            )
+
+        self.previous_pos = (self.current_pos_y, self.current_pos_x)
+        self.current_pos_y += best_direction[0]
+        self.current_pos_x += best_direction[1]
 
 
 class Blinky(Ghost):
 
-    def chase_behavior(self) -> None:
+    def get_target(self) -> tuple[int, int]:
         if self.pacman is None:
-            return
-        target_y, target_x = (
-            self.pacman.current_pos_y, self.pacman.current_pos_x)
-        possible_directions = [
-            (-1, 0),
-            (1, 0),
-            (0, -1),
-            (0, 1),
-        ]
-        for dir_y, dir_x in possible_directions:
-            if self.can_move(dir_y, dir_x):
-                next_y = dir_y + self.current_pos_y
-                next_x = dir_x + self.current_pos_x
-            
-
-    def flee_behavior(self) -> None:
-        pass
+            return (0, 0)
+        return (self.pacman.current_pos_y, self.pacman.current_pos_x)
 
 
 class Pinky(Ghost):
-    def chase_behavior(self) -> None:
-        pass
 
-    def flee_behavior(self) -> None:
-        pass
+    def get_target(self) -> tuple[int, int]:
+        if self.pacman is None:
+            return (0, 0)
+        target_y = self.pacman.current_pos_y + (self.pacman.move_y * 4)
+        target_x = self.pacman.current_pos_x + (self.pacman.move_x * 4)
+
+        return (target_y, target_x)
 
 
 class Inky(Ghost):
-    def chase_behavior(self) -> None:
-        pass
+    def _get_blinky(self) -> Ghost | None:
+        return self.ghost[2]
 
-    def flee_behavior(self) -> None:
-        pass
+    def get_target(self) -> tuple[int, int]:
+        if self.pacman is None:
+            return (0, 0)
+        blinky = self._get_blinky()
+        if blinky is None:
+            return (self.spawn_y, self.spawn_x)
+
+        front_y = self.pacman.current_pos_y + (self.pacman.move_y * 2)
+        front_x = self.pacman.current_pos_x + (self.pacman.move_x * 2)
+        target_y = front_y + (front_y - blinky.current_pos_y)
+        target_x = front_x + (front_x - blinky.current_pos_x)
+        return (target_y, target_x)
 
 
 class Clyde(Ghost):
-    def chase_behavior(self) -> None:
-        pass
-
-    def flee_behavior(self) -> None:
-        pass
+    def get_target(self) -> tuple[int, int]:
+        if self.pacman is None:
+            return (0, 0)
+        dist_case = (
+            abs(self.current_pos_y - self.pacman.current_pos_y) +
+            abs(self.current_pos_x - self.pacman.current_pos_x)
+        )
+        if dist_case < 8:
+            return (self.spawn_y, self.spawn_x)
+        else:
+            return (self.pacman.current_pos_y, self.pacman.current_pos_x)

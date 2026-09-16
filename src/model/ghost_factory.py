@@ -1,5 +1,5 @@
 from .entities import Ghost, Blinky, Pinky, Inky, Clyde, GhostName
-from .level_builder import LevelBuilder
+from . import level_builder
 
 
 class GhostFactory:
@@ -9,14 +9,14 @@ class GhostFactory:
             name: GhostName,
             x: int,
             y: int,
-            current_level: LevelBuilder) -> Ghost:
+            current_level: "level_builder.LevelBuilder") -> Ghost:
 
-        factories = {
-            GhostName.BLINKY: Blinky,
-            GhostName.PINKY: Pinky,
-            GhostName.INKY: Inky,
-            GhostName.CLYDE: Clyde,
-        }
-
-        ghost_class = factories.get(name)
-        return ghost_class(y, x, current_level)
+        match name:
+            case GhostName.BLINKY:
+                return Blinky(y, x, current_level)
+            case GhostName.PINKY:
+                return Pinky(y, x, current_level)
+            case GhostName.INKY:
+                return Inky(y, x, current_level)
+            case GhostName.CLYDE:
+                return Clyde(y, x, current_level)
