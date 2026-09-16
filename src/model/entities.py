@@ -39,12 +39,14 @@ class Entity(ABC):
         self.ghost = current_level.ghosts
         self.pacman = current_level.player
         self.speed: float = 1
+        self.move_timer: float = 0.0
 
     def respawn(self) -> None:
-        self.x = self.spawn_x
-        self.y = self.spawn_y
-        self.move_x = 0
+        self.currrent_pos_y = self.spawn_y
+        self.current_pos_x = self.spawn_x
         self.move_y = 0
+        self.move_x = 0
+        self.previous_pos = (self.spawn_y, self.spawn_x)
 
     def can_move(self, dir_y: int, dir_x: int) -> bool:
 
@@ -81,8 +83,23 @@ class PacMan(Entity):
             current_level: "level_builder.LevelBuilder") -> None:
         super().__init__(y, x, current_level)
 
+    def set_direction(self, dir_y: int, dir_x: int) -> None:
+        self.move_y = dir_y
+        self.move_x = dir_x
+
     def update(self, elapsed_time: float) -> None:
-        pass
+        self.move_timer += elapsed_time
+        move_delay: float = 1.0 / self.speed
+
+        if self.move_timer >= move_delay:
+            self.move_timer -= move_delay
+            if not self.can_move(self.move_y, self.move_x):
+                self.move_y, self.move_x = (0, 0)
+                return
+
+            self.previous_pos = (self.current_pos_y, self.current_pos_x)
+            self.current_pos_y += self.move_y
+            self.current_pos_x += self.move_x
 
 
 class Ghost(Entity, ABC):
@@ -109,14 +126,20 @@ class Ghost(Entity, ABC):
         if self.state == GhostState.EATEN:
             self.respawn_timer -= elapsed_time
             if self.respawn_timer <= 0:
-                self.respawn()
+                self.state == GhostState.NORMAL
             return
-        if self.state == GhostState.NORMAL:
-            target = self.get_target()
-            if target is not None:
-                self.chase_behavior(target[0], target[1])
-        elif self.state == GhostState.FRIGHTENED:
-            self.flee_behavior()
+
+        self.move_timer += elapsed_time
+        move_delay: float = 1.0 / self.speed
+        if self.move_timer >= move_delay:
+            self.move_timer -= move_delay
+
+            if self.state == GhostState.NORMAL:
+                target = self.get_target()
+                if target is not None:
+                    self.chase_behavior(target[0], target[1])
+            elif self.state == GhostState.FRIGHTENED:
+                self.flee_behavior()
 
     @abstractmethod
     def get_target(self) -> tuple[int, int]:
