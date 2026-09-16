@@ -4,8 +4,7 @@ sprites:
   wall_double_outer_corner_top_right:
     x: 0
     y: 0
-    w: 8
-    h: 8
+    w_h: 8
 
   wall_double_outer_corner_top_left:
     x: 9
@@ -58,6 +57,18 @@ sprites:
   wall_double_t_junction_top_left:
     x: 81
     y: 0
+    w: 8
+    h: 8
+
+  wall_double_t_junction_bottom_top_right:
+    x: 108
+    y: 9
+    w: 8
+    h: 8
+
+  wall_double_t_junction_bottom_top_left:
+    x: 108
+    y: 18
     w: 8
     h: 8
 
@@ -244,8 +255,8 @@ sprites:
     h: 8
 
   empty_tile:
-    x: 108
-    y: 18
+    x: 117
+    y: 9
     w: 8
     h: 8
 
