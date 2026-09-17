@@ -1,6 +1,5 @@
 from .exceptions import (
     PacmanError,
-    ParserError,
     GameSettingsError,
     ModelError,
     JsonLoadError,
@@ -12,7 +11,6 @@ from .exceptions import (
 
 __all__ = [
     "PacmanError",
-    "ParserError",
     "GameSettingsError",
     "ModelError",
     "JsonLoadError",

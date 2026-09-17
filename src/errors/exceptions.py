@@ -2,10 +2,6 @@ class PacmanError(Exception):
     """Application base exception."""
 
 
-class ParserError(PacmanError):
-    """Raised during a argument read."""
-
-
 class GameSettingsError(PacmanError):
     """Raised during a data read or validation error."""
 

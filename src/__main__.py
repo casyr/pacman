@@ -11,9 +11,13 @@ def main() -> int:
     setup_logging()
     logger = logging.getLogger(__name__)
     logger.info("Starting the application Pacman...")
+    if len(sys.argv) != 2:
+        logger.error("Use: uv run python3 -m src src/config.json")
+        return 1
+    config_file_path: str = sys.argv[1]
 
     try:
-        loader = ConfigParser(sys.argv[1:])
+        loader = ConfigParser(config_file_path)
         game_config = loader.load()
         json_loader = JsonModelLoader(game_config.highscore_filename)
         file_score_manager = HighScoreManager(json_loader)
