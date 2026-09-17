@@ -1,5 +1,6 @@
 from .entities import Ghost, Blinky, Pinky, Inky, Clyde, GhostName
-from . import level_builder
+from .maze_adaptater import MazeAdapter
+from .entities import PacMan
 
 
 class GhostFactory:
@@ -7,16 +8,20 @@ class GhostFactory:
     @staticmethod
     def create(
             name: GhostName,
-            x: int,
-            y: int,
-            current_level: "level_builder.LevelBuilder") -> Ghost:
+            pos_y: int,
+            pos_x: int,
+            maze: MazeAdapter,
+            pacman: PacMan,
+            ghosts: list[Ghost]) -> Ghost:
 
         match name:
             case GhostName.BLINKY:
-                return Blinky(y, x, current_level)
+                return Blinky(pos_y, pos_x, maze, pacman, ghosts)
             case GhostName.PINKY:
-                return Pinky(y, x, current_level)
+                return Pinky(pos_y, pos_x, maze, pacman, ghosts)
             case GhostName.INKY:
-                return Inky(y, x, current_level)
+                return Inky(pos_y, pos_x, maze, pacman, ghosts)
             case GhostName.CLYDE:
-                return Clyde(y, x, current_level)
+                return Clyde(pos_y, pos_x, maze, pacman, ghosts)
+            case _:
+                raise ValueError(f"Unknown ghost type: {name}")

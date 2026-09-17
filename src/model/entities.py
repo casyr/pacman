@@ -1,7 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from . import level_builder
+from .maze_adaptater import MazeAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class Entity(ABC):
             self,
             current_y: int,
             current_x: int,
-            current_level: "level_builder.LevelBuilder") -> None:
+            maze: MazeAdapter) -> None:
 
         self.current_pos_x: int = current_x
         self.current_pos_y: int = current_y
@@ -33,16 +33,14 @@ class Entity(ABC):
         self.spawn_x: int = current_x
         self.spawn_y: int = current_y
         self.previous_pos: tuple[int, int] = (current_y, current_x)
-        self.grid: list[list[int]] = current_level.maze.grid
-        self.width_max: int = current_level.width
-        self.height_max: int = current_level.height
-        self.ghost = current_level.ghosts
-        self.pacman = current_level.player
+        self.grid: list[list[int]] = maze.grid
+        self.width_max: int = maze.width
+        self.height_max: int = maze.height
         self.speed: float = 1
         self.move_timer: float = 0.0
 
     def respawn(self) -> None:
-        self.currrent_pos_y = self.spawn_y
+        self.current_pos_y = self.spawn_y
         self.current_pos_x = self.spawn_x
         self.move_y = 0
         self.move_x = 0
@@ -80,8 +78,8 @@ class PacMan(Entity):
             self,
             y: int,
             x: int,
-            current_level: "level_builder.LevelBuilder") -> None:
-        super().__init__(y, x, current_level)
+            maze: MazeAdapter) -> None:
+        super().__init__(y, x, maze)
 
     def set_direction(self, dir_y: int, dir_x: int) -> None:
         self.move_y = dir_y
@@ -108,9 +106,13 @@ class Ghost(Entity, ABC):
             self,
             y: int,
             x: int,
-            current_level: "level_builder.LevelBuilder") -> None:
-        super().__init__(y, x, current_level)
-
+            maze: MazeAdapter,
+            pacman: PacMan,
+            ghosts: list["Ghost"],
+            ) -> None:
+        super().__init__(y, x, maze)
+        self.pacman: PacMan = pacman
+        self.ghosts: list["Ghost"] = ghosts
         self.state: GhostState = GhostState.NORMAL
         self.respawn_timer: float = 0.0
 
@@ -126,7 +128,7 @@ class Ghost(Entity, ABC):
         if self.state == GhostState.EATEN:
             self.respawn_timer -= elapsed_time
             if self.respawn_timer <= 0:
-                self.state == GhostState.NORMAL
+                self.state = GhostState.NORMAL
             return
 
         self.move_timer += elapsed_time
@@ -184,9 +186,6 @@ class Ghost(Entity, ABC):
         max_distance = float('-inf')
         dist = float('-inf')
 
-        if self.pacman is None:
-            return
-
         target_y, target_x = (
             self.pacman.current_pos_y, self.pacman.current_pos_x)
 
@@ -217,16 +216,12 @@ class Ghost(Entity, ABC):
 class Blinky(Ghost):
 
     def get_target(self) -> tuple[int, int]:
-        if self.pacman is None:
-            return (0, 0)
         return (self.pacman.current_pos_y, self.pacman.current_pos_x)
 
 
 class Pinky(Ghost):
 
     def get_target(self) -> tuple[int, int]:
-        if self.pacman is None:
-            return (0, 0)
         target_y = self.pacman.current_pos_y + (self.pacman.move_y * 4)
         target_x = self.pacman.current_pos_x + (self.pacman.move_x * 4)
 
@@ -235,11 +230,12 @@ class Pinky(Ghost):
 
 class Inky(Ghost):
     def _get_blinky(self) -> Ghost | None:
-        return self.ghost[2]
+        for ghost in self.ghosts:
+            if isinstance(ghost, Blinky):
+                return ghost
+        return None
 
     def get_target(self) -> tuple[int, int]:
-        if self.pacman is None:
-            return (0, 0)
         blinky = self._get_blinky()
         if blinky is None:
             return (self.spawn_y, self.spawn_x)
@@ -253,8 +249,6 @@ class Inky(Ghost):
 
 class Clyde(Ghost):
     def get_target(self) -> tuple[int, int]:
-        if self.pacman is None:
-            return (0, 0)
         dist_case = (
             abs(self.current_pos_y - self.pacman.current_pos_y) +
             abs(self.current_pos_x - self.pacman.current_pos_x)

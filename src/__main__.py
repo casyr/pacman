@@ -18,9 +18,9 @@ def main() -> int:
         file_score_manager = HighScoreManager(json_loader)
         game_session_manager = GameSession(game_config)
         level_manager = LevelBuilder(game_session_manager)
-        level_manager.build_level()
+        game_board = level_manager.build_level()
         logger.info(file_score_manager)
-        logger.info(level_manager.ghosts[0].current_pos_y)
+        logger.info(game_board.ghosts[0].current_pos_y)
         return 0
 
     except PacmanError as error:
