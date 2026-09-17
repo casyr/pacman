@@ -26,7 +26,7 @@ class SpriteSheetManager:
         self.sprite_dict: dict[str, Any] = {}
         try:
             self.sprite = Graphics.load_sprite(self.sprite_path)
-        except ViewError as e :
+        except ViewError as e:
             raise SpriteSheetError(e)
         self._get_sprites_sheet_data()
 
@@ -55,7 +55,6 @@ class SpriteSheetManager:
                     self.sprite,
                     sprite_name
             )
-            # print("sprite: ", sprite, "\n")
             return (sprite)
         except ValidationError as e:
             raise SpriteSheetError(e.errors()[0]['msg'])

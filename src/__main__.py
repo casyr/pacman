@@ -7,6 +7,7 @@ from .errors import PacmanError
 from .view import Graphics
 from .view import SpriteSheetManager
 from .view import MazeRenderer
+from mazegenerator import MazeGenerator
 
 
 def main() -> int:
@@ -21,14 +22,23 @@ def main() -> int:
         graphic.initialisation()
         screen = graphic.new_window(1900, 1900)
 
-        pacman = SpriteSheetManager("sprites/pacman_sprites/pacman_sprites.bmp",
-                                    "sprites/pacman_sprites/pacman_sprites.yaml")
-        maze = SpriteSheetManager("sprites/maze_sprites/maze_sprites_4.png",
+        maze_sprite = SpriteSheetManager("sprites/maze_sprites/maze_sprite_2.bmp",
                                     "sprites/maze_sprites/maze_sprites.yaml")
-        Maze_renderer = MazeRenderer(maze)
-        maze_img = Maze_renderer.render_in_img()
-        graphic.put_sprite_in_image(maze_img, 250, 250, pacman.get_sprite("pacman_right_1"))
-        graphic.put_sprite_in_image(maze_img, 350, 350, maze.get_sprite("wall_double_t_junction_bottom_top_right"))
+        Maze_renderer = MazeRenderer(maze_sprite)
+
+        maze_width = 15
+        maze_height = 15
+        maze_generator = MazeGenerator(
+            (maze_width, maze_height),
+            False,
+            (0, 0),
+            (14, 14),
+        )
+
+        maze_generator.generate()
+        maze = maze_generator.maze
+        maze_img = Maze_renderer.render_in_img(maze, maze_width,
+                                               maze_height, maze_sprite)
         while (True):
             graphic.blit_img(maze_img, screen, (0, 0))
             graphic.update_window()

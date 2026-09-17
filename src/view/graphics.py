@@ -41,7 +41,8 @@ class Graphics:
 
     def put_sprite_in_image(self, dest_image: pygame.Surface,
                             dest_x: int, dest_y: int,
-                            sprite_data: SpriteModel,) -> None:
+                            sprite_data: SpriteModel,
+                            rotate: bool = False) -> None:
         scaling = 3
 
         sprite = sprite_data.sprite_surface.convert(dest_image)
@@ -62,5 +63,3 @@ class Graphics:
                 image_pos = ((dest_y + y_gap) * dest_width) + (dest_x + x_gap)
 
                 dest_image_buffer[image_pos] = sprite_buffer[sprite_pos]
-
-                
