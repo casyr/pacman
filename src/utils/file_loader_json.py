@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from ..model import HighScores
+from pydantic import BaseModel
 from ..errors import JsonLoadError
 
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ class JsonModelLoader:
     def save_json_file(
             self,
             file_name: Path,
-            results: HighScores) -> None:
+            results: BaseModel) -> None:
         folder_path = Path("data")
         file_path = folder_path / file_name
         file_path.parent.mkdir(parents=True, exist_ok=True)

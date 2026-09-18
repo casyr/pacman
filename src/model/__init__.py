@@ -1,14 +1,39 @@
+from .gameboard import GameBoard
+from .entities import (
+    Ghost,
+    GhostName,
+    GhostState,
+    PacMan,
+    Blinky,
+    Pinky,
+    Inky,
+    Clyde)
 from .high_score_validator import HighScore, HighScores
-from .high_score_manager import HighScoreManager
-from .game_session_manager import GameSession
 from .maze_adaptater import MazeAdapter
+
+from .ghost_factory import GhostFactory
 from .level_builder import LevelBuilder
+
+from .game_session_manager import GameSession, GameStatus
+from .high_score_manager import HighScoreManager
+
 
 __all__ = [
     "HighScoreManager",
     "HighScore",
     "HighScores",
     "GameSession",
+    "GameStatus",
     "MazeAdapter",
-    "LevelBuilder"
+    "GhostFactory",
+    "LevelBuilder",
+    "GameBoard",
+    "Ghost",
+    "GhostName",
+    "GhostState",
+    "PacMan",
+    "Blinky",
+    "Pinky",
+    "Inky",
+    "Clyde"
     ]
