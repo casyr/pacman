@@ -3,7 +3,6 @@ import logging
 from .utils import setup_logging
 from .parsing import ConfigParser
 from .errors import PacmanError
-
 from .view import Graphics
 from .view import SpriteSheetManager
 from .view import MazeRenderer
@@ -22,8 +21,10 @@ def main() -> int:
         graphic.initialisation()
         screen = graphic.new_window(1900, 1900)
 
-        maze_sprite = SpriteSheetManager("sprites/maze_sprites/maze_sprite_2.bmp",
-                                    "sprites/maze_sprites/maze_sprites.yaml")
+        maze_sprite = SpriteSheetManager("sprites/maze_sprites/"
+                                         "maze_sprite_2.bmp",
+                                         "sprites/maze_sprites/"
+                                         "maze_sprites.yaml")
         Maze_renderer = MazeRenderer(maze_sprite)
 
         maze_width = 15
@@ -37,8 +38,13 @@ def main() -> int:
 
         maze_generator.generate()
         maze = maze_generator.maze
+        img_width = 1900
+        img_height = 1900
+        graphic = Graphics()
+        img = graphic.new_image(img_width, img_height)
         maze_img = Maze_renderer.render_in_img(maze, maze_width,
-                                               maze_height, maze_sprite)
+                                               maze_height, maze_sprite,
+                                               img, img_height, img_width)
         while (True):
             graphic.blit_img(maze_img, screen, (0, 0))
             graphic.update_window()

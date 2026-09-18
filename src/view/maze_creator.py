@@ -3,6 +3,7 @@ from .graphics import Graphics
 from pygame import Surface
 from .sprite_model import SpriteModel
 from enum import Enum
+from typing import Any
 
 
 class Wall(Enum):
@@ -24,93 +25,98 @@ class MazeRenderer:
     def __init__(self, maze_sprites: SpriteSheetManager):
         self.maze_sprites = maze_sprites
 
-    def sprite_chooser(self, x: int, y: int, maze_sprites: SpriteSheetManager,
-                       maze: list[list[int]]) -> list[SpriteModel]:
-
-        get_sprite = maze_sprites.get_sprite
-
-        sprites = [get_sprite("empty_tile"),
-                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-        if x == 0:
-            sprites[Wall.WEST.value] = get_sprite("wall_double_vertical_left")
+    def straight_wall_chooser(self, sprites: list[Any],
+                              is_top: bool, is_bottom: bool,
+                              is_left: bool, is_right: bool) -> None:
+        if is_left:
+            sprite = self.maze_sprites.get_sprite("wall_double_vertical_left")
         else:
-            sprites[Wall.WEST.value] = get_sprite("wall_single_vertical_left")
+            sprite = self.maze_sprites.get_sprite("wall_single_vertical_left")
+        sprites[Wall.WEST.value] = sprite
 
-        if x == len(maze[0]) - 1:
-            sprites[Wall.EAST.value] = get_sprite("wall_double_vertical_right")
+        if is_right:
+            sprite = self.maze_sprites.get_sprite("wall_double_vertical_right")
         else:
-            sprites[Wall.EAST.value] = get_sprite("wall_single_vertical_right")
+            sprite = self.maze_sprites.get_sprite("wall_single_vertical_right")
+        sprites[Wall.EAST.value] = sprite
 
-        if y == 0:
-            sprites[Wall.NORTH.value] = get_sprite("wall_double_horizontal_top")
+        if is_top:
+            sprite = self.maze_sprites.get_sprite("wall_double_horizontal_top")
         else:
-            sprites[Wall.NORTH.value] = get_sprite("wall_single_horizontal_top")
+            sprite = self.maze_sprites.get_sprite("wall_single_horizontal_top")
+        sprites[Wall.NORTH.value] = sprite
 
-        if y == len(maze) - 1:
-            sprites[Wall.SOUTH.value] = get_sprite("wall_double_horizontal_bottom")
+        if is_bottom:
+            sprite = self.maze_sprites.get_sprite("wall_double_horizontal_"
+                                                  "bottom")
         else:
-            sprites[Wall.SOUTH.value] = get_sprite("wall_single_horizontal_bottom")
+            sprite = self.maze_sprites.get_sprite("wall_single_horizontal_"
+                                                  "bottom")
+        sprites[Wall.SOUTH.value] = sprite
 
-        if y == 0 and x == 0:
-            sprites[Corner.NORTH_WEST.value] = get_sprite("wall_double_outer_corner_top_left")
-        elif x == 0:
-            sprites[Corner.NORTH_WEST.value] = get_sprite("wall_double_t_junction_top_left")
-        elif y == 0:
-            sprites[Corner.NORTH_WEST.value] = get_sprite("wall_top_join_left")
+    def corner_wall_chooser(self, sprites: list[Any],
+                            is_top: bool, is_bottom: bool,
+                            is_left: bool, is_right: bool) -> None:
+
+        get_sprite = self.maze_sprites.get_sprite
+
+        if is_top and is_left:
+            sprite = get_sprite("wall_double_outer_corner_top_left")
+        elif is_left:
+            sprite = get_sprite("wall_double_t_junction_top_left")
+        elif is_top:
+            sprite = get_sprite("wall_top_join_left")
         else:
-            sprites[Corner.NORTH_WEST.value] = get_sprite("wall_curve_large_top_left")
+            sprite = get_sprite("wall_curve_large_top_left")
+        sprites[Corner.NORTH_WEST.value] = sprite
 
-        if y == 0 and x == len(maze[0]) - 1:
-            sprites[Corner.NORTH_EAST.value] = get_sprite("wall_double_outer_corner_top_right")
-        elif x == len(maze[0]) - 1:
-            sprites[Corner.NORTH_EAST.value] = get_sprite("wall_double_t_junction_top_right")
-        elif y == 0:
-            sprites[Corner.NORTH_EAST.value] = get_sprite("wall_top_join_right")
+        if is_top and is_right:
+            sprite = get_sprite("wall_double_outer_corner_top_right")
+        elif is_right:
+            sprite = get_sprite("wall_double_t_junction_top_right")
+        elif is_top:
+            sprite = get_sprite("wall_top_join_right")
         else:
-            sprites[Corner.NORTH_EAST.value] = get_sprite("wall_curve_large_top_right")
+            sprite = get_sprite("wall_curve_large_top_right")
+        sprites[Corner.NORTH_EAST.value] = sprite
 
-        if x == 0 and y == len(maze) - 1:
-            sprites[Corner.SOUTH_WEST.value] = get_sprite("wall_double_outer_corner_bottom_left")
-        elif y == len(maze) - 1:
-            sprites[Corner.SOUTH_WEST.value] = get_sprite("wall_double_t_junction_bottom_top_right")
-        elif x == 0:
-            sprites[Corner.SOUTH_WEST.value] = get_sprite("wall_double_t_junction_bottom_left")
+        if is_left and is_bottom:
+            sprite = get_sprite("wall_double_outer_corner_bottom_left")
+        elif is_bottom:
+            sprite = get_sprite("wall_double_t_junction_bottom_top_right")
+        elif is_left:
+            sprite = get_sprite("wall_double_t_junction_bottom_left")
         else:
-            sprites[Corner.SOUTH_WEST.value] = get_sprite("wall_curve_large_bottom_left")
+            sprite = get_sprite("wall_curve_large_bottom_left")
+        sprites[Corner.SOUTH_WEST.value] = sprite
 
-        if (y == len(maze) - 1) and (x == len(maze[0]) - 1):
-            sprites[Corner.SOUTH_EAST.value] = get_sprite("wall_double_outer_corner_bottom_right")
-        elif y == len(maze) - 1:
-            sprites[Corner.SOUTH_EAST.value] = get_sprite("wall_double_t_junction_bottom_top_left")
-        elif x == len(maze[0]) - 1:
-            sprites[Corner.SOUTH_EAST.value] = get_sprite("wall_double_t_junction_bottom_right")
+        if (is_bottom) and (is_right):
+            sprite = get_sprite("wall_double_outer_corner_bottom_right")
+        elif is_bottom:
+            sprite = get_sprite("wall_double_t_junction_bottom_top_left")
+        elif is_right:
+            sprite = get_sprite("wall_double_t_junction_bottom_right")
         else:
-            sprites[Corner.SOUTH_EAST.value] = get_sprite("wall_curve_large_bottom_right")
+            sprite = get_sprite("wall_curve_large_bottom_right")
+        sprites[Corner.SOUTH_EAST.value] = sprite
 
-        return sprites
+    def sprites_chooser(self, x: int, y: int, maze_sprites: SpriteSheetManager,
+                        maze: list[list[int]]) -> list[SpriteModel]:
 
-    def need_little_corners_(self, maze: list[list[int]], x: int, y: int,
-                           corner: Corner) -> int:
+        sprites = [maze_sprites.get_sprite("empty_tile") for _ in range(15)]
 
         is_top = y == 0
         is_bottom = y == len(maze) - 1
         is_left = x == 0
         is_right = x == len(maze[0]) - 1
 
-        if not is_top and not is_right and not maze[y][x] & Wall.EAST.value and not maze[y][x] & Wall.NORTH.value and corner.value == Corner.NORTH_EAST.value and (maze[y - 1][x + 1] & 4 or maze[y - 1][x + 1] & 8):
-            return Corner.NORTH_EAST.value
+        self.straight_wall_chooser(sprites, is_top, is_bottom, is_left,
+                                   is_right)
 
-        if not is_top and not is_left and not maze[y][x] & Wall.WEST.value and not maze[y][x] & Wall.NORTH.value and corner.value == Corner.NORTH_WEST.value and (maze[y - 1][x - 1] & 4 or maze[y - 1][x - 1] & 2):
-            return Corner.NORTH_WEST.value
+        self.corner_wall_chooser(sprites, is_top, is_bottom, is_left,
+                                 is_right)
 
-        if not is_bottom and not is_right and not maze[y][x] & Wall.EAST.value and not maze[y][x] & Wall.SOUTH.value and corner.value == Corner.SOUTH_EAST.value and (maze[y + 1][x + 1] & 1 or maze[y + 1][x + 1] & 8):
-            return Corner.SOUTH_EAST.value
-
-        if not is_left and not is_bottom and not maze[y][x] & Wall.WEST.value and not maze[y][x] & Wall.SOUTH.value and corner.value == Corner.SOUTH_WEST.value and (maze[y + 1][x - 1] & 1 or maze[y + 1][x - 1] & 2):
-            return Corner.SOUTH_WEST.value
-
-        return 0
+        return sprites
 
     def need_little_corner(self, current_square: int, next_square: int,
                            avoid_wall: list[int],
@@ -119,8 +125,8 @@ class MazeRenderer:
 
         if current_square & avoid_wall[0] or current_square & avoid_wall[1]:
             return 0
-        if (not next_square & mandatory_wall[0] or not
-                next_square & mandatory_wall[1]):
+        if (not (next_square & mandatory_wall[0])
+                and not (next_square & mandatory_wall[1])):
             return 0
         return corner_value
 
@@ -138,42 +144,47 @@ class MazeRenderer:
             return self.need_little_corner(maze[y][x], maze[y - 1][x + 1],
                                            [Wall.EAST.value, Wall.NORTH.value],
                                            [Wall.SOUTH.value, Wall.WEST.value],
-                                           Corner.NORTH_EAST.value)
+                                           corner.value)
 
         elif (corner.value == Corner.NORTH_WEST.value
               and not is_left
               and not is_top):
             return self.need_little_corner(maze[y][x], maze[y - 1][x - 1],
                                            [Wall.WEST.value, Wall.NORTH.value],
-                                           [Wall.NORTH.value, Wall.WEST.value],
+                                           [Wall.SOUTH.value, Wall.EAST.value],
                                            corner.value)
 
         elif (corner.value == Corner.SOUTH_EAST.value
               and not is_right
               and not is_bottom):
-            return self.need_little_corner(maze[y][x], maze[y + 1][x - 1],
-                                           [Wall.WEST.value, Wall.SOUTH.value],
-                                           [Wall.NORTH.value, Wall.EAST.value],
+            return self.need_little_corner(maze[y][x], maze[y + 1][x + 1],
+                                           [Wall.EAST.value, Wall.SOUTH.value],
+                                           [Wall.NORTH.value, Wall.WEST.value],
                                            corner.value)
 
-        elif not is_left and not is_bottom:
+        elif (corner.value == Corner.SOUTH_WEST.value
+                and not is_left
+                and not is_bottom):
             return self.need_little_corner(maze[y][x], maze[y + 1][x - 1],
-                                           [Wall.EAST.value, Wall.NORTH.value],
+                                           [Wall.WEST.value, Wall.SOUTH.value],
                                            [Wall.NORTH.value, Wall.EAST.value],
                                            corner.value)
         return 0
 
     def little_corner_handle(self, corner_value: int) -> SpriteModel:
+
+        get_sprite = self.maze_sprites.get_sprite
+
         if corner_value == Corner.NORTH_EAST.value:
-            return (self.maze_sprites.get_sprite("wall_small_corner_bottom_left"))
+            return (get_sprite("wall_small_corner_bottom_left"))
 
         if corner_value == Corner.NORTH_WEST.value:
-            return (self.maze_sprites.get_sprite("wall_small_corner_bottom_right"))
+            return (get_sprite("wall_small_corner_bottom_right"))
 
         if corner_value == Corner.SOUTH_EAST.value:
-            return (self.maze_sprites.get_sprite("wall_small_corner_top_left"))
+            return (get_sprite("wall_small_corner_top_left"))
 
-        return (self.maze_sprites.get_sprite("wall_small_corner_top_right"))
+        return (get_sprite("wall_small_corner_top_right"))
 
     def handle_corner(self, w1: int, w2: int,
                       sprites: list[SpriteModel],
@@ -194,13 +205,13 @@ class MazeRenderer:
                       x: int, y: int, maze_sprites: SpriteSheetManager
                       ) -> list[list[SpriteModel]]:
 
-        n = maze[y][x] & Wall.NORTH.value  
+        n = maze[y][x] & Wall.NORTH.value
         e = maze[y][x] & Wall.EAST.value
         s = maze[y][x] & Wall.SOUTH.value
         w = maze[y][x] & Wall.WEST.value
 
-        sprites: list[SpriteModel] = self.sprite_chooser(x, y,
-                                                         maze_sprites, maze)
+        sprites: list[SpriteModel] = self.sprites_chooser(x, y,
+                                                          maze_sprites, maze)
 
         north_west_sprite = self.handle_corner(w, n, sprites, maze,
                                                y, x, Corner.NORTH_WEST)
@@ -225,7 +236,7 @@ class MazeRenderer:
 
     def put_tile_in_image(self, img: Surface, tile: list[list[SpriteModel]],
                           maze_width: int, maze_height: int, x: int, y: int,
-                          img_width: int, img_height: int):
+                          img_width: int, img_height: int) -> None:
 
         tile_width_and_length = 24 * 3
         sprite_width_and_length = 8 * 3
@@ -248,12 +259,9 @@ class MazeRenderer:
 
     def render_in_img(self, maze: list[list[int]],
                       maze_width: int, maze_height: int,
-                      maze_sprites: SpriteSheetManager) -> Surface:
-
-        img_width = 1900
-        img_height = 1900
-        graphic = Graphics()
-        img = graphic.new_image(img_width, img_height)
+                      maze_sprites: SpriteSheetManager,
+                      img: Surface, img_height: int,
+                      img_width: int) -> Surface:
 
         for y in range(len(maze)):
             for x in range(len(maze[y])):
