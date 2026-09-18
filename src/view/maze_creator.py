@@ -90,7 +90,7 @@ class MazeRenderer:
 
         return sprites
 
-    def need_little_corner(self, maze: list[list[int]], x: int, y: int,
+    def need_little_corners_(self, maze: list[list[int]], x: int, y: int,
                            corner: Corner) -> int:
 
         is_top = y == 0
@@ -98,18 +98,69 @@ class MazeRenderer:
         is_left = x == 0
         is_right = x == len(maze[0]) - 1
 
-        if not is_top and not is_right and maze[y][x] & 2 == 0 and maze[y][x] & 1 == 0 and corner.value == Corner.NORTH_EAST.value and (maze[y - 1][x + 1] & 4 or maze[y - 1][x + 1] & 8):
+        if not is_top and not is_right and not maze[y][x] & Wall.EAST.value and not maze[y][x] & Wall.NORTH.value and corner.value == Corner.NORTH_EAST.value and (maze[y - 1][x + 1] & 4 or maze[y - 1][x + 1] & 8):
             return Corner.NORTH_EAST.value
 
-        if not is_top and not is_left and maze[y][x] & 8 == 0 and maze[y][x] & 1 == 0 and corner.value == Corner.NORTH_WEST.value and (maze[y - 1][x - 1] & 4 or maze[y - 1][x - 1] & 2):
+        if not is_top and not is_left and not maze[y][x] & Wall.WEST.value and not maze[y][x] & Wall.NORTH.value and corner.value == Corner.NORTH_WEST.value and (maze[y - 1][x - 1] & 4 or maze[y - 1][x - 1] & 2):
             return Corner.NORTH_WEST.value
 
-        if not is_bottom and not is_right and maze[y][x] & 2 == 0 and maze[y][x] & 4 == 0 and corner.value == Corner.SOUTH_EAST.value and (maze[y + 1][x + 1] & 1 or maze[y + 1][x + 1] & 8):
+        if not is_bottom and not is_right and not maze[y][x] & Wall.EAST.value and not maze[y][x] & Wall.SOUTH.value and corner.value == Corner.SOUTH_EAST.value and (maze[y + 1][x + 1] & 1 or maze[y + 1][x + 1] & 8):
             return Corner.SOUTH_EAST.value
 
-        if not is_left and not is_bottom and maze[y][x] & 8 == 0 and maze[y][x] & 4 == 0 and corner.value == Corner.SOUTH_WEST.value and (maze[y + 1][x - 1] & 1 or maze[y + 1][x - 1] & 2):
+        if not is_left and not is_bottom and not maze[y][x] & Wall.WEST.value and not maze[y][x] & Wall.SOUTH.value and corner.value == Corner.SOUTH_WEST.value and (maze[y + 1][x - 1] & 1 or maze[y + 1][x - 1] & 2):
             return Corner.SOUTH_WEST.value
 
+        return 0
+
+    def need_little_corner(self, current_square: int, next_square: int,
+                           avoid_wall: list[int],
+                           mandatory_wall: list[int],
+                           corner_value: int) -> int:
+
+        if current_square & avoid_wall[0] or current_square & avoid_wall[1]:
+            return 0
+        if (not next_square & mandatory_wall[0] or not
+                next_square & mandatory_wall[1]):
+            return 0
+        return corner_value
+
+    def need_little_corners(self, maze: list[list[int]], x: int, y: int,
+                            corner: Corner) -> int:
+
+        is_top = y == 0
+        is_bottom = y == len(maze) - 1
+        is_left = x == 0
+        is_right = x == len(maze[0]) - 1
+
+        if (corner.value == Corner.NORTH_EAST.value
+                and not is_right
+                and not is_top):
+            return self.need_little_corner(maze[y][x], maze[y - 1][x + 1],
+                                           [Wall.EAST.value, Wall.NORTH.value],
+                                           [Wall.SOUTH.value, Wall.WEST.value],
+                                           Corner.NORTH_EAST.value)
+
+        elif (corner.value == Corner.NORTH_WEST.value
+              and not is_left
+              and not is_top):
+            return self.need_little_corner(maze[y][x], maze[y - 1][x - 1],
+                                           [Wall.WEST.value, Wall.NORTH.value],
+                                           [Wall.NORTH.value, Wall.WEST.value],
+                                           corner.value)
+
+        elif (corner.value == Corner.SOUTH_EAST.value
+              and not is_right
+              and not is_bottom):
+            return self.need_little_corner(maze[y][x], maze[y + 1][x - 1],
+                                           [Wall.WEST.value, Wall.SOUTH.value],
+                                           [Wall.NORTH.value, Wall.EAST.value],
+                                           corner.value)
+
+        elif not is_left and not is_bottom:
+            return self.need_little_corner(maze[y][x], maze[y + 1][x - 1],
+                                           [Wall.EAST.value, Wall.NORTH.value],
+                                           [Wall.NORTH.value, Wall.EAST.value],
+                                           corner.value)
         return 0
 
     def little_corner_handle(self, corner_value: int) -> SpriteModel:
@@ -128,7 +179,7 @@ class MazeRenderer:
                       sprites: list[SpriteModel],
                       maze: list[list[int]], y: int, x: int,
                       corner: Corner) -> SpriteModel:
-        corner_needed = self.need_little_corner(maze, x, y, corner)
+        corner_needed = self.need_little_corners(maze, x, y, corner)
         if corner_needed > 0:
             return self.little_corner_handle(corner_needed)
         if w1 and w2:
@@ -143,7 +194,7 @@ class MazeRenderer:
                       x: int, y: int, maze_sprites: SpriteSheetManager
                       ) -> list[list[SpriteModel]]:
 
-        n = maze[y][x] & Wall.NORTH.value  # creer fct pour calcucler ca pour utiliser aussi dans need little corner
+        n = maze[y][x] & Wall.NORTH.value  
         e = maze[y][x] & Wall.EAST.value
         s = maze[y][x] & Wall.SOUTH.value
         w = maze[y][x] & Wall.WEST.value
