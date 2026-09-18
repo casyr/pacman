@@ -50,9 +50,9 @@ class Entity(ABC):
 
         next_move_y = self.current_pos_y + dir_y
         next_move_x = self.current_pos_x + dir_x
-        if 0 < next_move_y >= self.height_max:
+        if next_move_y < 0 or next_move_y >= self.height_max:
             return False
-        if 0 < next_move_x >= self.width_max:
+        if next_move_x < 0 or next_move_x >= self.width_max:
             return False
 
         move_masks: dict[tuple[int, int], int] = {
@@ -65,7 +65,7 @@ class Entity(ABC):
         if mask is None:
             return False
         cell_value: int = self.grid[self.current_pos_y][self.current_pos_x]
-        return (cell_value & mask) != 0
+        return (cell_value & mask) == 0
 
     @abstractmethod
     def update(self, elapsed_time: float) -> None:
@@ -204,8 +204,8 @@ class Ghost(Entity, ABC):
 
         if not valid_choice:
             best_direction = (
-                (self.previous_pos[0] - self.current_pos_x),
-                (self.previous_pos[1] - self.current_pos_y)
+                (self.previous_pos[0] - self.current_pos_y),
+                (self.previous_pos[1] - self.current_pos_x)
             )
 
         self.previous_pos = (self.current_pos_y, self.current_pos_x)
