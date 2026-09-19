@@ -1,6 +1,7 @@
-from .entities import Ghost, Blinky, Pinky, Inky, Clyde, GhostName
+from .entities import Ghost, Blinky, Pinky, Inky, Clyde
 from .maze_adaptater import MazeAdapter
 from .entities import PacMan
+from ..shared import GhostName, Vector2D
 
 
 class GhostFactory:
@@ -8,20 +9,19 @@ class GhostFactory:
     @staticmethod
     def create(
             name: GhostName,
-            pos_y: int,
-            pos_x: int,
+            pos: Vector2D,
             maze: MazeAdapter,
             pacman: PacMan,
             ghosts: list[Ghost]) -> Ghost:
 
         match name:
             case GhostName.BLINKY:
-                return Blinky(pos_y, pos_x, maze, pacman, ghosts)
+                return Blinky(pos.y, pos.x, maze, pacman, ghosts)
             case GhostName.PINKY:
-                return Pinky(pos_y, pos_x, maze, pacman, ghosts)
+                return Pinky(pos.y, pos.x, maze, pacman, ghosts)
             case GhostName.INKY:
-                return Inky(pos_y, pos_x, maze, pacman, ghosts)
+                return Inky(pos.y, pos.x, maze, pacman, ghosts)
             case GhostName.CLYDE:
-                return Clyde(pos_y, pos_x, maze, pacman, ghosts)
+                return Clyde(pos.y, pos.x, maze, pacman, ghosts)
             case _:
                 raise ValueError(f"Unknown ghost type: {name}")

@@ -1,8 +1,6 @@
 from .gameboard import GameBoard
 from .entities import (
     Ghost,
-    GhostName,
-    GhostState,
     PacMan,
     Blinky,
     Pinky,
@@ -29,8 +27,6 @@ __all__ = [
     "LevelBuilder",
     "GameBoard",
     "Ghost",
-    "GhostName",
-    "GhostState",
     "PacMan",
     "Blinky",
     "Pinky",
