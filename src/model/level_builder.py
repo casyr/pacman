@@ -59,7 +59,7 @@ class LevelBuilder:
             ) -> set[Vector2D]:
         super_pacgums_pos: set[Vector2D] = set()
 
-        for pos in self.bounds.corners:
+        for pos in self.bounds.corners_pos:
             try:
                 positions = self._check_first_coordonate(pos, maze)
                 if positions is not None:
@@ -80,7 +80,7 @@ class LevelBuilder:
         ignore.update(super_pacgums_pos)
         ignore.add(player_spawn_pos)
 
-        for name, pos in zip(GhostName, self.bounds.corners):
+        for name, pos in zip(GhostName, self.bounds.corners_pos):
             try:
                 positions = self._available_space(
                     [pos], {pos}, ignore, maze)

@@ -27,8 +27,7 @@ class GridBounds(NamedTuple):
     height: int
 
     @property
-    def corners(self) -> list[Vector2D]:
-        """Retourne les 4 coins de la grille en fonction de sa taille."""
+    def corners_pos(self) -> list[Vector2D]:
         return [
             Vector2D(0, 0),
             Vector2D(0, self.width - 1),
