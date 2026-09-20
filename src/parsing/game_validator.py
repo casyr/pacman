@@ -81,13 +81,8 @@ class GameValidator(BaseGameValidator):
         default_factory=lambda: [LevelValidator() for _ in range(10)]
     )
     lives: int = Field(default=3, ge=1, le=10)
-    # WARNING : MAKE SURE PACGUM FILED MAZE INSIDE MODEL AND
-    # DISPLAY MESSAGE IF PACGUM NOT FIT 03/09
-    #
     pacgum: int = Field(default=42, ge=1)
-    super_pacgum: int = Field(default=4, ge=1)
-    #
-    #
+    super_pacgum: int = Field(default=4, ge=1, le=4)
     points_per_pacgum: int = Field(default=10, ge=1, le=10)
     points_per_super_pacgum: int = Field(default=50, ge=1, le=50)
     points_per_ghost: int = Field(default=200, ge=1, le=200)
