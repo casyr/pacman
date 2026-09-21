@@ -1,6 +1,5 @@
 import sys
 import logging
-
 from .model import HighScoreManager, GameSession, LevelBuilder
 from .utils import setup_logging, JsonModelLoader
 from .parsing import ConfigParser
@@ -19,10 +18,9 @@ def main() -> int:
         file_score_manager = HighScoreManager(json_loader)
         game_session_manager = GameSession(game_config)
         level_manager = LevelBuilder(game_session_manager)
-        level_manager.build_level()
+        game_board = level_manager.build_level()
         logger.info(file_score_manager)
-        logger.info(level_manager.pacgum_pos)
-        logger.info(level_manager.pacgum)
+        logger.info(game_board.ghosts_spawn_pos)
         return 0
 
     except PacmanError as error:
