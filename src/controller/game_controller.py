@@ -19,6 +19,7 @@ class GameMenuState(Enum):
     VICTORY = auto()
     DEFEAT = auto()
     PAUSED = auto()
+    CHEAT_MENU = auto()
     ENTER_HIGHSCORE = auto()
     EXIT = auto()
 
@@ -59,6 +60,8 @@ class GameController:
                 self._run_game_over_state()
             elif self.state == GameMenuState.PAUSED:
                 self._run_paused_state()
+            elif self.state == GameMenuState.CHEAT_MENU:
+                self._run_cheat_menu_state()
             elif self.state == GameMenuState.ENTER_HIGHSCORE:
                 self._run_highscore_state()
             processing_time = time.perf_counter() - current_time
@@ -82,7 +85,7 @@ class GameController:
 
     def get_input_move(self) -> str:
         choices = input(
-            "Choices (w: up, s: down, right:d left: a  paused: p) : ")
+            "Choices (w: up, s: down, right:d left: a  paused: p cheat: c) : ")
         if choices == "w":
             return "KEY_UP"
         elif choices == "s":
@@ -93,6 +96,8 @@ class GameController:
             return "KEY_LEFT"
         elif choices == "p":
             return "KEY_PAUSED"
+        elif choices == "c":
+            return "KEY_CHEAT_MENU"
         return ""
 
     def get_input_paused(self) -> str:
@@ -101,6 +106,22 @@ class GameController:
             return "RESUME"
         elif choices == "2":
             return "RETURN MAIN MENU"
+        return ""
+
+    def get_input_cheat(self) -> str:
+        choices = input("Select a cheat : ")
+        if choices == "1":
+            return "CHEAT_INVINCIBLE"
+        elif choices == "2":
+            return "CHEAT_FREEZE"
+        elif choices == "3":
+            return "CHEAT_SPEED"
+        elif choices == "4":
+            return "CHEAT_LIFE"
+        elif choices == "5":
+            return "CHEAT_SKIP"
+        elif choices == "6":
+            return "RESUME"
         return ""
 
     def _run_menu_state(self) -> None:
@@ -131,6 +152,9 @@ class GameController:
             self.game_board.player.set_direction(0, 1)
         elif move_input == "KEY_PAUSED":
             self.state = GameMenuState.PAUSED
+            self.game_session.switch_status_paused()
+        elif move_input == "KEY_CHEAT_MENU":
+            self.state = GameMenuState.CHEAT_MENU
             self.game_session.switch_status_paused()
             return
 
@@ -222,3 +246,33 @@ class GameController:
         elif pause_choice == "RETURN MAIN MENU":
             self.state = GameMenuState.MENU
         self.game_session.switch_status_paused()
+
+    def _run_cheat_menu_state(self) -> None:
+        # self.view.draw_cheat_menu()
+        cheat_choice = self.get_input_cheat()
+        if cheat_choice == "CHEAT_INVINCIBLE":
+            self.game_session.switch_invincibility()
+            print(f"Invincibility is now {
+                self.game_session.cheat_mode.invincibility}")
+
+        elif cheat_choice == "CHEAT_FREEZE":
+            self.game_session.switch_ghost_freeze()
+            print(f"Ghost Freeze is now {self.game_session.cheat_mode.freeze}")
+
+        elif cheat_choice == "CHEAT_SPEED":
+            self.game_session.switch_speed_boost()
+            print(f"Speed Boost is now {self.game_session.cheat_mode.speed}")
+
+        elif cheat_choice == "CHEAT_LIFE":
+            self.game_session.cheat_extra_lives()
+            print(f"Lives remaining: {self.game_session.lives_remaining}")
+
+        elif cheat_choice == "CHEAT_SKIP":
+            self.game_session.cheat_skip_level()
+            if self.game_session.game_status == GameStatus.PLAYING:
+                self.game_board = self.level_manager.build_level()
+            self.state = GameMenuState.PLAYING
+
+        elif cheat_choice == "RESUME":
+            self.game_session.switch_status_paused()
+            self.state = GameMenuState.PLAYING
