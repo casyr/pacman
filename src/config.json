@@ -1,5 +1,5 @@
 {
-  "highscore_filename": "config.txt",
+  "highscore_filename": "highscore.json",
   "lives": 3,
   "pacgum": 42,
   "super_pacgum": 4,
@@ -10,7 +10,7 @@
   "level_max_time" : 90,
   "levels": [
     {
-      "level_id": 10,
+      "level_id": 1,
       "width": 10,
       "height": 10
     },
