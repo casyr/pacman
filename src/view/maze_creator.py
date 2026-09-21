@@ -36,8 +36,8 @@ class MazeRenderer:
         self.screen_width = screen_width
         self.screen_height = screen_height
 
-        self.sprite_size = 8 * self.scaling
-        self.tile_size = 24 * self.scaling
+        self.tile_size = self.graphic.get_tile_size(self.maze_width, self.maze_height, self.screen_width, self.screen_height)
+        self.sprite_size = self.scaling // 3
 
     def straight_wall_chooser(self, sprites: list[Any],
                               is_top: bool, is_bottom: bool,
@@ -252,8 +252,10 @@ class MazeRenderer:
                           tile: list[list[SpriteModel]],
                           x: int, y: int) -> None:
 
-        half_img_width = self.screen_width // 2
-        half_img_height = self.screen_height // 2
+        usable_width = self.graphic.get_usable_width(self.screen_width)
+        usable_height = self.graphic.get_usable_height(self.screen_height)
+        half_img_width = usable_width // 2 + self.graphic.get_padding() // 2
+        half_img_height = usable_height // 2 + self.graphic.get_padding() // 2
 
         x_dest = half_img_width - ((self.maze_width // 2) * self.tile_size)
         y_dest = half_img_height - ((self.maze_height // 2) * self.tile_size)
@@ -264,15 +266,40 @@ class MazeRenderer:
                 y_gap = (tile_y * self.sprite_size)
                 dest_x = x_dest + x * self.tile_size + x_gap
                 dest_y = y_dest + y * self.tile_size + y_gap
-                self.graphic.put_sprite_in_image(img, dest_x, dest_y,
+                self.graphic.put_sprite_in_image_(img, dest_x, dest_y,
                                                  tile[tile_y][tile_x],
-                                                 self.scaling)
+                                                 self.maze_width, self.maze_height)
+
+    def put_tile_in_image_(self, img: Surface,
+                           tile: list[list[SpriteModel]],
+                           x: int, y: int) -> None:
+        print("la\n")
+        usable_width = self.graphic.get_usable_width(self.screen_width)
+        print("la\n")
+        usable_height = self.graphic.get_usable_height(self.screen_height)
+        print("ici")
+        half_img_width = usable_width // 2 + self.graphic.get_padding() // 2
+        half_img_height = usable_height // 2 + self.graphic.get_padding() // 2
+
+        x_dest = half_img_width - ((self.maze_width // 2) * self.tile_size)
+        y_dest = half_img_height - ((self.maze_height // 2) * self.tile_size)
+
+        for tile_y in range(3):
+            for tile_x in range(3):
+                x_gap = (tile_x * self.sprite_size)
+                y_gap = (tile_y * self.sprite_size)
+                dest_x = x_dest + x * self.tile_size + x_gap
+                dest_y = y_dest + y * self.tile_size + y_gap
+                self.graphic.put_sprite_in_image_(img, dest_x, dest_y,
+                                                  tile[tile_y][tile_x],
+                                                  self.maze_width, self.maze_height)
 
     def render_in_img(self, img: Surface) -> Surface:
 
+        print("render")
         for y in range(len(self.maze)):
             for x in range(len(self.maze[y])):
                 tile = self.sprite_filler(x, y)
                 self.put_tile_in_image(img, tile, x, y)
-
+        print("end render")
         return (img)

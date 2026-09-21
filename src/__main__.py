@@ -27,13 +27,13 @@ def main() -> int:
                                          "maze_sprite.bmp",
                                          "sprites/maze_sprites/"
                                          "maze_sprites.yaml")
-        maze_width = 14
-        maze_height = 14
+        maze_width = 25
+        maze_height = 25
         maze_generator = MazeGenerator(
             (maze_width, maze_height),
             False,
             (0, 0),
-            (14, 14),
+            (20, 20),
         )
         maze_generator.generate()
         maze = maze_generator.maze
@@ -43,6 +43,10 @@ def main() -> int:
                                      screen_height)
 
         img = graphic.new_image(screen_width, screen_height)
+
+        # graphic.put_sprite_in_image_(img, 2000, 2000, maze_sprite.get_sprite("wall_double_t_junction_top_right"),
+        #                              maze_width, maze_height)
+
         maze_img = Maze_renderer.render_in_img(img)
 
         while (True):
