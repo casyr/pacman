@@ -18,6 +18,7 @@ class GameMenuState(Enum):
     PLAYING = auto()
     VICTORY = auto()
     DEFEAT = auto()
+    PAUSED = auto()
     ENTER_HIGHSCORE = auto()
     EXIT = auto()
 
@@ -56,6 +57,8 @@ class GameController:
                 self._run_game_victory_state()
             elif self.state is GameMenuState.DEFEAT:
                 self._run_game_over_state()
+            elif self.state == GameMenuState.PAUSED:
+                self._run_paused_state()
             elif self.state == GameMenuState.ENTER_HIGHSCORE:
                 self._run_highscore_state()
             processing_time = time.perf_counter() - current_time
@@ -65,29 +68,39 @@ class GameController:
                 self.last_time = time.perf_counter()
 
     def get_input(self) -> str:
-        choix = input(
+        choices = input(
             "Choices (1: Start, 2: Highscores, 3:Instruction 4: Exit) : ")
-        if choix == "1":
+        if choices == "1":
             return "START_KEY"
-        elif choix == "2":
+        elif choices == "2":
             return "HIGHSCORES_KEY"
-        elif choix == "3":
+        elif choices == "3":
             return "INSTRUCTION_KEY"
-        elif choix == "4":
+        elif choices == "4":
             return "EXIT_KEY"
         return ""
 
     def get_input_move(self) -> str:
-        choix = input(
-            "Choices (w: up, s: down, right:d left: a) : ")
-        if choix == "w":
+        choices = input(
+            "Choices (w: up, s: down, right:d left: a  paused: p) : ")
+        if choices == "w":
             return "KEY_UP"
-        elif choix == "s":
+        elif choices == "s":
             return "KEY_DOWN"
-        elif choix == "d":
+        elif choices == "d":
             return "KEY_RIGHT"
-        elif choix == "a":
+        elif choices == "a":
             return "KEY_LEFT"
+        elif choices == "p":
+            return "KEY_PAUSED"
+        return ""
+
+    def get_input_paused(self) -> str:
+        choices = input("1: Resume, 2: Return to Main Menu : ")
+        if choices == "1":
+            return "RESUME"
+        elif choices == "2":
+            return "RETURN MAIN MENU"
         return ""
 
     def _run_menu_state(self) -> None:
@@ -116,6 +129,10 @@ class GameController:
             self.game_board.player.set_direction(0, -1)
         elif move_input == "KEY_RIGHT":
             self.game_board.player.set_direction(0, 1)
+        elif move_input == "KEY_PAUSED":
+            self.state = GameMenuState.PAUSED
+            self.game_session.switch_status_paused()
+            return
 
         if self.game_board.player.move_dir != (0, 0):
             self.game_board.player.set_direction(
@@ -196,3 +213,12 @@ class GameController:
                 player_name, self.game_session.score)
             self.game_session.reset_level_data()
             self.state = GameMenuState.MENU
+
+    def _run_paused_state(self) -> None:
+        # self.view.draw_pause_menu()
+        pause_choice = self.get_input_paused()
+        if pause_choice == "RESUME":
+            self.state = GameMenuState.PLAYING
+        elif pause_choice == "RETURN MAIN MENU":
+            self.state = GameMenuState.MENU
+        self.game_session.switch_status_paused()

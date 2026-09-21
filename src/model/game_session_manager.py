@@ -130,6 +130,6 @@ class GameSession:
 
     def switch_status_paused(self) -> None:
         if self.game_status == GameStatus.PLAYING:
-            GameStatus.PAUSED
+            self.game_status = GameStatus.PAUSED
         elif self.game_status == GameStatus.PAUSED:
-            GameStatus.PLAYING
+            self.game_status = GameStatus.PLAYING
