@@ -3,11 +3,11 @@ from enum import Enum, auto
 from ..parsing import ConfigParser
 from ..model import (
     GameSession,
+    GameStatus,
     LevelBuilder,
     HighScoreManager,
     HighScore,
     GameBoard,
-    GameStatus,
 )
 from ..utils import JsonModelLoader
 from ..shared import GhostState, Vector2D
@@ -30,7 +30,7 @@ class GameController:
         json_loader = JsonModelLoader(self.game_config.highscore_filename)
         self.highscore_manager = HighScoreManager(json_loader)
 
-        self.game_session = GameSession(self.game_config)
+        self.game_session: GameSession = GameSession(self.game_config)
         self.level_manager = LevelBuilder(self.game_session)
 
         self.state = GameMenuState.MENU
@@ -169,6 +169,7 @@ class GameController:
 
         if self.game_session.game_status == GameStatus.GAME_OVER:
             self.state = GameMenuState.DEFEAT
+            self.game_session.game_status = GameStatus.PLAYING
         elif self.game_session.game_status == GameStatus.VICTORY:
             self.state = GameMenuState.VICTORY
 
