@@ -4,4 +4,4 @@ from .sprite_model import SpriteModel
 from .maze_creator import MazeRenderer
 
 
-__all__ = ["Graphics", "SpriteSheetManager", "SpriteModel", "MazeRenderer"]
+__all__ = ["Graphic", "SpriteSheetManager", "SpriteModel", "MazeRenderer"]
