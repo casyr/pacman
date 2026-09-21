@@ -13,7 +13,7 @@ class HighScoreManager:
 
     def __init__(self, json: JsonModelLoader):
         self.json_loader = json
-        self.file_path = Path(self.json_loader.file)
+        self.file_path = Path(self.json_loader.highscore_file_path())
         self.scores: list[HighScore] = self.load_score()
 
     def handle_player_names(self, player: str) -> bool:
@@ -30,7 +30,7 @@ class HighScoreManager:
     def save_scores(self) -> None:
         data_to_save = HighScores(scores=self.scores)
         try:
-            self.json_loader.save_json_file(self.file_path, data_to_save)
+            self.json_loader.score_save_json_file(self.file_path, data_to_save)
         except JsonLoadError:
             logger.error("Check disk space.")
 
@@ -39,7 +39,7 @@ class HighScoreManager:
             f"The score file {self.file_path} is {reason}. Resetting.")
         empty_data: HighScores = HighScores(scores=[])
         try:
-            self.json_loader.save_json_file(self.file_path, empty_data)
+            self.json_loader.score_save_json_file(self.file_path, empty_data)
         except JsonLoadError as e:
             logger.error("Unable to reset score_file: %s", e)
         return []

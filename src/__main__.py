@@ -1,9 +1,8 @@
 import sys
 import logging
-from .model import HighScoreManager, GameSession, LevelBuilder
-from .utils import setup_logging, JsonModelLoader
-from .parsing import ConfigParser
+from .utils import setup_logging
 from .errors import PacmanError
+from .controller import GameController
 
 
 def main() -> int:
@@ -16,15 +15,10 @@ def main() -> int:
     config_file_path: str = sys.argv[1]
 
     try:
-        loader = ConfigParser(config_file_path)
-        game_config = loader.load()
-        json_loader = JsonModelLoader(game_config.highscore_filename)
-        file_score_manager = HighScoreManager(json_loader)
-        game_session_manager = GameSession(game_config)
-        level_manager = LevelBuilder(game_session_manager)
-        game_board = level_manager.build_level()
-        logger.info(file_score_manager)
-        logger.info(game_board.ghosts_spawn_pos)
+        controller = GameController(config_file_path)
+        logger.info(controller.highscore_manager)
+        logger.info(controller.game_board.ghosts_spawn_pos)
+        controller.run()
         return 0
 
     except PacmanError as error:
