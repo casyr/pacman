@@ -20,12 +20,12 @@ class Sprites(BaseModel):
 class SpriteSheetManager:
 
     def __init__(self, sprite_path: str, sprite_path_data: str):
-        from . import Graphics
+        from . import Graphic
         self.sprite_path = sprite_path
         self.sprite_path_data = sprite_path_data
         self.sprite_dict: dict[str, Any] = {}
         try:
-            self.sprite = Graphics.load_sprite(self.sprite_path)
+            self.sprite = Graphic.load_sprite(self.sprite_path)
         except ViewError as e:
             raise SpriteSheetError(e)
         self._get_sprites_sheet_data()

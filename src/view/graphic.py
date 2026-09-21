@@ -3,7 +3,7 @@ from ..errors import ViewError
 from .sprite_sheet_manager import SpriteModel
 
 
-class Graphics:
+class Graphic:
 
     @staticmethod
     def initialisation() -> None:
@@ -15,7 +15,7 @@ class Graphics:
 
     @staticmethod
     def quit_window() -> None:
-        pygame.display.quit()
+        pygame.quit()
 
     @staticmethod
     def new_image(width: int, height: int) -> pygame.Surface:
@@ -38,6 +38,19 @@ class Graphics:
             raise ViewError(e)
         except PermissionError as e:
             raise ViewError(e)
+
+    def get_scaling(self, maze_width: int, maze_height: int,
+                    screen_width: int, screen_height: int) -> int:
+        px_border_padding = 200
+        usable_width = screen_width - px_border_padding
+        usable_height = screen_height - px_border_padding
+        px_tile_width = usable_width // maze_width
+        px_tile_height = usable_height // maze_height
+        if (px_tile_height < px_tile_width):
+            tile_w_h = px_tile_height
+        else:
+            tile_w_h = px_tile_width
+        return tile_w_h // 16
 
     def put_sprite_in_image(self, dest_image: pygame.Surface,
                             dest_x: int, dest_y: int,

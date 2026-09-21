@@ -3,10 +3,11 @@ import logging
 from .utils import setup_logging
 from .parsing import ConfigParser
 from .errors import PacmanError
-from .view import Graphics
+from .view import Graphic
 from .view import SpriteSheetManager
 from .view import MazeRenderer
 from mazegenerator import MazeGenerator
+import screeninfo
 
 
 def main() -> int:
@@ -17,12 +18,13 @@ def main() -> int:
         loader = ConfigParser(sys.argv[1:])
         game_config = loader.load()
         logger.debug(game_config.pacgum)
-        graphic = Graphics()
-        graphic.initialisation()
-        screen = graphic.new_window(1900, 1900)
+        screen_width = screeninfo.get_monitors()[0].width
+        screen_height = screeninfo.get_monitors()[0].height
+        graphic = Graphic()
+        screen = graphic.new_window(screen_width, screen_height)
 
         maze_sprite = SpriteSheetManager("sprites/maze_sprites/"
-                                         "maze_sprite_2.bmp",
+                                         "maze_sprite.bmp",
                                          "sprites/maze_sprites/"
                                          "maze_sprites.yaml")
         Maze_renderer = MazeRenderer(maze_sprite)
@@ -38,13 +40,10 @@ def main() -> int:
 
         maze_generator.generate()
         maze = maze_generator.maze
-        img_width = 1900
-        img_height = 1900
-        graphic = Graphics()
-        img = graphic.new_image(img_width, img_height)
+        img = graphic.new_image(screen_width, screen_height)
         maze_img = Maze_renderer.render_in_img(maze, maze_width,
                                                maze_height, maze_sprite,
-                                               img, img_height, img_width)
+                                               img, screen_height, screen_width)
         while (True):
             graphic.blit_img(maze_img, screen, (0, 0))
             graphic.update_window()

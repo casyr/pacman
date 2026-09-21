@@ -1,4 +1,4 @@
-from .graphics import Graphics
+from .graphic import Graphic
 from .sprite_sheet_manager import SpriteSheetManager
 from .sprite_model import SpriteModel
 from .maze_creator import MazeRenderer
