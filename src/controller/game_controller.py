@@ -1,6 +1,6 @@
 import time
 from enum import Enum, auto
-from ..parsing import ConfigParser
+
 from ..model import (
     GameSession,
     GameStatus,
@@ -9,7 +9,7 @@ from ..model import (
     HighScore,
     GameBoard,
 )
-from ..utils import JsonModelLoader
+
 from ..shared import GhostState, Vector2D
 
 
@@ -23,16 +23,15 @@ class GameMenuState(Enum):
 
 
 class GameController:
-    def __init__(self, config_path: str):
-        loader = ConfigParser(config_path)
-        self.game_config = loader.load()
+    def __init__(
+            self,
+            level_manager: LevelBuilder,
+            highscore_manager: HighScoreManager,
+            game_session: GameSession):
 
-        json_loader = JsonModelLoader(self.game_config.highscore_filename)
-        self.highscore_manager = HighScoreManager(json_loader)
-
-        self.game_session: GameSession = GameSession(self.game_config)
-        self.level_manager = LevelBuilder(self.game_session)
-
+        self.level_manager = level_manager
+        self.highscore_manager = highscore_manager
+        self.game_session = game_session
         self.state = GameMenuState.MENU
         self.game_board: GameBoard = self.level_manager.build_level()
         # self.view = GameView()
@@ -147,7 +146,6 @@ class GameController:
         for ghost in self.game_board.ghosts:
             ghost.update(elapsed_time)
             ghost_pos = Vector2D(ghost.current_pos_y, ghost.current_pos_x)
-            print(ghost_pos)
 
             if self.game_session.power_just_expired:
                 ghost.state = GhostState.NORMAL
@@ -165,11 +163,10 @@ class GameController:
                     if self.game_session.game_status == GameStatus.PLAYING:
                         self.game_board.player.respawn()
                         ghost.respawn()
-                    break
+                        print(ghost_pos)
 
         if self.game_session.game_status == GameStatus.GAME_OVER:
             self.state = GameMenuState.DEFEAT
-            self.game_session.game_status = GameStatus.PLAYING
         elif self.game_session.game_status == GameStatus.VICTORY:
             self.state = GameMenuState.VICTORY
 
@@ -197,4 +194,5 @@ class GameController:
         if player_name:
             self.highscore_manager.update_score(
                 player_name, self.game_session.score)
+            self.game_session.reset_level_data()
             self.state = GameMenuState.MENU

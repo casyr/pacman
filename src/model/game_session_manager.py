@@ -43,7 +43,6 @@ class GameSession:
     def _next_level(self) -> None:
         if self.level_index + 1 < self.total_levels:
             self.level_index += 1
-            self.reset_level_data()
         else:
             self.game_status = GameStatus.VICTORY
 
@@ -51,7 +50,19 @@ class GameSession:
         if self.pacgum_remaining <= 0 and self.super_pacgum_remaining <= 0:
             self._next_level()
 
+    def next_level_data(self) -> None:
+        self.game_status = GameStatus.PLAYING
+        self.time_remaining = float(self.settings.level_max_time)
+        self.pacgum_remaining = self.settings.pacgum
+        self.super_pacgum_remaining = self.settings.super_pacgum
+        self.active_power = False
+        self.super_mode_timer = 0.0
+
     def reset_level_data(self) -> None:
+        self.game_status = GameStatus.PLAYING
+        self.level_index = 0
+        self.score = 0
+        self.lives_remaining = self.settings.lives
         self.time_remaining = float(self.settings.level_max_time)
         self.pacgum_remaining = self.settings.pacgum
         self.super_pacgum_remaining = self.settings.super_pacgum
