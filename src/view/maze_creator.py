@@ -22,9 +22,20 @@ class CornerWall(Enum):
 
 class MazeRenderer:
 
-    def __init__(self, maze_sprites: SpriteSheetManager):
+    def __init__(self, maze_sprites: SpriteSheetManager,
+                 maze: list[list[int]], maze_width: int, maze_height: int,
+                 screen_width: int, screen_height: int):
         self.maze_sprites = maze_sprites
-        self.scaling = 3
+        self.graphic = Graphic()
+        self.scaling = self.graphic.get_scaling(maze_width, maze_height,
+                                                screen_width, screen_height)
+        self.maze = maze
+        self.maze_width = maze_width
+        self.maze_height = maze_height
+
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+
         self.sprite_size = 8 * self.scaling
         self.tile_size = 24 * self.scaling
 
@@ -103,15 +114,15 @@ class MazeRenderer:
             sprite = get_sprite("wall_curve_large_bottom_right")
         sprites[CornerWall.SOUTH_EAST.value] = sprite
 
-    def sprites_chooser(self, x: int, y: int, maze_sprites: SpriteSheetManager,
-                        maze: list[list[int]]) -> list[SpriteModel]:
+    def sprites_chooser(self, x: int, y: int) -> list[SpriteModel]:
 
-        sprites = [maze_sprites.get_sprite("empty_tile") for _ in range(15)]
+        sprites = [self.maze_sprites.get_sprite("empty_tile")
+                   for _ in range(15)]
 
         is_top = y == 0
-        is_bottom = y == len(maze) - 1
+        is_bottom = y == len(self.maze) - 1
         is_left = x == 0
-        is_right = x == len(maze[0]) - 1
+        is_right = x == len(self.maze[0]) - 1
 
         self.straight_wall_chooser(sprites, is_top, is_bottom, is_left,
                                    is_right)
@@ -133,18 +144,19 @@ class MazeRenderer:
             return 0
         return corner_value
 
-    def need_little_corners(self, maze: list[list[int]], x: int, y: int,
-                            corner: Corner) -> int:
+    def need_little_corners(self, x: int, y: int,
+                            corner: CornerWall) -> int:
 
         is_top = y == 0
-        is_bottom = y == len(maze) - 1
+        is_bottom = y == len(self.maze) - 1
         is_left = x == 0
-        is_right = x == len(maze[0]) - 1
+        is_right = x == len(self.maze[0]) - 1
 
         if (corner.value == CornerWall.NORTH_EAST.value
                 and not is_right
                 and not is_top):
-            return self.need_little_corner(maze[y][x], maze[y - 1][x + 1],
+            return self.need_little_corner(self.maze[y][x],
+                                           self.maze[y - 1][x + 1],
                                            [Wall.EAST.value, Wall.NORTH.value],
                                            [Wall.SOUTH.value, Wall.WEST.value],
                                            corner.value)
@@ -152,7 +164,8 @@ class MazeRenderer:
         elif (corner.value == CornerWall.NORTH_WEST.value
               and not is_left
               and not is_top):
-            return self.need_little_corner(maze[y][x], maze[y - 1][x - 1],
+            return self.need_little_corner(self.maze[y][x],
+                                           self.maze[y - 1][x - 1],
                                            [Wall.WEST.value, Wall.NORTH.value],
                                            [Wall.SOUTH.value, Wall.EAST.value],
                                            corner.value)
@@ -160,7 +173,8 @@ class MazeRenderer:
         elif (corner.value == CornerWall.SOUTH_EAST.value
               and not is_right
               and not is_bottom):
-            return self.need_little_corner(maze[y][x], maze[y + 1][x + 1],
+            return self.need_little_corner(self.maze[y][x],
+                                           self.maze[y + 1][x + 1],
                                            [Wall.EAST.value, Wall.SOUTH.value],
                                            [Wall.NORTH.value, Wall.WEST.value],
                                            corner.value)
@@ -168,7 +182,8 @@ class MazeRenderer:
         elif (corner.value == CornerWall.SOUTH_WEST.value
                 and not is_left
                 and not is_bottom):
-            return self.need_little_corner(maze[y][x], maze[y + 1][x - 1],
+            return self.need_little_corner(self.maze[y][x],
+                                           self.maze[y + 1][x - 1],
                                            [Wall.WEST.value, Wall.SOUTH.value],
                                            [Wall.NORTH.value, Wall.EAST.value],
                                            corner.value)
@@ -190,10 +205,9 @@ class MazeRenderer:
         return (get_sprite("wall_small_corner_top_right"))
 
     def handle_corner(self, w1: int, w2: int,
-                      sprites: list[SpriteModel],
-                      maze: list[list[int]], y: int, x: int,
+                      sprites: list[SpriteModel], y: int, x: int,
                       corner: CornerWall) -> SpriteModel:
-        corner_needed = self.need_little_corners(maze, x, y, corner)
+        corner_needed = self.need_little_corners(x, y, corner)
         if corner_needed > 0:
             return self.little_corner_handle(corner_needed)
         if w1 and w2:
@@ -204,32 +218,29 @@ class MazeRenderer:
             return sprites[w2]
         return sprites[0]
 
-    def sprite_filler(self, maze: list[list[int]],
-                      x: int, y: int, maze_sprites: SpriteSheetManager
-                      ) -> list[list[SpriteModel]]:
+    def sprite_filler(self, x: int, y: int) -> list[list[SpriteModel]]:
 
-        n = maze[y][x] & Wall.NORTH.value
-        e = maze[y][x] & Wall.EAST.value
-        s = maze[y][x] & Wall.SOUTH.value
-        w = maze[y][x] & Wall.WEST.value
+        n = self.maze[y][x] & Wall.NORTH.value
+        e = self.maze[y][x] & Wall.EAST.value
+        s = self.maze[y][x] & Wall.SOUTH.value
+        w = self.maze[y][x] & Wall.WEST.value
 
-        sprites: list[SpriteModel] = self.sprites_chooser(x, y,
-                                                          maze_sprites, maze)
+        sprites: list[SpriteModel] = self.sprites_chooser(x, y)
 
-        north_west_sprite = self.handle_corner(w, n, sprites, maze,
+        north_west_sprite = self.handle_corner(w, n, sprites,
                                                y, x, CornerWall.NORTH_WEST)
         north_sprite = sprites[n]
-        north_east_sprite = self.handle_corner(n, e, sprites, maze,
+        north_east_sprite = self.handle_corner(n, e, sprites,
                                                y, x, CornerWall.NORTH_EAST)
 
         west_sprite = sprites[w]
         empty_sprite = sprites[0]
         east_sprite = sprites[e]
 
-        south_west_sprite = self.handle_corner(w, s, sprites, maze,
+        south_west_sprite = self.handle_corner(w, s, sprites,
                                                y, x, CornerWall.SOUTH_WEST)
         south_sprite = sprites[s]
-        sout_east_sprite = self.handle_corner(s, e, sprites, maze,
+        sout_east_sprite = self.handle_corner(s, e, sprites,
                                               y, x, CornerWall.SOUTH_EAST)
         return [
                 [north_west_sprite, north_sprite, north_east_sprite],
@@ -237,17 +248,15 @@ class MazeRenderer:
                 [south_west_sprite, south_sprite, sout_east_sprite]
                 ]
 
-    def put_tile_in_image(self, img: Surface, tile: list[list[SpriteModel]],
-                          maze_width: int, maze_height: int, x: int, y: int,
-                          img_width: int, img_height: int) -> None:
+    def put_tile_in_image(self, img: Surface,
+                          tile: list[list[SpriteModel]],
+                          x: int, y: int) -> None:
 
-        graphic = Graphic()
+        half_img_width = self.screen_width // 2
+        half_img_height = self.screen_height // 2
 
-        half_img_width = img_width // 2
-        half_img_height = img_height // 2
-
-        x_dest = half_img_width - ((maze_width // 2) * self.tile_size)
-        y_dest = half_img_height - ((maze_height // 2) * self.tile_size)
+        x_dest = half_img_width - ((self.maze_width // 2) * self.tile_size)
+        y_dest = half_img_height - ((self.maze_height // 2) * self.tile_size)
 
         for tile_y in range(3):
             for tile_x in range(3):
@@ -255,19 +264,15 @@ class MazeRenderer:
                 y_gap = (tile_y * self.sprite_size)
                 dest_x = x_dest + x * self.tile_size + x_gap
                 dest_y = y_dest + y * self.tile_size + y_gap
-                graphic.put_sprite_in_image(img, dest_x, dest_y,
-                                            tile[tile_y][tile_x])
+                self.graphic.put_sprite_in_image(img, dest_x, dest_y,
+                                                 tile[tile_y][tile_x],
+                                                 self.scaling)
 
-    def render_in_img(self, maze: list[list[int]],
-                      maze_width: int, maze_height: int,
-                      maze_sprites: SpriteSheetManager,
-                      img: Surface, img_height: int,
-                      img_width: int) -> Surface:
+    def render_in_img(self, img: Surface) -> Surface:
 
-        for y in range(len(maze)):
-            for x in range(len(maze[y])):
-                tile = self.sprite_filler(maze, x, y, maze_sprites)
-                self.put_tile_in_image(img, tile, maze_width, maze_height,
-                                       x, y, img_width, img_height)
+        for y in range(len(self.maze)):
+            for x in range(len(self.maze[y])):
+                tile = self.sprite_filler(x, y)
+                self.put_tile_in_image(img, tile, x, y)
 
         return (img)

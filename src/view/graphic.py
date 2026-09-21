@@ -50,13 +50,13 @@ class Graphic:
             tile_w_h = px_tile_height
         else:
             tile_w_h = px_tile_width
-        return tile_w_h // 16
+        print(tile_w_h // 24)
+        return tile_w_h // 24
 
     def put_sprite_in_image(self, dest_image: pygame.Surface,
                             dest_x: int, dest_y: int,
                             sprite_data: SpriteModel,
-                            rotate: bool = False) -> None:
-        scaling = 3
+                            scaling: int) -> None:
 
         sprite = sprite_data.sprite_surface.convert(dest_image)
 

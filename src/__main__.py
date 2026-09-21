@@ -27,23 +27,24 @@ def main() -> int:
                                          "maze_sprite.bmp",
                                          "sprites/maze_sprites/"
                                          "maze_sprites.yaml")
-        Maze_renderer = MazeRenderer(maze_sprite)
-
-        maze_width = 15
-        maze_height = 15
+        maze_width = 14
+        maze_height = 14
         maze_generator = MazeGenerator(
             (maze_width, maze_height),
             False,
             (0, 0),
             (14, 14),
         )
-
         maze_generator.generate()
         maze = maze_generator.maze
+
+        Maze_renderer = MazeRenderer(maze_sprite, maze, maze_width,
+                                     maze_height, screen_width,
+                                     screen_height)
+
         img = graphic.new_image(screen_width, screen_height)
-        maze_img = Maze_renderer.render_in_img(maze, maze_width,
-                                               maze_height, maze_sprite,
-                                               img, screen_height, screen_width)
+        maze_img = Maze_renderer.render_in_img(img)
+
         while (True):
             graphic.blit_img(maze_img, screen, (0, 0))
             graphic.update_window()
