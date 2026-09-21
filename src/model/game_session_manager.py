@@ -31,8 +31,8 @@ class GameSession:
         self.super_pacgum_remaining: int = settings.super_pacgum
 
         self.active_power: bool = False
-        self.super_mode_timer: float = 0
-        self.super_mode_duration: float = 8
+        self.power_just_expired: bool = False
+        self.super_mode_timer: float = 6
 
         self.game_status: GameStatus = GameStatus.PLAYING
         self.cheat_mode: CheatMode = CheatMode()
@@ -61,18 +61,21 @@ class GameSession:
     def update_timers(self, elapsed_time: float) -> None:
         if self.game_status != GameStatus.PLAYING:
             return
-
+        self.power_just_expired = False
         self.time_remaining = max(0.0, self.time_remaining - elapsed_time)
         if self.time_remaining == 0.0:
             self.game_status = GameStatus.GAME_OVER
 
         if self.active_power:
             self.super_mode_timer = max(
-                0.0, self.super_mode_duration - elapsed_time)
+                0.0, self.super_mode_timer - elapsed_time)
             if self.super_mode_timer == 0.0:
                 self.active_power = False
+                self.power_just_expired = True
 
     def activate_power_mode(self) -> None:
+        self.super_mode_timer = 6
+        self.power_just_expired = False
         self.active_power = True
 
     def lose_life(self) -> None:

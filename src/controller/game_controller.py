@@ -118,40 +118,45 @@ class GameController:
         elif move_input == "KEY_RIGHT":
             self.game_board.player.set_direction(0, 1)
 
+        if self.game_board.player.move_dir != (0, 0):
+            self.game_board.player.set_direction(
+                self.game_board.player.move_dir.y,
+                self.game_board.player.move_dir.x)
+
         self.game_session.update_timers(elapsed_time)
         self.game_board.player.update(elapsed_time)
-        for ghost in self.game_board.ghosts:
-            ghost.update(elapsed_time)
 
         player_pos = Vector2D(
             y=self.game_board.player.current_pos_y,
             x=self.game_board.player.current_pos_x
         )
-        print(player_pos)
+        print(f'player_pos : {player_pos}')
         if player_pos in self.game_board.pacgum_pos:
             print("miam")
             self.game_board.pacgum_pos.remove(player_pos)
             self.game_session.consume_pacgum()
 
         if player_pos in self.game_board.super_pacgums_pos:
-            print("miam")
+            print("SUPER miam")
             self.game_board.super_pacgums_pos.remove(player_pos)
             self.game_session.consume_super_pacgum()
             for ghost in self.game_board.ghosts:
                 if ghost.state != GhostState.EATEN:
                     ghost.state = GhostState.FRIGHTENED
 
-        if not self.game_session.active_power:
-            for ghost in self.game_board.ghosts:
-                if ghost.state == GhostState.FRIGHTENED:
-                    ghost.state = GhostState.NORMAL
-
         for ghost in self.game_board.ghosts:
-            ghost_pos = ghost.current_pos_y, ghost.current_pos_x
+            ghost.update(elapsed_time)
+            ghost_pos = Vector2D(ghost.current_pos_y, ghost.current_pos_x)
+            print(ghost_pos)
+
+            if self.game_session.power_just_expired:
+                ghost.state = GhostState.NORMAL
+
             if player_pos == ghost_pos:
                 if (self.game_session.active_power and
                         ghost.state == GhostState.FRIGHTENED):
                     ghost.get_eaten()
+                    print("Ghost miam")
                     self.game_session.consume_ghost()
 
                 elif ghost.state == GhostState.NORMAL:
@@ -159,6 +164,8 @@ class GameController:
                     self.game_session.lose_life()
                     if self.game_session.game_status == GameStatus.PLAYING:
                         self.game_board.player.respawn()
+                        ghost.respawn()
+                    break
 
         if self.game_session.game_status == GameStatus.GAME_OVER:
             self.state = GameMenuState.DEFEAT
@@ -180,10 +187,12 @@ class GameController:
         is_valid = False
         while not is_valid:
             player_name = input("Pseudo : ")
-            if HighScore._handle_player_names(player_name):
+            if not HighScore._handle_player_names(player_name):
+                error_name_score: str = (f"{player_name}"
+                                         "only 10 letters or digits")
+                print(error_name_score)
+            else:
                 is_valid = True
-            error_name_score: str = f"{player_name} only 10 letters or digits"
-            print(error_name_score)
         if player_name:
             self.highscore_manager.update_score(
                 player_name, self.game_session.score)
