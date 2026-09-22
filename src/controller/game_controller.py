@@ -1,4 +1,5 @@
 import time
+import logging
 from enum import Enum, auto
 
 from ..model import (
@@ -11,6 +12,8 @@ from ..model import (
 )
 
 from ..shared import GhostState, Vector2D
+
+logger = logging.getLogger(__name__)
 
 
 class GameMenuState(Enum):
@@ -64,13 +67,14 @@ class GameController:
                 self._run_cheat_menu_state()
             elif self.state == GameMenuState.ENTER_HIGHSCORE:
                 self._run_highscore_state()
+
             processing_time = time.perf_counter() - current_time
             time_to_sleep = self.frame_duration - processing_time
             if time_to_sleep > 0:
                 time.sleep(time_to_sleep)
                 self.last_time = time.perf_counter()
 
-    def get_input(self) -> str:
+    def get_input_menu(self) -> str:
         choices = input(
             "Choices (1: Start, 2: Highscores, 3:Instruction 4: Exit) : ")
         if choices == "1":
@@ -109,7 +113,9 @@ class GameController:
         return ""
 
     def get_input_cheat(self) -> str:
-        choices = input("Select a cheat : ")
+        choices = input(
+            "Select a cheat 1:Invincibility, 2:Freeze, 3:Speed,"
+            "4:Life, 5:LvlSkip ,6:Score, 7:Resume ")
         if choices == "1":
             return "CHEAT_INVINCIBLE"
         elif choices == "2":
@@ -121,27 +127,51 @@ class GameController:
         elif choices == "5":
             return "CHEAT_SKIP"
         elif choices == "6":
+            return "CHEAT_SCORE"
+        elif choices == "7":
             return "RESUME"
         return ""
 
     def _run_menu_state(self) -> None:
         # self.view.draw_main_menu()
-        user_input = self.get_input()
+        user_input = self.get_input_menu()
         if user_input == "START_KEY":
-            self.state = GameMenuState.PLAYING
+            self.game_session.reset_level_data()
             self.game_board = self.level_manager.build_level()
+            self.state = GameMenuState.PLAYING
         elif user_input == "HIGHSCORES_KEY":
             scores = self.highscore_manager.scores
-            print(scores)
-            # self.view.draw_highscores(scores)
+            logger.debug(scores)
+            # self.view.draw_highscores(self.highscore_manager.scores)
         elif user_input == "INSTRUCTIONS_KEY":
             # self.view.draw_instructions()
             pass
         elif user_input == "EXIT_KEY":
             self.state = GameMenuState.EXIT
 
-    def _run_playing_state(self, elapsed_time: float) -> None:
+    def _check_game_end_conditions(self) -> bool:
+        if self.game_session.game_status == GameStatus.GAME_OVER:
+            self.state = GameMenuState.DEFEAT
+            return True
+        elif self.game_session.game_status == GameStatus.VICTORY:
+            self.state = GameMenuState.VICTORY
+            return True
+        return False
+
+    def _handle_playing_inputs(self) -> bool:
         move_input = self.get_input_move()
+
+        if move_input == "KEY_PAUSED":
+            self.state = GameMenuState.PAUSED
+            self.game_session.switch_status_paused()
+            # self.view.draw_pause_menu()
+            return True
+        elif move_input == "KEY_CHEAT_MENU":
+            self.state = GameMenuState.CHEAT_MENU
+            self.game_session.switch_status_paused()
+            # self.view.draw_cheat_menu()
+            return True
+
         if move_input == "KEY_UP":
             self.game_board.player.set_direction(-1, 0)
         elif move_input == "KEY_DOWN":
@@ -150,39 +180,37 @@ class GameController:
             self.game_board.player.set_direction(0, -1)
         elif move_input == "KEY_RIGHT":
             self.game_board.player.set_direction(0, 1)
-        elif move_input == "KEY_PAUSED":
-            self.state = GameMenuState.PAUSED
-            self.game_session.switch_status_paused()
-        elif move_input == "KEY_CHEAT_MENU":
-            self.state = GameMenuState.CHEAT_MENU
-            self.game_session.switch_status_paused()
-            return
 
         if self.game_board.player.move_dir != (0, 0):
             self.game_board.player.set_direction(
                 self.game_board.player.move_dir.y,
                 self.game_board.player.move_dir.x)
+        return False
 
+    def _update_player_and_timers(self, elapsed_time: float) -> None:
         self.game_session.update_timers(elapsed_time)
-        self.game_board.player.update(elapsed_time)
+        self.game_board.player.update(
+            elapsed_time * self.game_session.speed_multiplier)
 
-        player_pos = Vector2D(
-            y=self.game_board.player.current_pos_y,
-            x=self.game_board.player.current_pos_x
-        )
-        print(f'player_pos : {player_pos}')
+    def _handle_consumables(self, player_pos: Vector2D) -> None:
         if player_pos in self.game_board.pacgum_pos:
-            print("miam")
+            logger.debug("miam")
             self.game_board.pacgum_pos.remove(player_pos)
             self.game_session.consume_pacgum()
 
         if player_pos in self.game_board.super_pacgums_pos:
-            print("SUPER miam")
+            logger.debug("SUPER miam")
             self.game_board.super_pacgums_pos.remove(player_pos)
             self.game_session.consume_super_pacgum()
             for ghost in self.game_board.ghosts:
                 if ghost.state != GhostState.EATEN:
                     ghost.state = GhostState.FRIGHTENED
+
+    def _handle_ghosts_and_collisions(
+            self, player_pos: Vector2D, elapsed_time: float) -> None:
+
+        if self.game_session.cheat_mode.freeze:
+            return
 
         for ghost in self.game_board.ghosts:
             ghost.update(elapsed_time)
@@ -195,28 +223,41 @@ class GameController:
                 if (self.game_session.active_power and
                         ghost.state == GhostState.FRIGHTENED):
                     ghost.get_eaten()
-                    print("Ghost miam")
+                    logger.debug("Ghost miam")
                     self.game_session.consume_ghost()
 
                 elif ghost.state == GhostState.NORMAL:
-                    print("found you")
-                    self.game_session.lose_life()
-                    if self.game_session.game_status == GameStatus.PLAYING:
+                    logger.debug("found you")
+                    if self.game_session.lose_life():
                         self.game_board.player.respawn()
                         ghost.respawn()
-                        print(ghost_pos)
 
-        if self.game_session.game_status == GameStatus.GAME_OVER:
-            self.state = GameMenuState.DEFEAT
-        elif self.game_session.game_status == GameStatus.VICTORY:
-            self.state = GameMenuState.VICTORY
+    def _run_playing_state(self, elapsed_time: float) -> None:
+        if self._check_game_end_conditions():
+            return
+
+        if self._handle_playing_inputs():
+            return
+
+        self._update_player_and_timers(elapsed_time)
+
+        player_pos = Vector2D(
+            y=self.game_board.player.current_pos_y,
+            x=self.game_board.player.current_pos_x
+        )
+        logger.debug(f'player_pos : {player_pos}')
+        self._handle_consumables(player_pos)
+        self._handle_ghosts_and_collisions(player_pos, elapsed_time)
+        # self.view.draw_game(self.game_board, self.game_session)
 
     def _run_game_victory_state(self) -> None:
-        print(f"Victory ! Final Score : {self.game_session.score}")
+        logger.debug(f"Victory ! Final Score : {self.game_session.score}")
+        # draw_victory_screen(self, self.game_session.score)
         self.state = GameMenuState.ENTER_HIGHSCORE
 
     def _run_game_over_state(self) -> None:
-        print(f"Game Over ! Final Score : {self.game_session.score}")
+        logger.debug(f"Game Over ! Final Score : {self.game_session.score}")
+        # draw_game_over_screen(self, self.game_session.score)
         self.state = GameMenuState.ENTER_HIGHSCORE
 
     def _run_instruction_state(self) -> None:
@@ -224,6 +265,7 @@ class GameController:
 
     def _run_highscore_state(self) -> None:
         is_valid = False
+        # draw_enter_name_screen(self)
         while not is_valid:
             player_name = input("Pseudo : ")
             if not HighScore._handle_player_names(player_name):
@@ -250,6 +292,7 @@ class GameController:
     def _run_cheat_menu_state(self) -> None:
         # self.view.draw_cheat_menu()
         cheat_choice = self.get_input_cheat()
+        print(self.game_session.time_remaining)
         if cheat_choice == "CHEAT_INVINCIBLE":
             self.game_session.switch_invincibility()
             print(f"Invincibility is now {
@@ -257,6 +300,9 @@ class GameController:
 
         elif cheat_choice == "CHEAT_FREEZE":
             self.game_session.switch_ghost_freeze()
+            for ghost in self.game_board.ghosts:
+                print(f"x : {ghost.current_pos_x}")
+                print(f"y : {ghost.current_pos_y}")
             print(f"Ghost Freeze is now {self.game_session.cheat_mode.freeze}")
 
         elif cheat_choice == "CHEAT_SPEED":
@@ -269,9 +315,16 @@ class GameController:
 
         elif cheat_choice == "CHEAT_SKIP":
             self.game_session.cheat_skip_level()
-            if self.game_session.game_status == GameStatus.PLAYING:
+            if self.game_session.game_status == GameStatus.VICTORY:
+                self.state = GameMenuState.VICTORY
+            else:
                 self.game_board = self.level_manager.build_level()
-            self.state = GameMenuState.PLAYING
+                self.game_session.next_level_data()
+                self.state = GameMenuState.PLAYING
+
+        elif cheat_choice == "CHEAT_SCORE":
+            self.game_session.cheat_add_score()
+            print(f"You have just found extra point {self.game_session.score}")
 
         elif cheat_choice == "RESUME":
             self.game_session.switch_status_paused()

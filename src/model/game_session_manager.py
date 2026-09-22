@@ -8,6 +8,7 @@ class CheatMode:
     invincibility: bool = False
     freeze: bool = False
     speed: bool = False
+    score: int = 100
 
 
 class GameStatus(Enum):
@@ -25,8 +26,9 @@ class GameSession:
         self.level_index: int = 0
         self.score: int = 0
         self.lives_remaining: int = settings.lives
+        self.speed_multiplier: int = 1
 
-        self.time_remaining: float = settings.level_max_time
+        self.time_remaining: float = float(settings.level_max_time)
         self.pacgum_remaining: int = settings.pacgum
         self.super_pacgum_remaining: int = settings.super_pacgum
 
@@ -58,6 +60,10 @@ class GameSession:
         self.active_power = False
         self.super_mode_timer = 0.0
 
+        self.cheat_mode.invincibility = False
+        self.cheat_mode.freeze = False
+        self.cheat_mode.speed = False
+
     def reset_level_data(self) -> None:
         self.game_status = GameStatus.PLAYING
         self.level_index = 0
@@ -68,6 +74,10 @@ class GameSession:
         self.super_pacgum_remaining = self.settings.super_pacgum
         self.active_power = False
         self.super_mode_timer = 0.0
+
+        self.cheat_mode.invincibility = False
+        self.cheat_mode.freeze = False
+        self.cheat_mode.speed = False
 
     def update_timers(self, elapsed_time: float) -> None:
         if self.game_status != GameStatus.PLAYING:
@@ -89,12 +99,13 @@ class GameSession:
         self.power_just_expired = False
         self.active_power = True
 
-    def lose_life(self) -> None:
+    def lose_life(self) -> bool:
         if self.cheat_mode.invincibility:
-            return
+            return False
         self.lives_remaining -= 1
         if self.lives_remaining <= 0:
             self.game_status = GameStatus.GAME_OVER
+        return True
 
     def consume_pacgum(self) -> None:
         if self.pacgum_remaining > 0:
@@ -113,11 +124,20 @@ class GameSession:
         if self.active_power:
             self.add_score(self.settings.points_per_ghost)
 
+    def switch_status_paused(self) -> None:
+        if self.game_status == GameStatus.PLAYING:
+            self.game_status = GameStatus.PAUSED
+        elif self.game_status == GameStatus.PAUSED:
+            self.game_status = GameStatus.PLAYING
+
     def cheat_extra_lives(self) -> None:
         self.lives_remaining = min(self.lives_remaining + 1, 10)
 
     def cheat_skip_level(self) -> None:
         self._next_level()
+
+    def cheat_add_score(self) -> None:
+        self.add_score(self.cheat_mode.score)
 
     def switch_invincibility(self) -> None:
         self.cheat_mode.invincibility = not self.cheat_mode.invincibility
@@ -127,9 +147,7 @@ class GameSession:
 
     def switch_speed_boost(self) -> None:
         self.cheat_mode.speed = not self.cheat_mode.speed
-
-    def switch_status_paused(self) -> None:
-        if self.game_status == GameStatus.PLAYING:
-            self.game_status = GameStatus.PAUSED
-        elif self.game_status == GameStatus.PAUSED:
-            self.game_status = GameStatus.PLAYING
+        if self.cheat_mode.speed:
+            self.speed_multiplier = 2
+        if not self.cheat_mode.speed:
+            self.speed_multiplier = 1
