@@ -3,6 +3,7 @@ from ..errors import SpriteSheetError, ViewError
 from typing import Any
 from pydantic import BaseModel, ValidationError
 from .sprite_model import SpriteModel
+from pygame import Surface
 
 
 class SpriteData(BaseModel):
@@ -19,11 +20,14 @@ class Sprites(BaseModel):
 
 class SpriteSheetManager:
 
-    def __init__(self, sprite_path: str, sprite_path_data: str):
+    def __init__(self, sprite_path: str, sprite_path_data: str,
+                 dest_image: Surface):
         from . import Graphic
         self.sprite_path = sprite_path
         self.sprite_path_data = sprite_path_data
         self.sprite_dict: dict[str, Any] = {}
+        self.graphic = Graphic()
+        self.dest_image = dest_image
         try:
             self.sprite = Graphic.load_sprite(self.sprite_path)
         except ViewError as e:
@@ -46,6 +50,8 @@ class SpriteSheetManager:
         try:
             Sprites.model_validate(self.sprite_dict)
             data = self.sprite_dict["sprites"][sprite_name]
+            sprite_buffer = self.sprite.convert(self.dest_image)
+            buffer = self.graphic.to_buffer(sprite_buffer)
             sprite = SpriteModel(
                     data["x"],
                     data["y"],
@@ -53,7 +59,8 @@ class SpriteSheetManager:
                     data["h"],
                     self._get_sprite_file_width(),
                     self.sprite,
-                    sprite_name
+                    sprite_name,
+                    buffer
             )
             return (sprite)
         except ValidationError as e:

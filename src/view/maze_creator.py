@@ -4,6 +4,7 @@ from pygame import Surface
 from .sprite_model import SpriteModel
 from enum import Enum
 from typing import Any
+from numpy import ndarray
 
 
 class Wall(Enum):
@@ -37,7 +38,7 @@ class MazeRenderer:
         self.screen_height = screen_height
 
         self.tile_size = self.graphic.get_tile_size(self.maze_width, self.maze_height, self.screen_width, self.screen_height)
-        self.sprite_size = self.scaling // 3
+        self.sprite_size = self.tile_size // 3
 
     def straight_wall_chooser(self, sprites: list[Any],
                               is_top: bool, is_bottom: bool,
@@ -270,14 +271,11 @@ class MazeRenderer:
                                                  tile[tile_y][tile_x],
                                                  self.maze_width, self.maze_height)
 
-    def put_tile_in_image_(self, img: Surface,
-                           tile: list[list[SpriteModel]],
-                           x: int, y: int) -> None:
-        print("la\n")
+    def put_tile_in_image_(self, tile: list[list[SpriteModel]],
+                           x: int, y: int, dest_img_buffer: ndarray,
+                           dest_img_size: int) -> None:
         usable_width = self.graphic.get_usable_width(self.screen_width)
-        print("la\n")
         usable_height = self.graphic.get_usable_height(self.screen_height)
-        print("ici")
         half_img_width = usable_width // 2 + self.graphic.get_padding() // 2
         half_img_height = usable_height // 2 + self.graphic.get_padding() // 2
 
@@ -290,16 +288,21 @@ class MazeRenderer:
                 y_gap = (tile_y * self.sprite_size)
                 dest_x = x_dest + x * self.tile_size + x_gap
                 dest_y = y_dest + y * self.tile_size + y_gap
-                self.graphic.put_sprite_in_image_(img, dest_x, dest_y,
+                self.graphic.put_sprite_in_image_(dest_img_buffer,
+                                                  dest_img_size,
+                                                  dest_x, dest_y,
                                                   tile[tile_y][tile_x],
-                                                  self.maze_width, self.maze_height)
+                                                  self.maze_width,
+                                                  self.maze_height)
 
-    def render_in_img(self, img: Surface) -> Surface:
+    def render_in_img(self, dest_img_buffer: ndarray,
+                      dest_img_size: int) -> None:
 
         print("render")
         for y in range(len(self.maze)):
             for x in range(len(self.maze[y])):
                 tile = self.sprite_filler(x, y)
-                self.put_tile_in_image(img, tile, x, y)
+                self.put_tile_in_image_(tile, x, y,
+                                        dest_img_buffer,
+                                        dest_img_size)
         print("end render")
-        return (img)

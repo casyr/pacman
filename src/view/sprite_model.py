@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pygame import Surface
+from numpy import ndarray
 
 
 @dataclass
@@ -12,3 +13,4 @@ class SpriteModel:
     file_width: int
     sprite_surface: Surface
     sprite_name: str
+    buffer: ndarray

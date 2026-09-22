@@ -8,6 +8,7 @@ from .view import SpriteSheetManager
 from .view import MazeRenderer
 from mazegenerator import MazeGenerator
 import screeninfo
+import time
 
 
 def main() -> int:
@@ -23,12 +24,15 @@ def main() -> int:
         graphic = Graphic()
         screen = graphic.new_window(screen_width, screen_height)
 
+        dest_img = graphic.new_image(screen_width, screen_height)
+
         maze_sprite = SpriteSheetManager("sprites/maze_sprites/"
                                          "maze_sprite.bmp",
                                          "sprites/maze_sprites/"
-                                         "maze_sprites.yaml")
-        maze_width = 25
-        maze_height = 25
+                                         "maze_sprites.yaml",
+                                         dest_img)
+        maze_width = 15
+        maze_height = 15
         maze_generator = MazeGenerator(
             (maze_width, maze_height),
             False,
@@ -42,16 +46,21 @@ def main() -> int:
                                      maze_height, screen_width,
                                      screen_height)
 
-        img = graphic.new_image(screen_width, screen_height)
-
-        # graphic.put_sprite_in_image_(img, 2000, 2000, maze_sprite.get_sprite("wall_double_t_junction_top_right"),
+        dest_img_buffer = graphic.to_buffer(dest_img)
+        dest_img_size = dest_img.get_width()
+        # graphic.put_sprite_in_image_(dest_img_buffer, dest_img_size,
+        #                              1000, 1000,
+        #                              maze_sprite.get_sprite("wall_double_t_junction_top_right"),
         #                              maze_width, maze_height)
 
-        maze_img = Maze_renderer.render_in_img(img)
-
+        Maze_renderer.render_in_img(dest_img_buffer, dest_img_size)
+        del dest_img_buffer
         while (True):
-            graphic.blit_img(maze_img, screen, (0, 0))
+            dest_img.unlock()
+            screen.unlock()
+            graphic.blit_img(dest_img, screen, (0, 0))
             graphic.update_window()
+            time.sleep(200)
         return 0
 
     except PacmanError as error:
