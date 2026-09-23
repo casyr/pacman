@@ -279,21 +279,28 @@ class MazeRenderer:
         half_img_width = usable_width // 2 + self.graphic.get_padding() // 2
         half_img_height = usable_height // 2 + self.graphic.get_padding() // 2
 
-        x_dest = half_img_width - ((self.maze_width // 2) * self.tile_size)
-        y_dest = half_img_height - ((self.maze_height // 2) * self.tile_size)
+        x_dest = half_img_width - int((self.maze_width / 2) * self.tile_size)
+        y_dest = half_img_height - int((self.maze_height / 2) * self.tile_size)
+
+        tile_x_start = x_dest + int(x * self.tile_size)
+        tile_x_end = x_dest + int((x + 1) * self.tile_size)
+        tile_w = tile_x_end - tile_x_start
+
+        tile_y_start = y_dest + int(y * self.tile_size)
+        tile_y_end = y_dest + int((y + 1) * self.tile_size)
+        tile_h = tile_y_end - tile_y_start
 
         for tile_y in range(3):
+            sub_y_start = tile_y_start + int(tile_y * tile_h / 3)
             for tile_x in range(3):
-                x_gap = (tile_x * self.sprite_size)
-                y_gap = (tile_y * self.sprite_size)
-                dest_x = x_dest + x * self.tile_size + x_gap
-                dest_y = y_dest + y * self.tile_size + y_gap
-                self.graphic.put_sprite_in_image_(dest_img_buffer,
-                                                  dest_img_size,
-                                                  dest_x, dest_y,
-                                                  tile[tile_y][tile_x],
-                                                  self.maze_width,
-                                                  self.maze_height)
+                sub_x_start = tile_x_start + int(tile_x * tile_w / 3)
+                sub_x_end = tile_x_start + int((tile_x + 1) * tile_w / 3)
+                sub_w = sub_x_end - sub_x_start
+                self.graphic.put_sprite_in_image_3(dest_img_buffer,
+                                                   dest_img_size,
+                                                   sub_x_start, sub_y_start,
+                                                   sub_w,
+                                                   tile[tile_y][tile_x])
 
     def render_in_img(self, dest_img_buffer: ndarray,
                       dest_img_size: int) -> None:

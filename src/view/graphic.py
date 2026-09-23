@@ -49,7 +49,7 @@ class Graphic:
     #     return sprite.get_buffer()
 
     def get_padding(self):
-        return 300
+        return 500
 
     def get_usable_width(self, screen_width: int) -> int:
         padding = self.get_padding()
@@ -118,25 +118,68 @@ class Graphic:
                                               dest_image_width)
 
         src_file_w = sprite_data.file_width
-        src_w = sprite_data.width  # Largeur du sprite source (ex: 8)
-        src_h = sprite_data.height  # Hauteur du sprite source (ex: 8)
+        src_w = sprite_data.width
+        src_h = sprite_data.height
 
-        # 2. Produit en croix vectorisé pour obtenir les coordonnées locales 0 -> dest_tile_height
         x_gap = np.arange(dest_tile_height)
         y_gap = np.arange(dest_tile_height)
 
-        # Coordonnées dans le sprite source (produit en croix)
         src_x = (x_gap * src_w // dest_tile_height).astype(np.int32)
         src_y = (y_gap * src_h // dest_tile_height).astype(np.int32)
 
-        # 3. Calcul des indices 1D pour CHAQUE pixel de la sous-grille (via outer / broadcasting)
-        # Formule 1D Source : src_y * src_w + src_x
+        src_x += sprite_data.pos_x
+        src_y += sprite_data.pos_y
+
         sprite_pos_1d = (src_y[:, None] * src_file_w + src_x).ravel()
 
-        # Formule 1D Destination : (dest_y + y_gap) * dest_w + (dest_x + x_gap)
         y_dest_global = dest_y + y_gap
         x_dest_global = dest_x + x_gap
-        image_pos_1d = (y_dest_global[:, None] * dest_image_width + x_dest_global).ravel()
+        image_pos_1d = (y_dest_global[:, None] * dest_image_width +
+                        x_dest_global).ravel()
 
-        # 4. Copie 1D instantanée exécutée en C
+        dest_image_buffer[image_pos_1d] = sprite_data.buffer[sprite_pos_1d]
+
+    def put_sprite_in_image_2(self, dest_image_buffer: np.ndarray,
+                             dest_image_width: int,
+                             dest_x: int, dest_y: int,
+                             sprite_data: SpriteModel, maze_width: int,
+                             maze_height: int) -> None:
+
+        dest_tile_width = self.get_tile_size(maze_width, maze_height,
+                                             dest_image_width,
+                                             dest_image_width)
+
+        print(dest_tile_width)
+        dest_tile_height = dest_tile_width
+
+        ratio = sprite_data.width / dest_tile_height
+
+        for y_gap in range(dest_tile_height):
+            for x_gap in range(dest_tile_height):
+                src_x = int(ratio * x_gap)
+                src_y = int(ratio * y_gap)
+                sprite_pos = (src_y * sprite_data.file_width) + src_x
+                image_pos = ((dest_y + y_gap) * dest_image_width) + (dest_x + x_gap)
+                dest_image_buffer[image_pos] = sprite_data.buffer[sprite_pos]
+
+    def put_sprite_in_image_3(self, dest_image_buffer: np.ndarray,
+                              dest_image_width: int,
+                              dest_x: int, dest_y: int,
+                              dest_size: int,
+                              sprite_data: SpriteModel) -> None:
+
+        ratio = sprite_data.width / dest_size
+
+        x_gap = np.arange(dest_size)
+        y_gap = np.arange(dest_size)
+
+        src_x = (ratio * x_gap).astype(np.int32)
+        src_y = (ratio * y_gap).astype(np.int32)
+
+        offset_x = sprite_data.pos_x
+        offset_y = sprite_data.pos_y
+
+        sprite_pos_1d = ((offset_y + src_y)[:, None] * sprite_data.file_width + (offset_x + src_x)).ravel()
+        image_pos_1d = ((dest_y + y_gap)[:, None] * dest_image_width + (dest_x + x_gap)).ravel()
+
         dest_image_buffer[image_pos_1d] = sprite_data.buffer[sprite_pos_1d]

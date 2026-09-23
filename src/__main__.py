@@ -48,9 +48,14 @@ def main() -> int:
 
         dest_img_buffer = graphic.to_buffer(dest_img)
         dest_img_size = dest_img.get_width()
-        # graphic.put_sprite_in_image_(dest_img_buffer, dest_img_size,
+        # graphic.put_sprite_in_image_3(dest_img_buffer, dest_img_size,
         #                              1000, 1000,
         #                              maze_sprite.get_sprite("wall_double_t_junction_top_right"),
+        #                              maze_width, maze_height)
+
+        # graphic.put_sprite_in_image_3(dest_img_buffer, dest_img_size,
+        #                              1500, 1500,
+        #                              maze_sprite.get_sprite("pacgum_large"),
         #                              maze_width, maze_height)
 
         Maze_renderer.render_in_img(dest_img_buffer, dest_img_size)
