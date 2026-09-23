@@ -1,5 +1,5 @@
 from yaml import safe_load
-from ..errors import SpriteSheetError, ViewError
+from ..errors import ViewError
 from typing import Any
 from pydantic import BaseModel, ValidationError
 from .sprite_model import SpriteModel
@@ -28,10 +28,7 @@ class SpriteSheetManager:
         self.sprite_dict: dict[str, Any] = {}
         self.graphic = Graphic()
         self.dest_image = dest_image
-        try:
-            self.sprite = Graphic.load_sprite(self.sprite_path)
-        except ViewError as e:
-            raise SpriteSheetError(e)
+        self.sprite = Graphic.load_sprite(self.sprite_path)
         self._get_sprites_sheet_data()
 
     def _get_sprites_sheet_data(self) -> None:
@@ -39,9 +36,9 @@ class SpriteSheetManager:
             with open(self.sprite_path_data, "r") as data:
                 self.sprite_dict = safe_load(data)
         except (FileNotFoundError) as e:
-            raise SpriteSheetError(e)
+            raise ViewError(e)
         except (PermissionError) as e:
-            raise SpriteSheetError(e)
+            raise ViewError(e)
 
     def _get_sprite_file_width(self) -> int:
         return int(self.sprite_dict["sprite_width"])
@@ -64,6 +61,4 @@ class SpriteSheetManager:
             )
             return (sprite)
         except ValidationError as e:
-            raise SpriteSheetError(e.errors()[0]['msg'])
-        except ViewError as e:
-            raise SpriteSheetError(e)
+            raise ViewError(e.errors()[0]['msg'])
