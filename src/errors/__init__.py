@@ -3,8 +3,6 @@ from .exceptions import (
     GameSettingsError,
     ModelError,
     JsonLoadError,
-    MazeError,
-    LevelError,
     ViewError,
     ControllerError
 )

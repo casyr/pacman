@@ -4,6 +4,7 @@ from .sprite_model import SpriteModel
 from enum import Enum
 from typing import Any
 from numpy import ndarray
+from . import GameView
 
 
 class Wall(Enum):
@@ -20,39 +21,15 @@ class CornerWall(Enum):
     SOUTH_WEST = Wall.SOUTH.value + Wall.WEST.value
 
 
-class MazeRenderer:
+class Maze(GameView):
 
     def __init__(self, maze_sprites: SpriteSheetManager,
-                 maze: list[list[int]], maze_width: int, maze_height: int,
-                 screen_width: int, screen_height: int):
+                 maze: list[list[int]], maze_width: int, maze_height: int):
         self.maze_sprites = maze_sprites
-        self.graphic = Graphic()
-        self.scaling = self.graphic.get_scaling(maze_width, maze_height,
-                                                screen_width, screen_height)
         self.maze = maze
         self.maze_width = maze_width
         self.maze_height = maze_height
-
-        self.screen_width = screen_width
-        self.screen_height = screen_height
-
-        self.tile_size = self.graphic.get_tile_size(self.maze_width,
-                                                    self.maze_height,
-                                                    self.screen_width,
-                                                    self.screen_height)
-        self.sprite_size = self.tile_size // 3 + 1
-
-        self.usable_width = self.graphic.get_usable_width(self.screen_width)
-        self.usable_height = self.graphic.get_usable_height(self.screen_height)
-        self.half_img_width = (self.usable_width // 2 +
-                               self.graphic.get_padding() // 2)
-        self.half_img_height = (self.usable_height // 2 +
-                                self.graphic.get_padding() // 2)
-
-        self.x_start = self.half_img_width - int((self.maze_width / 2)
-                                                 * self.tile_size)
-        self.y_start = self.half_img_height - int((self.maze_height / 2)
-                                                  * self.tile_size)
+        super().__init__(maze_width, maze_height)
 
     def straight_wall_chooser(self, sprites: list[Any],
                               is_top: bool, is_bottom: bool,
@@ -282,8 +259,8 @@ class MazeRenderer:
                                                  sub_w, sub_h,
                                                  tile[tile_y][tile_x])
 
-    def render_in_img(self, dest_img_buffer: ndarray,
-                      dest_img_size: int) -> None:
+    def render(self, dest_img_buffer: ndarray,
+               dest_img_size: int) -> None:
 
         for y in range(len(self.maze)):
             for x in range(len(self.maze[y])):
