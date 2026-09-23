@@ -40,7 +40,19 @@ class MazeRenderer:
                                                     self.maze_height,
                                                     self.screen_width,
                                                     self.screen_height)
-        self.sprite_size = self.tile_size // 3
+        self.sprite_size = self.tile_size // 3 + 1
+
+        self.usable_width = self.graphic.get_usable_width(self.screen_width)
+        self.usable_height = self.graphic.get_usable_height(self.screen_height)
+        self.half_img_width = (self.usable_width // 2 +
+                               self.graphic.get_padding() // 2)
+        self.half_img_height = (self.usable_height // 2 +
+                                self.graphic.get_padding() // 2)
+
+        self.x_start = self.half_img_width - int((self.maze_width / 2)
+                                                 * self.tile_size)
+        self.y_start = self.half_img_height - int((self.maze_height / 2)
+                                                  * self.tile_size)
 
     def straight_wall_chooser(self, sprites: list[Any],
                               is_top: bool, is_bottom: bool,
@@ -251,34 +263,19 @@ class MazeRenderer:
                 [south_west_sprite, south_sprite, sout_east_sprite]
                 ]
 
-    def put_tile_in_image_(self, tile: list[list[SpriteModel]],
-                           x: int, y: int, dest_img_buffer: ndarray,
-                           dest_img_size: int) -> None:
+    def put_tile_in_image(self, tile: list[list[SpriteModel]],
+                          x: int, y: int, dest_img_buffer: ndarray,
+                          dest_img_size: int) -> None:
 
-        usable_width = self.graphic.get_usable_width(self.screen_width)
-        usable_height = self.graphic.get_usable_height(self.screen_height)
-        half_img_width = usable_width // 2 + self.graphic.get_padding() // 2
-        half_img_height = usable_height // 2 + self.graphic.get_padding() // 2
-
-        x_dest = half_img_width - int((self.maze_width / 2) * self.tile_size)
-        y_dest = half_img_height - int((self.maze_height / 2) * self.tile_size)
-
-        tile_x_start = x_dest + int(x * self.tile_size)
-        tile_x_end = x_dest + int((x + 1) * self.tile_size)
-        tile_w = tile_x_end - tile_x_start
-
-        tile_y_start = y_dest + int(y * self.tile_size)
-        tile_y_end = y_dest + int((y + 1) * self.tile_size)
-        tile_h = tile_y_end - tile_y_start
+        tile_x_start = self.x_start + int(x * self.tile_size)
+        tile_y_start = self.y_start + int(y * self.tile_size)
 
         for tile_y in range(3):
-            sub_y_start = tile_y_start + tile_y * tile_h // 3
-            sub_y_end = tile_y_start + (tile_y + 1) * tile_h // 3
+            sub_y_start = tile_y_start + tile_y * self.sprite_size
             for tile_x in range(3):
-                sub_x_start = tile_x_start + tile_x * tile_w // 3
-                sub_x_end = tile_x_start + (tile_x + 1) * tile_w // 3
-                sub_w = sub_x_end - sub_x_start
-                sub_h = sub_y_end - sub_y_start
+                sub_x_start = tile_x_start + tile_x * self.sprite_size
+                sub_w = self.sprite_size
+                sub_h = self.sprite_size
                 self.graphic.put_sprite_in_image(dest_img_buffer,
                                                  dest_img_size,
                                                  sub_x_start, sub_y_start,
@@ -288,11 +285,9 @@ class MazeRenderer:
     def render_in_img(self, dest_img_buffer: ndarray,
                       dest_img_size: int) -> None:
 
-        print("render")
         for y in range(len(self.maze)):
             for x in range(len(self.maze[y])):
                 tile = self.sprite_filler(x, y)
-                self.put_tile_in_image_(tile, x, y,
-                                        dest_img_buffer,
-                                        dest_img_size)
-        print("end render")
+                self.put_tile_in_image(tile, x, y,
+                                       dest_img_buffer,
+                                       dest_img_size)

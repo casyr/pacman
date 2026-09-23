@@ -31,8 +31,8 @@ def main() -> int:
                                          "sprites/maze_sprites/"
                                          "maze_sprites.yaml",
                                          dest_img)
-        maze_width = 15
-        maze_height = 15
+        maze_width = 35
+        maze_height = 18
         maze_generator = MazeGenerator(
             (maze_width, maze_height),
             False,
@@ -61,8 +61,6 @@ def main() -> int:
         Maze_renderer.render_in_img(dest_img_buffer, dest_img_size)
         del dest_img_buffer
         while (True):
-            dest_img.unlock()
-            screen.unlock()
             graphic.blit_img(dest_img, screen, (0, 0))
             graphic.update_window()
             time.sleep(200)
