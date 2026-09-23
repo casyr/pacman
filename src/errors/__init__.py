@@ -10,12 +10,11 @@ from .exceptions import (
 )
 
 __all__ = [
-    "PacmanError",
-    "GameSettingsError",
-    "ModelError",
-    "JsonLoadError",
-    "MazeError",
-    "LevelError",
-    "ViewError",
-    "ControllerError"
+    'PacmanError',
+    'ParserError',
+    'GameSettingsError',
+    'ModelError',
+    'JsonLoadError',
+    'ViewError',
+    'ControllerError',
 ]

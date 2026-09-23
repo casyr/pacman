@@ -23,7 +23,8 @@ clean:
 	@find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -type d -name "logs" -exec rm -rf {} +
-	@rm -rf data
+	@rm -rf .venv
+
 
 .PHONY:
 	help install run debug lint clean
