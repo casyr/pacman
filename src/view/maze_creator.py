@@ -27,8 +27,6 @@ class MazeRenderer:
                  screen_width: int, screen_height: int):
         self.maze_sprites = maze_sprites
         self.graphic = Graphic()
-        self.scaling = self.graphic.get_scaling(maze_width, maze_height,
-                                                screen_width, screen_height)
         self.maze = maze
         self.maze_width = maze_width
         self.maze_height = maze_height

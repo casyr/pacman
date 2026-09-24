@@ -56,20 +56,6 @@ class Graphic:
         padding = self.get_padding()
         return (screen_height - padding)
 
-    def get_scaling(self, maze_width: int, maze_height: int,
-                    screen_width: int, screen_height: int) -> int:
-
-        usable_width = self.get_usable_width(screen_width)
-        usable_height = self.get_usable_height(screen_height)
-
-        px_tile_width = usable_width // maze_width
-        px_tile_height = usable_height // maze_height
-        if (px_tile_height < px_tile_width):
-            tile_w_h = px_tile_height
-        else:
-            tile_w_h = px_tile_width
-        return tile_w_h // 24
-
     def get_tile_size(self, maze_width: int, maze_height: int,
                       screen_width: int, screen_height: int) -> int:
 
