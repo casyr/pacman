@@ -53,25 +53,33 @@ def check_quit_event(event: pygame.event.Event) -> bool:
 @lru_cache(maxsize=1)
 def _get_key_mapping() -> dict[int, str]:
     return {
-        pygame.K_w: "KEY_UP",
-        pygame.K_s: "KEY_DOWN",
-        pygame.K_a: "KEY_LEFT",
-        pygame.K_d: "KEY_RIGHT",
-        pygame.K_p: "KEY_PAUSED",
-        pygame.K_c: "KEY_CHEAT_MENU",
-        pygame.K_1: "START_KEY",
-        pygame.K_2: "HIGHSCORES_KEY",
-        pygame.K_3: "INSTRUCTION_KEY",
-        pygame.K_4: "EXIT_KEY",
-        pygame.K_KP1: "START_KEY",
-        pygame.K_KP2: "HIGHSCORES_KEY",
-        pygame.K_KP3: "INSTRUCTION_KEY",
-        pygame.K_KP4: "EXIT_KEY",
+        pygame.K_w: "KEY_W",
+        pygame.K_s: "KEY_S",
+        pygame.K_a: "KEY_A",
+        pygame.K_d: "KEY_D",
+        pygame.K_p: "KEY_P",
+        pygame.K_c: "KEY_C",
+        pygame.K_t: "KEY_T",
+        pygame.K_1: "KEY_1",
+        pygame.K_2: "KEY_2",
+        pygame.K_3: "KEY_3",
+        pygame.K_4: "KEY_4",
+        pygame.K_5: "KEY_5",
+        pygame.K_6: "KEY_6",
+        pygame.K_RETURN: "KEY_RETURN"
     }
 
 
 def get_key_pressed(event: pygame.event.Event) -> str | None:
     if event.type == pygame.KEYDOWN:
         mapping = _get_key_mapping()
-        return mapping.get(event.key, None)
+        mapped_key = mapping.get(event.key, None)
+        if mapped_key:
+            return mapped_key
+        is_letter = pygame.K_a <= event.key <= pygame.K_z
+        is_number = pygame.K_0 <= event.key <= pygame.K_9
+        is_space = event.key == pygame.K_SPACE
+        if is_letter or is_number or is_space:
+            char = chr(event.key)
+            return f"CHAR_{char}"
     return None
