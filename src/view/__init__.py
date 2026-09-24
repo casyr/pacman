@@ -6,4 +6,5 @@ from .game_view import GameView
 from .pacgum import Pacgums
 
 
-__all__ = ["Graphic", "SpriteSheetManager", "SpriteModel", "MazeRenderer", "GameView", "Pacgums", "Maze"]
+__all__ = ["Graphic", "SpriteSheetManager", "SpriteModel",
+           "MazeRenderer", "GameView", "Pacgums", "Maze"]

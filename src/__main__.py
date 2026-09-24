@@ -1,7 +1,7 @@
 import sys
 import logging
-from .model import HighScoreManager, GameSession, LevelBuilder
-from .utils import setup_logging, JsonModelLoader
+from .model import GameSession, LevelBuilder  # , HighScoreManager
+from .utils import setup_logging  # JsonModelLoader
 from .parsing import ConfigParser
 from .errors import PacmanError
 import time
@@ -17,7 +17,7 @@ def main() -> int:
         loader = ConfigParser(config_file_path)
         game_config = loader.load()
         logger.debug(game_config.pacgum)
-        json_loader = JsonModelLoader(game_config.highscore_filename)
+        # json_loader = JsonModelLoader(game_config.highscore_filename)
         # highscore_manager = HighScoreManager(json_loader)
         game_session: GameSession = GameSession(game_config)
         level_manager = LevelBuilder(game_session)
@@ -27,21 +27,24 @@ def main() -> int:
         view.graphic.initialisation()
         screen = view.graphic.new_window(view.screen_width, view.screen_width)
         img = view.graphic.new_image(view.screen_width, view.screen_width)
-        maze_sprite = SpriteSheetManager("sprites/maze_sprites/maze_sprites.bmp",
-                                    "sprites/maze_sprites/maze_sprites.yaml",
-                                    img)
+        maze_sprite = SpriteSheetManager("sprites/maze_sprites/"
+                                         "maze_sprites.bmp",
+                                         "sprites/maze_sprites"
+                                         "/maze_sprites.yaml",
+                                         img)
         pacgum = Pacgums(game_session.settings.levels[0].width,
                          game_session.settings.levels[0].height,
-                         game_board.pacgum_pos,
-                         maze_sprite.get_sprite("pacgum_small"))
+                         game_board.pacgums_pos,
+                         game_board.super_pacgums_pos,
+                         maze_sprite)
 
         maze = Maze(game_session.settings.levels[0].width,
-                         game_session.settings.levels[0].height,
-                         maze_sprite,
-                         game_board.maze.grid)
+                    game_session.settings.levels[0].height,
+                    maze_sprite,
+                    game_board.maze.grid)
 
         maze.render(view.graphic.to_buffer(img),
-                      view.screen_width)
+                    view.screen_width)
 
         pacgum.render(view.graphic.to_buffer(img),
                       view.screen_width)

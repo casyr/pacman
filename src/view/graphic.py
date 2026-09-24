@@ -42,6 +42,10 @@ class Graphic:
     @staticmethod
     def to_buffer(sprite: pygame.Surface) -> np.ndarray:
         return pygame.surfarray.pixels2d(sprite).T.ravel()
+        # sprite_raw = pygame.surfarray.pixels2d(sprite)
+        # mask = (sprite_raw[:, :3] == [0, 0, 0]).all(axis=-1)
+        # sprite_raw[mask, 3] = 0
+        # return sprite_raw.T.ravel()
 
     @staticmethod
     def get_padding() -> int:
