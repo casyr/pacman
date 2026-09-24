@@ -39,31 +39,38 @@ def main() -> int:
             (0, 0),
             (20, 20),
         )
-        maze_generator.generate()
-        maze = maze_generator.maze
+        # maze_generator.generate()
+        # maze = maze_generator.maze
 
-        Maze_renderer = MazeRenderer(maze_sprite, maze, maze_width,
-                                     maze_height, screen_width,
-                                     screen_height)
+        # Maze_renderer = MazeRenderer(maze_sprite, maze, maze_width,
+        #                              maze_height, screen_width,
+        #                              screen_height)
 
-        dest_img_buffer = graphic.to_buffer(dest_img)
-        dest_img_size = dest_img.get_width()
+        # dest_img_buffer = graphic.to_buffer(dest_img)
+        # dest_img_size = dest_img.get_width()
         # graphic.put_sprite_in_image_3(dest_img_buffer, dest_img_size,
         #                              1000, 1000,
         #                              maze_sprite.get_sprite("wall_double_t_junction_top_right"),
         #                              maze_width, maze_height)
 
-        # graphic.put_sprite_in_image_3(dest_img_buffer, dest_img_size,
-        #                              1500, 1500,
-        #                              maze_sprite.get_sprite("pacgum_large"),
-        #                              maze_width, maze_height)
+        # Maze_renderer.render_in_img(dest_img_buffer, dest_img_size)
 
-        Maze_renderer.render_in_img(dest_img_buffer, dest_img_size)
-        del dest_img_buffer
+        # del dest_img_buffer
         while (True):
+            maze_generator.generate()
+            maze = maze_generator.maze
+
+            Maze_renderer = MazeRenderer(maze_sprite, maze, maze_width,
+                                         maze_height, screen_width,
+                                         screen_height)
+
+            dest_img_buffer = graphic.to_buffer(dest_img)
+            dest_img_size = dest_img.get_width()
+            Maze_renderer.render_in_img(dest_img_buffer, dest_img_size)
+            del dest_img_buffer
             graphic.blit_img(dest_img, screen, (0, 0))
             graphic.update_window()
-            time.sleep(200)
+            time.sleep(2)
         return 0
 
     except PacmanError as error:

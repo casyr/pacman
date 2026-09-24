@@ -75,7 +75,7 @@ class Graphic:
         y_gap = np.arange(dest_h)
 
         src_x = (sprite_data.width * x_gap) // dest_w
-        src_y = (sprite_data.width * y_gap) // dest_h
+        src_y = (sprite_data.height * y_gap) // dest_h
 
         offset_x = sprite_data.pos_x
         offset_y = sprite_data.pos_y
