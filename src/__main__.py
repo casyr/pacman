@@ -4,8 +4,8 @@ from .model import HighScoreManager, GameSession, LevelBuilder
 from .utils import setup_logging, JsonModelLoader
 from .parsing import ConfigParser
 from .errors import PacmanError
-from mazegenerator import MazeGenerator
 import time
+from .view import Pacgums, SpriteSheetManager, GameView, Maze
 
 
 def main() -> int:
@@ -18,11 +18,35 @@ def main() -> int:
         game_config = loader.load()
         logger.debug(game_config.pacgum)
         json_loader = JsonModelLoader(game_config.highscore_filename)
-        highscore_manager = HighScoreManager(json_loader)
+        # highscore_manager = HighScoreManager(json_loader)
         game_session: GameSession = GameSession(game_config)
         level_manager = LevelBuilder(game_session)
-        
+        game_board = level_manager.build_level()
+        view = GameView(game_session.settings.levels[0].width,
+                        game_session.settings.levels[0].height)
+        view.graphic.initialisation()
+        screen = view.graphic.new_window(view.screen_width, view.screen_width)
+        img = view.graphic.new_image(view.screen_width, view.screen_width)
+        maze_sprite = SpriteSheetManager("sprites/maze_sprites/maze_sprites.bmp",
+                                    "sprites/maze_sprites/maze_sprites.yaml",
+                                    img)
+        pacgum = Pacgums(game_session.settings.levels[0].width,
+                         game_session.settings.levels[0].height,
+                         game_board.pacgum_pos,
+                         maze_sprite.get_sprite("pacgum_small"))
+
+        maze = Maze(game_session.settings.levels[0].width,
+                         game_session.settings.levels[0].height,
+                         maze_sprite,
+                         game_board.maze.grid)
+
+        maze.render(view.graphic.to_buffer(img),
+                      view.screen_width)
+
+        pacgum.render(view.graphic.to_buffer(img),
+                      view.screen_width)
         while (True):
+            view.blit_and_update(img, screen)
             time.sleep(200)
         return 0
 

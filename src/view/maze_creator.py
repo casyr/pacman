@@ -1,10 +1,9 @@
-from . import SpriteSheetManager
-from .graphic import Graphic
 from .sprite_model import SpriteModel
 from enum import Enum
 from typing import Any
 from numpy import ndarray
-from . import GameView
+from .game_view import GameView
+from . import SpriteSheetManager
 
 
 class Wall(Enum):
@@ -23,8 +22,9 @@ class CornerWall(Enum):
 
 class Maze(GameView):
 
-    def __init__(self, maze_sprites: SpriteSheetManager,
-                 maze: list[list[int]], maze_width: int, maze_height: int):
+    def __init__(self, maze_width: int, maze_height: int,
+                 maze_sprites: SpriteSheetManager,
+                 maze: list[list[int]]):
         self.maze_sprites = maze_sprites
         self.maze = maze
         self.maze_width = maze_width
@@ -242,7 +242,7 @@ class Maze(GameView):
 
     def put_tile_in_image(self, tile: list[list[SpriteModel]],
                           x: int, y: int, dest_img_buffer: ndarray,
-                          dest_img_size: int) -> None:
+                          dest_img_width: int) -> None:
 
         tile_x_start = self.x_start + int(x * self.tile_size)
         tile_y_start = self.y_start + int(y * self.tile_size)
@@ -253,18 +253,17 @@ class Maze(GameView):
                 sub_x_start = tile_x_start + tile_x * self.sprite_size
                 sub_w = self.sprite_size
                 sub_h = self.sprite_size
-                self.graphic.put_sprite_in_image(dest_img_buffer,
-                                                 dest_img_size,
-                                                 sub_x_start, sub_y_start,
-                                                 sub_w, sub_h,
-                                                 tile[tile_y][tile_x])
+                self.put_sprite_in_image(dest_img_buffer, dest_img_width,
+                                         sub_x_start, sub_y_start,
+                                         sub_w, sub_h,
+                                         tile[tile_y][tile_x])
 
     def render(self, dest_img_buffer: ndarray,
-               dest_img_size: int) -> None:
+               dest_img_width: int) -> None:
 
         for y in range(len(self.maze)):
             for x in range(len(self.maze[y])):
                 tile = self.sprite_filler(x, y)
                 self.put_tile_in_image(tile, x, y,
                                        dest_img_buffer,
-                                       dest_img_size)
+                                       dest_img_width)
