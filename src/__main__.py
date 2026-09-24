@@ -6,6 +6,7 @@ from .parsing import ConfigParser
 from .model import HighScoreManager, GameSession, LevelBuilder
 from .utils import JsonModelLoader
 from .controller import GameController
+from .view import GameView
 
 
 def main() -> int:
@@ -24,10 +25,12 @@ def main() -> int:
         highscore_manager = HighScoreManager(json_loader)
         game_session: GameSession = GameSession(game_config)
         level_manager = LevelBuilder(game_session)
+        game_view = GameView()
         controller = GameController(
             level_manager,
             highscore_manager,
-            game_session)
+            game_session,
+            game_view)
         logger.info(highscore_manager)
         # logger.info(controller.game_board.ghosts_spawn_pos)
         controller.run()

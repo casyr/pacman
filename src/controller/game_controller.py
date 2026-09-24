@@ -10,7 +10,7 @@ from ..model import (
     HighScore,
     GameBoard,
 )
-
+from ..view import GameView
 from ..shared import GhostState, Vector2D
 
 logger = logging.getLogger(__name__)
@@ -32,121 +32,66 @@ class GameController:
             self,
             level_manager: LevelBuilder,
             highscore_manager: HighScoreManager,
-            game_session: GameSession):
+            game_session: GameSession,
+            game_view: GameView):
 
         self.level_manager = level_manager
         self.highscore_manager = highscore_manager
         self.game_session = game_session
         self.state = GameMenuState.MENU
         self.game_board: GameBoard = self.level_manager.build_level()
-        # self.view = GameView()
-
+        self.view = game_view
+        self.player_name: str = ""
         self.last_time = time.perf_counter()
+
         self.target_fps: int = 60
         self.frame_duration: float = 1.0 / self.target_fps
 
     def run(self) -> None:
-        # self.view.initialize_graphics()
+        self.view.initialize_graphics()
         # self.view.load_assets()
         while self.state != GameMenuState.EXIT:
             current_time = time.perf_counter()
             elapsed_time = current_time - self.last_time
             self.last_time = current_time
 
-            if self.state == GameMenuState.MENU:
-                self._run_menu_state()
-            elif self.state == GameMenuState.PLAYING:
-                self._run_playing_state(elapsed_time)
-            elif self.state is GameMenuState.VICTORY:
-                self._run_game_victory_state()
-            elif self.state is GameMenuState.DEFEAT:
-                self._run_game_over_state()
-            elif self.state == GameMenuState.PAUSED:
-                self._run_paused_state()
-            elif self.state == GameMenuState.CHEAT_MENU:
-                self._run_cheat_menu_state()
-            elif self.state == GameMenuState.ENTER_HIGHSCORE:
-                self._run_highscore_state()
+            user_input = self.view.handle_events()
 
-            processing_time = time.perf_counter() - current_time
+            if self.state == GameMenuState.MENU:
+                self._run_menu_state(user_input)
+            elif self.state == GameMenuState.PLAYING:
+                self._run_playing_state(elapsed_time, user_input)
+            elif self.state is GameMenuState.VICTORY:
+                self._run_game_victory_state(user_input)
+            elif self.state is GameMenuState.DEFEAT:
+                self._run_game_over_state(user_input)
+            elif self.state == GameMenuState.PAUSED:
+                self._run_paused_state(user_input)
+            elif self.state == GameMenuState.CHEAT_MENU:
+                self._run_cheat_menu_state(user_input)
+            elif self.state == GameMenuState.ENTER_HIGHSCORE:
+                self._run_highscore_state(user_input)
+
+            processing_time = time.perf_counter() - self.last_time
             time_to_sleep = self.frame_duration - processing_time
             if time_to_sleep > 0:
                 time.sleep(time_to_sleep)
-                self.last_time = time.perf_counter()
+        self.view.close()
 
-    def get_input_menu(self) -> str:
-        choices = input(
-            "Choices (1: Start, 2: Highscores, 3:Instruction 4: Exit) : ")
-        if choices == "1":
-            return "START_KEY"
-        elif choices == "2":
-            return "HIGHSCORES_KEY"
-        elif choices == "3":
-            return "INSTRUCTION_KEY"
-        elif choices == "4":
-            return "EXIT_KEY"
-        return ""
-
-    def get_input_move(self) -> str:
-        choices = input(
-            "Choices (w: up, s: down, right:d left: a  paused: p cheat: c) : ")
-        if choices == "w":
-            return "KEY_UP"
-        elif choices == "s":
-            return "KEY_DOWN"
-        elif choices == "d":
-            return "KEY_RIGHT"
-        elif choices == "a":
-            return "KEY_LEFT"
-        elif choices == "p":
-            return "KEY_PAUSED"
-        elif choices == "c":
-            return "KEY_CHEAT_MENU"
-        return ""
-
-    def get_input_paused(self) -> str:
-        choices = input("1: Resume, 2: Return to Main Menu : ")
-        if choices == "1":
-            return "RESUME"
-        elif choices == "2":
-            return "RETURN MAIN MENU"
-        return ""
-
-    def get_input_cheat(self) -> str:
-        choices = input(
-            "Select a cheat 1:Invincibility, 2:Freeze, 3:Speed,"
-            "4:Life, 5:LvlSkip ,6:Score, 7:Resume ")
-        if choices == "1":
-            return "CHEAT_INVINCIBLE"
-        elif choices == "2":
-            return "CHEAT_FREEZE"
-        elif choices == "3":
-            return "CHEAT_SPEED"
-        elif choices == "4":
-            return "CHEAT_LIFE"
-        elif choices == "5":
-            return "CHEAT_SKIP"
-        elif choices == "6":
-            return "CHEAT_SCORE"
-        elif choices == "7":
-            return "RESUME"
-        return ""
-
-    def _run_menu_state(self) -> None:
+    def _run_menu_state(self, user_input: str | None) -> None:
         # self.view.draw_main_menu()
-        user_input = self.get_input_menu()
-        if user_input == "START_KEY":
+        if user_input == "KEY_1":
             self.game_session.reset_level_data()
             self.game_board = self.level_manager.build_level()
             self.state = GameMenuState.PLAYING
-        elif user_input == "HIGHSCORES_KEY":
+        elif user_input == "KEY_2":
             scores = self.highscore_manager.scores
             logger.debug(scores)
             # self.view.draw_highscores(self.highscore_manager.scores)
-        elif user_input == "INSTRUCTIONS_KEY":
+        elif user_input == "KEY_3":
             # self.view.draw_instructions()
             pass
-        elif user_input == "EXIT_KEY":
+        elif user_input == "KEY_4":
             self.state = GameMenuState.EXIT
 
     def _check_game_end_conditions(self) -> bool:
@@ -158,34 +103,26 @@ class GameController:
             return True
         return False
 
-    def _handle_playing_inputs(self) -> bool:
-        move_input = self.get_input_move()
-
-        if move_input == "KEY_PAUSED":
+    def _handle_playing_inputs(self, user_input: str | None) -> None:
+        if user_input == "KEY_P":
             self.state = GameMenuState.PAUSED
             self.game_session.switch_status_paused()
             # self.view.draw_pause_menu()
-            return True
-        elif move_input == "KEY_CHEAT_MENU":
+        elif user_input == "KEY_C":
             self.state = GameMenuState.CHEAT_MENU
             self.game_session.switch_status_paused()
             # self.view.draw_cheat_menu()
-            return True
+        elif user_input == "KEY_T":
+            self.state = GameMenuState.VICTORY
 
-        if move_input == "KEY_UP":
+        if user_input == "KEY_W":
             self.game_board.player.set_direction(-1, 0)
-        elif move_input == "KEY_DOWN":
+        elif user_input == "KEY_S":
             self.game_board.player.set_direction(1, 0)
-        elif move_input == "KEY_LEFT":
+        elif user_input == "KEY_A":
             self.game_board.player.set_direction(0, -1)
-        elif move_input == "KEY_RIGHT":
+        elif user_input == "KEY_D":
             self.game_board.player.set_direction(0, 1)
-
-        if self.game_board.player.move_dir != (0, 0):
-            self.game_board.player.set_direction(
-                self.game_board.player.move_dir.y,
-                self.game_board.player.move_dir.x)
-        return False
 
     def _update_player_and_timers(self, elapsed_time: float) -> None:
         self.game_session.update_timers(elapsed_time)
@@ -232,13 +169,15 @@ class GameController:
                         self.game_board.player.respawn()
                         ghost.respawn()
 
-    def _run_playing_state(self, elapsed_time: float) -> None:
+    def _run_playing_state(
+            self,
+            elapsed_time: float,
+            user_input: str | None) -> None:
+
         if self._check_game_end_conditions():
             return
 
-        if self._handle_playing_inputs():
-            return
-
+        self._handle_playing_inputs(user_input)
         self._update_player_and_timers(elapsed_time)
 
         player_pos = Vector2D(
@@ -250,70 +189,79 @@ class GameController:
         self._handle_ghosts_and_collisions(player_pos, elapsed_time)
         # self.view.draw_game(self.game_board, self.game_session)
 
-    def _run_game_victory_state(self) -> None:
+    def _run_game_victory_state(self, user_input: str | None) -> None:
         logger.debug(f"Victory ! Final Score : {self.game_session.score}")
-        # draw_victory_screen(self, self.game_session.score)
+        # self.view.draw_victory_screen(self, self.game_session.score)
         self.state = GameMenuState.ENTER_HIGHSCORE
 
-    def _run_game_over_state(self) -> None:
+    def _run_game_over_state(self, user_input: str | None) -> None:
         logger.debug(f"Game Over ! Final Score : {self.game_session.score}")
-        # draw_game_over_screen(self, self.game_session.score)
+        # self.view.draw_game_over_screen(self, self.game_session.score)
         self.state = GameMenuState.ENTER_HIGHSCORE
 
-    def _run_instruction_state(self) -> None:
-        pass
-
-    def _run_highscore_state(self) -> None:
-        is_valid = False
-        # draw_enter_name_screen(self)
-        while not is_valid:
-            player_name = input("Pseudo : ")
-            if not HighScore._handle_player_names(player_name):
-                error_name_score: str = (f"{player_name}"
-                                         "only 10 letters or digits")
-                print(error_name_score)
-            else:
-                is_valid = True
-        if player_name:
-            self.highscore_manager.update_score(
-                player_name, self.game_session.score)
-            self.game_session.reset_level_data()
+    def _run_instruction_state(self, user_input: str | None) -> None:
+        # self.view.draw_instruction(self)
+        if user_input == "KEY_1":
             self.state = GameMenuState.MENU
 
-    def _run_paused_state(self) -> None:
+    def _run_highscore_state(self, user_input: str | None) -> None:
+        char: str | None = None
+        print(f"player {self.player_name}")
+        # self.view.draw_enter_name_screen(self)
+        if user_input is None:
+            return
+        if user_input == "KEY_RETURN":
+            print("HE SUIS ICI")
+            if not HighScore._handle_player_names(self.player_name.strip()):
+                error_name_score: str = (f"{self.player_name}"
+                                         "only 10 letters or digits")
+                print(error_name_score)
+                self.player_name = ""
+            else:
+                self.highscore_manager.update_score(
+                    self.player_name, self.game_session.score)
+                self.game_session.reset_level_data()
+                self.state = GameMenuState.MENU
+        elif user_input.startswith("KEY_"):
+            char = user_input[4:].lower()
+            self.player_name += char
+            print(f"player {self.player_name}")
+        elif user_input.startswith("CHAR_"):
+            char = user_input[5:]
+            self.player_name += char
+
+    def _run_paused_state(self, pause_choice: str | None) -> None:
         # self.view.draw_pause_menu()
-        pause_choice = self.get_input_paused()
-        if pause_choice == "RESUME":
+        if pause_choice == "KEY_1":
             self.state = GameMenuState.PLAYING
-        elif pause_choice == "RETURN MAIN MENU":
+        elif pause_choice == "KEY_2":
             self.state = GameMenuState.MENU
         self.game_session.switch_status_paused()
 
-    def _run_cheat_menu_state(self) -> None:
+    def _run_cheat_menu_state(self, cheat_choice: str | None) -> None:
         # self.view.draw_cheat_menu()
-        cheat_choice = self.get_input_cheat()
         print(self.game_session.time_remaining)
-        if cheat_choice == "CHEAT_INVINCIBLE":
+        if cheat_choice == "KEY_1":
             self.game_session.switch_invincibility()
-            print(f"Invincibility is now {
-                self.game_session.cheat_mode.invincibility}")
+            print("Invincibility is now"
+                  f"{self.game_session.cheat_mode.invincibility}")
 
-        elif cheat_choice == "CHEAT_FREEZE":
+        elif cheat_choice == "KEY_2":
             self.game_session.switch_ghost_freeze()
             for ghost in self.game_board.ghosts:
                 print(f"x : {ghost.current_pos_x}")
                 print(f"y : {ghost.current_pos_y}")
             print(f"Ghost Freeze is now {self.game_session.cheat_mode.freeze}")
 
-        elif cheat_choice == "CHEAT_SPEED":
+        elif cheat_choice == "KEY_3":
             self.game_session.switch_speed_boost()
             print(f"Speed Boost is now {self.game_session.cheat_mode.speed}")
 
-        elif cheat_choice == "CHEAT_LIFE":
+        elif cheat_choice == "KEY_4":
             self.game_session.cheat_extra_lives()
             print(f"Lives remaining: {self.game_session.lives_remaining}")
 
-        elif cheat_choice == "CHEAT_SKIP":
+        elif cheat_choice == "KEY_5":
             self.game_session.cheat_skip_level()
             if self.game_session.game_status == GameStatus.VICTORY:
                 self.state = GameMenuState.VICTORY
@@ -322,10 +270,10 @@ class GameController:
                 self.game_session.next_level_data()
                 self.state = GameMenuState.PLAYING
 
-        elif cheat_choice == "CHEAT_SCORE":
+        elif cheat_choice == "KEY_6":
             self.game_session.cheat_add_score()
             print(f"You have just found extra point {self.game_session.score}")
 
-        elif cheat_choice == "RESUME":
+        elif cheat_choice == "KEY_C":
             self.game_session.switch_status_paused()
             self.state = GameMenuState.PLAYING

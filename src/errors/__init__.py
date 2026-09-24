@@ -6,6 +6,7 @@ from .exceptions import (
     MazeError,
     LevelError,
     ViewError,
+    SpriteSheetError,
     ControllerError
 )
 
@@ -17,5 +18,6 @@ __all__ = [
     "MazeError",
     "LevelError",
     "ViewError",
+    "SpriteSheetError",
     "ControllerError"
 ]

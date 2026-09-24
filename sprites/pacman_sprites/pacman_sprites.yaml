@@ -1,0 +1,467 @@
+sprite_width: 225
+sprites:
+  # --- NORMAL PAC-MAN ---
+  pacman_right_1:
+    x: 0
+    y: 0
+    w: 16
+    h: 16
+  pacman_right_2:
+    x: 16
+    y: 0
+    w: 16
+    h: 16
+  pacman_left_1:
+    x: 0
+    y: 16
+    w: 16
+    h: 16
+  pacman_left_2:
+    x: 16
+    y: 16
+    w: 16
+    h: 16
+  pacman_up_1:
+    x: 0
+    y: 32
+    w: 16
+    h: 16
+  pacman_up_2:
+    x: 16
+    y: 32
+    w: 16
+    h: 16
+  pacman_down_1:
+    x: 0
+    y: 48
+    w: 16
+    h: 16
+  pacman_down_2:
+    x: 16
+    y: 48
+    w: 16
+    h: 16
+  pacman_closed:
+    x: 32
+    y: 0
+    w: 16
+    h: 16
+
+  # --- DEATH ANIMATION ---
+  pacman_death_1:
+    x: 48
+    y: 0
+    w: 16
+    h: 16
+  pacman_death_2:
+    x: 64
+    y: 0
+    w: 16
+    h: 16
+  pacman_death_3:
+    x: 80
+    y: 0
+    w: 16
+    h: 16
+  pacman_death_4:
+    x: 96
+    y: 0
+    w: 16
+    h: 16
+  pacman_death_5:
+    x: 112
+    y: 0
+    w: 16
+    h: 16
+  pacman_death_6:
+    x: 128
+    y: 0
+    w: 16
+    h: 16
+  pacman_death_7:
+    x: 144
+    y: 0
+    w: 16
+    h: 16
+  pacman_death_8:
+    x: 160
+    y: 0
+    w: 16
+    h: 16
+  pacman_death_9:
+    x: 176
+    y: 0
+    w: 16
+    h: 16
+  pacman_death_10:
+    x: 192
+    y: 0
+    w: 16
+    h: 16
+  pacman_death_11:
+    x: 208
+    y: 0
+    w: 16
+    h: 16
+
+  # --- BIG PAC-MAN ---
+  big_pacman_right_1:
+    x: 48
+    y: 16
+    w: 32
+    h: 32
+  big_pacman_right_2:
+    x: 80
+    y: 16
+    w: 32
+    h: 32
+  big_pacman_closed:
+    x: 113
+    y: 16
+    w: 32
+    h: 32
+
+
+  # --- ITEMS / FRUITS ---
+  item_cherry:
+    x: 48
+    y: 48
+    w: 16
+    h: 16
+  item_strawberry:
+    x: 64
+    y: 48
+    w: 16
+    h: 16
+  item_peach:
+    x: 80
+    y: 48
+    w: 16
+    h: 16
+  item_apple:
+    x: 96
+    y: 48
+    w: 16
+    h: 16
+  item_melon:
+    x: 112
+    y: 48
+    w: 16
+    h: 16
+  item_galaxian:
+    x: 128
+    y: 48
+    w: 16
+    h: 16
+  item_bell:
+    x: 144
+    y: 48
+    w: 16
+    h: 16
+  item_key:
+    x: 160
+    y: 48
+    w: 16
+    h: 16
+
+  # --- GHOSTS ---
+  # Blinky
+  ghost_blinky_right_1:
+    x: 0
+    y: 64
+    w: 16
+    h: 16
+  ghost_blinky_right_2:
+    x: 16
+    y: 64
+    w: 16
+    h: 16
+  ghost_blinky_left_1:
+    x: 32
+    y: 64
+    w: 16
+    h: 16
+  ghost_blinky_left_2:
+    x: 48
+    y: 64
+    w: 16
+    h: 16
+  ghost_blinky_up_1:
+    x: 64
+    y: 64
+    w: 16
+    h: 16
+  ghost_blinky_up_2:
+    x: 64
+    y: 64
+    w: 16
+    h: 16
+  ghost_blinky_down_1:
+    x: 96
+    y: 64
+    w: 16
+    h: 16
+  ghost_blinky_down_2:
+    x: 112
+    y: 64
+    w: 16
+    h: 16
+  # Pinky
+  ghost_pinky_right_1:
+    x: 0
+    y: 80
+    w: 16
+    h: 16
+  ghost_pinky_right_2:
+    x: 16
+    y: 80
+    w: 16
+    h: 16
+  ghost_pinky_left_1:
+    x: 32
+    y: 80
+    w: 16
+    h: 16
+  ghost_pinky_left_2:
+    x: 48
+    y: 80
+    w: 16
+    h: 16
+  ghost_pinky_up_1:
+    x: 64
+    y: 80
+    w: 16
+    h: 16
+  ghost_pinky_up_2:
+    x: 80
+    y: 80
+    w: 16
+    h: 16
+  ghost_pinky_down_1:
+    x: 80
+    y: 80
+    w: 16
+    h: 16
+  ghost_pinky_down_2:
+    x: 112
+    y: 80
+    w: 16
+    h: 16
+  # Inky
+  ghost_inky_right_1:
+    x: 0
+    y: 96
+    w: 16
+    h: 16
+  ghost_inky_right_2:
+    x: 16
+    y: 96
+    w: 16
+    h: 16
+  ghost_inky_left_1:
+    x: 32
+    y: 96
+    w: 16
+    h: 16
+  ghost_inky_left_2:
+    x: 48
+    y: 96
+    w: 16
+    h: 16
+  ghost_inky_up_1:
+    x: 64
+    y: 96
+    w: 16
+    h: 16
+  ghost_inky_up_2:
+    x: 80
+    y: 96
+    w: 16
+    h: 16
+  ghost_inky_down_1:
+    x: 96
+    y: 96
+    w: 16
+    h: 16
+  ghost_inky_down_2:
+    x: 96
+    y: 96
+    w: 16
+    h: 16
+  # Clyde
+  ghost_clyde_right_1:
+    x: 0
+    y: 112
+    w: 16
+    h: 16
+  ghost_clyde_right_2:
+    x: 16
+    y: 112
+    w: 16
+    h: 16
+  ghost_clyde_left_1:
+    x: 32
+    y: 112
+    w: 16
+    h: 16
+  ghost_clyde_left_2:
+    x: 48
+    y: 112
+    w: 16
+    h: 16
+  ghost_clyde_up_1:
+    x: 64
+    y: 112
+    w: 16
+    h: 16
+  ghost_clyde_up_2:
+    x: 80
+    y: 112
+    w: 16
+    h: 16
+  ghost_clyde_down_1:
+    x: 96
+    y: 112
+    w: 16
+    h: 16
+  ghost_clyde_down_2:
+    x: 112
+    y: 112
+    w: 16
+    h: 16
+
+  # --- SCARED GHOSTS & EYES ---
+  ghost_scared_blue_1:
+    x: 128
+    y: 64
+    w: 16
+    h: 16
+  ghost_scared_blue_2:
+    x: 144
+    y: 64
+    w: 16
+    h: 16
+  ghost_scared_white_1:
+    x: 160
+    y: 64
+    w: 16
+    h: 16
+  ghost_scared_white_2:
+    x: 176
+    y: 64
+    w: 16
+    h: 16
+  ghost_eyes_right:
+    x: 128
+    y: 80
+    w: 16
+    h: 16
+  ghost_eyes_left:
+    x: 144
+    y: 80
+    w: 16
+    h: 16
+  ghost_eyes_up:
+    x: 160
+    y: 80
+    w: 16
+    h: 16
+  ghost_eyes_down:
+    x: 176
+    y: 80
+    w: 16
+    h: 16
+
+animations:
+  pacman_walk_right:
+    speed: 100
+    loop: true
+    frames: [pacman_closed, pacman_right_2, pacman_right_1, pacman_right_2]
+  pacman_walk_left:
+    speed: 100
+    loop: true
+    frames: [pacman_closed, pacman_left_2, pacman_left_1, pacman_left_2]
+  pacman_walk_up:
+    speed: 100
+    loop: true
+    frames: [pacman_closed, pacman_up_2, pacman_up_1, pacman_up_2]
+  pacman_walk_down:
+    speed: 100
+    loop: true
+    frames: [pacman_closed, pacman_down_2, pacman_down_1, pacman_down_2]
+  pacman_die:
+    speed: 150
+    loop: false
+    frames: [pacman_death_1, pacman_death_2, pacman_death_3, pacman_death_4, pacman_death_5, pacman_death_6, pacman_death_7, pacman_death_8, pacman_death_9, pacman_death_10, pacman_death_11]
+  ghost_blinky_walk_right:
+    speed: 150
+    loop: true
+    frames: [ghost_blinky_right_1, ghost_blinky_right_2]
+  ghost_blinky_walk_left:
+    speed: 150
+    loop: true
+    frames: [ghost_blinky_left_1, ghost_blinky_left_2]
+  ghost_blinky_walk_up:
+    speed: 150
+    loop: true
+    frames: [ghost_blinky_up_1, ghost_blinky_up_2]
+  ghost_blinky_walk_down:
+    speed: 150
+    loop: true
+    frames: [ghost_blinky_down_1, ghost_blinky_down_2]
+  ghost_pinky_walk_right:
+    speed: 150
+    loop: true
+    frames: [ghost_pinky_right_1, ghost_pinky_right_2]
+  ghost_pinky_walk_left:
+    speed: 150
+    loop: true
+    frames: [ghost_pinky_left_1, ghost_pinky_left_2]
+  ghost_pinky_walk_up:
+    speed: 150
+    loop: true
+    frames: [ghost_pinky_up_1, ghost_pinky_up_2]
+  ghost_pinky_walk_down:
+    speed: 150
+    loop: true
+    frames: [ghost_pinky_down_1, ghost_pinky_down_2]
+  ghost_inky_walk_right:
+    speed: 150
+    loop: true
+    frames: [ghost_inky_right_1, ghost_inky_right_2]
+  ghost_inky_walk_left:
+    speed: 150
+    loop: true
+    frames: [ghost_inky_left_1, ghost_inky_left_2]
+  ghost_inky_walk_up:
+    speed: 150
+    loop: true
+    frames: [ghost_inky_up_1, ghost_inky_up_2]
+  ghost_inky_walk_down:
+    speed: 150
+    loop: true
+    frames: [ghost_inky_down_1, ghost_inky_down_2]
+  ghost_clyde_walk_right:
+    speed: 150
+    loop: true
+    frames: [ghost_clyde_right_1, ghost_clyde_right_2]
+  ghost_clyde_walk_left:
+    speed: 150
+    loop: true
+    frames: [ghost_clyde_left_1, ghost_clyde_left_2]
+  ghost_clyde_walk_up:
+    speed: 150
+    loop: true
+    frames: [ghost_clyde_up_1, ghost_clyde_up_2]
+  ghost_clyde_walk_down:
+    speed: 150
+    loop: true
+    frames: [ghost_clyde_down_1, ghost_clyde_down_2]
+  ghost_scared_blue:
+    speed: 150
+    loop: true
+    frames: [ghost_scared_blue_1, ghost_scared_blue_2]
+  ghost_scared_flash:
+    speed: 150
+    loop: true
+    frames: [ghost_scared_blue_1, ghost_scared_white_1, ghost_scared_blue_2, ghost_scared_white_2]
