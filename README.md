@@ -100,7 +100,7 @@ Because MiniLibX relies on an event-driven hook system in C while Pygame uses an
 | `mlx_string_put` | `font.render()` then `screen.blit()` | Requires creating a `pygame.font.Font` object, generating a text Surface with `.render()`, then drawing it. |
 | **Image functions** |  |  |
 | `mlx_new_image` | `pygame.Surface((w, h))` | Creates a new blank image/surface in memory. |
-| `mlx_get_data_addr` | `pygame.surfarray.pixels3d()` or `surface.get_buffer()` | Accesses pixel data directly as arrays or raw memory buffers. |
+| `mlx_get_data_addr` | `pygame.surfarray.pixels2d()` | Accesses pixel data directly as arrays or raw memory buffers. |
 | `mlx_put_image_to_window` | `screen.blit(image_surface, (x, y))` | Draws one Surface onto another (e.g., onto the screen). Requires calling `pygame.display.flip()` to render. |
 | `mlx_destroy_image` | `del image_surface` | Memory is freed automatically by Python's Garbage Collector when references are removed. |
 | **Hooks / Loop** |  |  |

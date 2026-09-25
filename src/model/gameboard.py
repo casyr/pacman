@@ -12,5 +12,5 @@ class GameBoard:
     ghosts: list[Ghost]
     ghosts_spawn_pos: dict[GhostName, Vector2D]
     pacgums: int
-    pacgum_pos: set[Vector2D]
+    pacgums_pos: set[Vector2D]
     super_pacgums_pos: set[Vector2D]

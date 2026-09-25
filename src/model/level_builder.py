@@ -6,7 +6,7 @@ from .ghost_factory import GhostFactory
 from .entities import Ghost, PacMan
 from .gameboard import GameBoard
 from ..shared import GhostName, Vector2D, GridBounds, Direction
-from ..errors import LevelError
+
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class LevelBuilder:
             ghosts=ghosts,
             ghosts_spawn_pos=ghosts_spawn_pos,
             pacgums=self.current_game.pacgum_remaining,
-            pacgum_pos=pacgum_pos,
+            pacgums_pos=pacgum_pos,
             super_pacgums_pos=super_pacgums_pos,
         )
 
