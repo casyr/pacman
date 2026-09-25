@@ -1,4 +1,4 @@
-from .game_controller import GameController
+from .game_scene_commun_object import GameContext
 from .game_scene import GameScene
 from .game_scene_menu import MenuScene
 from ..model import HighScore
@@ -7,7 +7,7 @@ from ..model import HighScore
 class ScoreScene:
     def update(
             self,
-            controller: GameController,
+            controller: GameContext,
             elapsed_time: float, user_input: str | None) -> GameScene | None:
 
         if user_input is None:
@@ -30,7 +30,7 @@ class ScoreScene:
 
         return self
 
-    def render(self, controller: GameController) -> None:
+    def render(self, controller: GameContext) -> None:
         # controller.view.draw_enter_name_screen(controller)
         # self.view.draw_enter_name_screen(controller)
         pass

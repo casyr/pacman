@@ -1,8 +1,6 @@
-from .game_controller import GameController
-from .game_scene import GameScene
-from .game_scene_victory import VictoryScene
-from .game_scene_playing import PlayingScene
+from .game_scene_commun_object import GameContext
 from ..model import GameStatus
+from .game_scene import GameScene
 
 
 class CheatScene:
@@ -11,9 +9,11 @@ class CheatScene:
 
     def update(
             self,
-            controller: GameController,
+            controller: GameContext,
             elapsed_time: float,
             user_input: str | None) -> GameScene | None:
+        from .game_scene_victory import VictoryScene
+        from .game_scene_playing import PlayingScene
 
         if user_input == "KEY_1":
             controller.game_session.switch_invincibility()
@@ -37,6 +37,6 @@ class CheatScene:
             return self.previous_scene
         return self
 
-    def render(self, controller: GameController) -> None:
+    def render(self, controller: GameContext) -> None:
         # controller.view.draw_cheat_menu()
         pass

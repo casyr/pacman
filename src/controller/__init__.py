@@ -9,7 +9,7 @@ from .game_scene_paused_menu import PausedScene
 from .game_scene_playing import PlayingScene
 from .game_scene_victory import VictoryScene
 from .game_controller import GameController
-from .game_context import GameContext
+from .game_scene_commun_object import GameContext
 
 __all__ = [
     'GameController',

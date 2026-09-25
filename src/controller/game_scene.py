@@ -1,13 +1,13 @@
 from typing import Protocol
-from .game_controller import GameController
+from .game_scene_commun_object import GameContext
 
 
 class GameScene(Protocol):
     def update(
             self,
-            controller: GameController,
+            controller: GameContext,
             elapsed_time: float, user_input: str | None) -> GameScene | None:
         pass
 
-    def render(self, controller: GameController) -> None:
+    def render(self, controller: GameContext) -> None:
         pass

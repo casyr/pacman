@@ -1,7 +1,5 @@
-from .game_controller import GameController
+from .game_scene_commun_object import GameContext
 from .game_scene import GameScene
-from .game_scene_victory import VictoryScene
-from .game_scene_defeat import DefeatScene
 from .game_scene_paused_menu import PausedScene
 from .game_scene_cheat_menu import CheatScene
 from ..shared import GhostState, Vector2D
@@ -11,15 +9,15 @@ from ..model import GameStatus
 class PlayingScene:
     def update(
             self,
-            controller: GameController,
+            controller: GameContext,
             elapsed_time: float, user_input: str | None) -> GameScene | None:
 
         scene = self._check_game_end_conditions(controller)
-        if scene is not PlayingScene:
+        if scene is not self:
             return scene
 
         scene = self._handle_playing_inputs(user_input, controller)
-        if scene is not PlayingScene:
+        if scene is not self:
             return scene
 
         self._update_player_and_timers(elapsed_time, controller)
@@ -37,8 +35,10 @@ class PlayingScene:
 
     def _check_game_end_conditions(
             self,
-            controller: GameController
+            controller: GameContext
             ) -> GameScene:
+        from .game_scene_victory import VictoryScene
+        from .game_scene_defeat import DefeatScene
 
         if controller.game_session.game_status == GameStatus.GAME_OVER:
             return DefeatScene()
@@ -49,8 +49,9 @@ class PlayingScene:
     def _handle_playing_inputs(
             self,
             user_input: str | None,
-            controller: GameController
+            controller: GameContext
             ) -> GameScene:
+        from .game_scene_victory import VictoryScene
 
         if user_input == "KEY_P":
             controller.game_session.switch_status_paused()
@@ -77,7 +78,7 @@ class PlayingScene:
     def _update_player_and_timers(
             self,
             elapsed_time: float,
-            controller: GameController) -> None:
+            controller: GameContext) -> None:
 
         controller.game_session.update_timers(elapsed_time)
         controller.game_board.player.update(
@@ -85,7 +86,7 @@ class PlayingScene:
 
     def _handle_consumables(
             self,
-            controller: GameController,
+            controller: GameContext,
             player_pos: Vector2D) -> None:
 
         if player_pos in controller.game_board.pacgum_pos:
@@ -102,7 +103,7 @@ class PlayingScene:
 
     def _handle_ghosts_and_collisions(
             self,
-            controller: GameController,
+            controller: GameContext,
             player_pos: Vector2D,
             elapsed_time: float) -> None:
 
@@ -128,7 +129,7 @@ class PlayingScene:
                         controller.game_board.reset_entities()
                         return
 
-    def render(self, controller: GameController) -> None:
+    def render(self, controller: GameContext) -> None:
         # controller.view.draw_game(
         # controller.game_board, controller.game_session)
         # self.view.draw_game(controller.game_board, controller.game_session)
