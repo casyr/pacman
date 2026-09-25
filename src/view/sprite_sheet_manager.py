@@ -2,36 +2,10 @@ from yaml import safe_load
 from ..errors import ViewError
 from typing import Any
 from pydantic import BaseModel, ValidationError
-<<<<<<< HEAD
-from pygame import Surface
-
-
-
-class SpriteSheetError(ViewError):
-    """
-    This error type in inheritance to ViewError
-    and raised his own error in case of:
-        - fail to laod sprite data
-        - malformed file
-    """
-
-
-class Sprite:
-
-    pos_x: int
-    pos_y: int
-    width: int
-    height: int
-    file_width: int
-    sprite_surface: Surface
-
-
-=======
 from .sprite_model import SpriteModel
 from pygame import Surface
 
 
->>>>>>> 78-viewcreateblackpixeltransparency
 class SpriteData(BaseModel):
     x: int
     y: int
