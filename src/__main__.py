@@ -3,9 +3,12 @@ import logging
 from .utils import setup_logging
 from .parsing import ConfigParser
 from .errors import PacmanError
-
-from .view import Graphics
+from .view import Graphic
 from .view import SpriteSheetManager
+from .view import MazeRenderer
+from mazegenerator import MazeGenerator
+import screeninfo
+import time
 
 
 def main() -> int:
@@ -16,27 +19,58 @@ def main() -> int:
         loader = ConfigParser(sys.argv[1:])
         game_config = loader.load()
         logger.debug(game_config.pacgum)
-        graphic = Graphics()
+        screen_width = screeninfo.get_monitors()[0].width
+        screen_height = screeninfo.get_monitors()[0].height
+        graphic = Graphic()
+        screen = graphic.new_window(screen_width, screen_height)
 
-        pacman = SpriteSheetManager("sprites/pacman_sprites/pacman_sprite.bmp",
-                                    "sprites/pacman_sprites/pacman_sprites"
-                                    ".yaml")
+        dest_img = graphic.new_image(screen_width, screen_height)
 
-        maze = SpriteSheetManager("sprites/maze_sprites/maze_sprite.bmp",
-                                  "sprites/maze_sprites/maze_sprites.yaml")
+        maze_sprite = SpriteSheetManager("sprites/maze_sprites/"
+                                         "maze_sprite.bmp",
+                                         "sprites/maze_sprites/"
+                                         "maze_sprites.yaml",
+                                         dest_img)
+        maze_width = 35
+        maze_height = 18
+        maze_generator = MazeGenerator(
+            (maze_width, maze_height),
+            False,
+            (0, 0),
+            (20, 20),
+        )
+        # maze_generator.generate()
+        # maze = maze_generator.maze
 
-        graphic.initialisation()
-        screen = graphic.new_window(800, 800)
-        img = graphic.new_image(800, 800)
-        pacman_sprite = pacman.get_sprite("ghost_eyes_down")
-        maze_sprite = maze.get_sprite("pacgum_small")
-        graphic.put_sprite_in_image(
-                img, 100, 100, pacman_sprite)
-        graphic.put_sprite_in_image(
-                img, 200, 100, maze_sprite)
+        # Maze_renderer = MazeRenderer(maze_sprite, maze, maze_width,
+        #                              maze_height, screen_width,
+        #                              screen_height)
+
+        # dest_img_buffer = graphic.to_buffer(dest_img)
+        # dest_img_size = dest_img.get_width()
+        # graphic.put_sprite_in_image_3(dest_img_buffer, dest_img_size,
+        #                              1000, 1000,
+        #                              maze_sprite.get_sprite("wall_double_t_junction_top_right"),
+        #                              maze_width, maze_height)
+
+        # Maze_renderer.render_in_img(dest_img_buffer, dest_img_size)
+
+        # del dest_img_buffer
         while (True):
-            graphic.blit_img(img, screen, (0, 0))
+            maze_generator.generate()
+            maze = maze_generator.maze
+
+            Maze_renderer = MazeRenderer(maze_sprite, maze, maze_width,
+                                         maze_height, screen_width,
+                                         screen_height)
+
+            dest_img_buffer = graphic.to_buffer(dest_img)
+            dest_img_size = dest_img.get_width()
+            Maze_renderer.render_in_img(dest_img_buffer, dest_img_size)
+            del dest_img_buffer
+            graphic.blit_img(dest_img, screen, (0, 0))
             graphic.update_window()
+            time.sleep(2)
         return 0
 
     except PacmanError as error:

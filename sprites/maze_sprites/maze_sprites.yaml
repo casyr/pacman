@@ -13,13 +13,13 @@ sprites:
     w: 8
     h: 8
 
-  wall_double_vertical_left:
+  wall_double_vertical_right:
     x: 18
     y: 0
     w: 8
     h: 8
 
-  wall_double_vertical_right:
+  wall_double_vertical_left:
     x: 27
     y: 0
     w: 8
@@ -37,33 +37,39 @@ sprites:
     w: 8
     h: 8
 
-  wall_double_t_junction_top_right:
+  wall_double_t_junction_bottom_right:
     x: 54
     y: 0
     w: 8
     h: 8
 
-  wall_double_t_junction_top_left:
+  wall_double_t_junction_bottom_left:
     x: 63
     y: 0
     w: 8
     h: 8
 
-  wall_double_t_junction_bottom_right:
+  wall_double_t_junction_top_right:
     x: 72
     y: 0
     w: 8
     h: 8
 
-  wall_double_t_junction_bottom_left:
+  wall_double_t_junction_top_left:
     x: 81
     y: 0
     w: 8
     h: 8
 
-  wall_double_horizontal_top:
-    x: 90
-    y: 0
+  wall_double_t_junction_bottom_top_right: 
+    x: 108
+    y: 9
+    w: 8
+    h: 8
+
+  wall_double_t_junction_bottom_top_left:
+    x: 117
+    y: 9
     w: 8
     h: 8
 
@@ -73,8 +79,8 @@ sprites:
     w: 8
     h: 8
 
-  wall_single_horizontal_top:
-    x: 126
+  wall_double_horizontal_top:
+    x: 90
     y: 0
     w: 8
     h: 8
@@ -107,6 +113,12 @@ sprites:
   wall_single_horizontal_top:
     x: 36
     y: 9
+    w: 8
+    h: 8
+
+  wall_single_horizontal_bottom:
+    x: 126
+    y: 0
     w: 8
     h: 8
 

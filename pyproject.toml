@@ -12,10 +12,8 @@ dependencies = [
     "pydantic>=2.13.4",
     "pygame>=2.6.1",
     "pyyaml>=6.0.3",
+    "screeninfo>=0.8.1",
 ]
 
 [tool.uv.sources]
 mazegenerator = { path = "42_modules/mazegenerator/mazegenerator-2.1.0-py3-none-any.whl" }
-
-[tool.uv]
-no-build-isolation-package = []
