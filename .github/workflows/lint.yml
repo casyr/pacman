@@ -2,9 +2,9 @@ name: Linting (MyPy & Flake8)
 
 on:
   push:
-    branches: [ "main", "dev" , "init_projet"]
+    branches: [ "main", "dev"]
   pull_request:
-    branches: [ "main", "dev", "init_projet" ]
+    branches: [ "main", "dev"]
 
 jobs:
   lint:
@@ -23,7 +23,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: "3.11"
 
       - name: Install dependencies
         run: uv sync 
