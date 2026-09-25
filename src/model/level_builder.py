@@ -6,6 +6,7 @@ from .ghost_factory import GhostFactory
 from .entities import Ghost, PacMan
 from .gameboard import GameBoard
 from ..shared import GhostName, Vector2D, GridBounds, Direction
+from ..errors import LevelError
 
 
 logger = logging.getLogger(__name__)

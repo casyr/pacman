@@ -4,7 +4,9 @@ from .exceptions import (
     ModelError,
     JsonLoadError,
     ViewError,
-    ControllerError
+    ControllerError,
+    LevelError,
+    MazeError
 )
 
 __all__ = [
@@ -15,4 +17,6 @@ __all__ = [
     'JsonLoadError',
     'ViewError',
     'ControllerError',
+    'LevelError',
+    'MazeError'
 ]

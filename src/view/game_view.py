@@ -76,7 +76,7 @@ class GameView:
 
         dest_image_buffer[image_pos_1d] = sprite_data.buffer[sprite_pos_1d]
 
-    def blit_and_update(self, img: Surface, dest_screen: Surface):
+    def blit_and_update(self, img: Surface, dest_screen: Surface) -> None:
 
         self.graphic.blit_img(img, dest_screen, (0, 0))
         self.graphic.update_window()

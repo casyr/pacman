@@ -48,7 +48,6 @@ class SpriteSheetManager:
             Sprites.model_validate(self.sprite_dict)
             data = self.sprite_dict["sprites"][sprite_name]
             sprite_buffer = self.sprite.convert(self.dest_image)
-
             buffer = self.graphic.to_buffer(sprite_buffer)
             sprite = SpriteModel(
                     data["x"],
