@@ -39,6 +39,8 @@ class GameSession:
         self.game_status: GameStatus = GameStatus.PLAYING
         self.cheat_mode: CheatMode = CheatMode()
 
+        self.player_name: str = ""
+
     def add_score(self, score: int) -> None:
         self.score += max(0, score)
 
