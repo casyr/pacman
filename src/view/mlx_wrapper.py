@@ -38,7 +38,7 @@ def blit_img(image: pygame.Surface,
     dest_screen.blit(image, coords)
 
 
-def get_events() -> list:
+def get_events() -> list[pygame.event.Event]:
     return pygame.event.get()
 
 

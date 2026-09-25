@@ -34,7 +34,7 @@ class HighScoreManager:
         except JsonLoadError:
             logger.error("Check disk space.")
 
-    def _reset_corrupted_file(self, reason: str) -> list:
+    def _reset_corrupted_file(self, reason: str) -> list[HighScore]:
         logger.warning(
             f"The score file {self.file_path} is {reason}. Resetting.")
         empty_data: HighScores = HighScores(scores=[])

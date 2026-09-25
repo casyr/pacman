@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Protocol
 from .game_scene_commun_object import GameContext
 
