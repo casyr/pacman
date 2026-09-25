@@ -42,14 +42,6 @@ def get_events() -> list:
     return pygame.event.get()
 
 
-def check_quit_event(event: pygame.event.Event) -> bool:
-    if event.type == pygame.QUIT:
-        return True
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-        return True
-    return False
-
-
 @lru_cache(maxsize=1)
 def _get_key_mapping() -> dict[int, str]:
     return {
@@ -66,7 +58,8 @@ def _get_key_mapping() -> dict[int, str]:
         pygame.K_4: "KEY_4",
         pygame.K_5: "KEY_5",
         pygame.K_6: "KEY_6",
-        pygame.K_RETURN: "KEY_RETURN"
+        pygame.K_RETURN: "KEY_RETURN",
+        pygame.K_ESCAPE: "KEY_ESCAPE"
     }
 
 

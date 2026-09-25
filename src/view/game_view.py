@@ -25,8 +25,8 @@ class GameView:
         key: str | None = None
         for event in mlx.get_events():
             print("Pygame event:", event)
-            if mlx.check_quit_event(event):
-                return "EXIT_KEY"
+            if event.type == pygame.QUIT:
+                return "MOUSE_QUIT"
             action = mlx.get_key_pressed(event)
             if action is not None:
                 key = action

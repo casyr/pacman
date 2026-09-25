@@ -14,3 +14,8 @@ class GameBoard:
     pacgums: int
     pacgum_pos: set[Vector2D]
     super_pacgums_pos: set[Vector2D]
+
+    def reset_entities(self) -> None:
+        self.player.respawn()
+        for ghost in self.ghosts:
+            ghost.respawn()
