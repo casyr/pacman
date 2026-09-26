@@ -47,6 +47,7 @@ class GameSession:
     def _next_level(self) -> None:
         if self.level_index + 1 < self.total_levels:
             self.level_index += 1
+            self.next_level_data()
         else:
             self.game_status = GameStatus.VICTORY
 
