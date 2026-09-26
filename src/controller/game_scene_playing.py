@@ -7,10 +7,16 @@ from ..model import GameStatus
 
 
 class PlayingScene:
+    def __init__(self) -> None:
+        self.current_level_index: int | None = None
+
     def update(
             self,
             controller: GameContext,
             elapsed_time: float, user_input: str | None) -> GameScene | None:
+
+        if self.current_level_index is None:
+            self.current_level_index = controller.game_session.level_index
 
         scene = self._check_game_end_conditions(controller)
         if scene is not self:
@@ -21,16 +27,11 @@ class PlayingScene:
             return scene
 
         self._update_player_and_timers(elapsed_time, controller)
-
-        player_pos = Vector2D(
-            y=controller.game_board.player.current_pos_y,
-            x=controller.game_board.player.current_pos_x
-        )
-
+        player_pos = self._get_player_position(controller)
         self._handle_consumables(controller, player_pos)
         self._handle_ghosts_and_collisions(
             controller, player_pos, elapsed_time)
-
+        self._check_update_level(controller)
         return self
 
     def _check_game_end_conditions(
@@ -84,6 +85,12 @@ class PlayingScene:
         controller.game_board.player.update(
             elapsed_time * controller.game_session.speed_multiplier)
 
+    def _get_player_position(self, controller: GameContext) -> Vector2D:
+        return Vector2D(
+            y=controller.game_board.player.current_pos_y,
+            x=controller.game_board.player.current_pos_x
+        )
+
     def _handle_consumables(
             self,
             controller: GameContext,
@@ -128,6 +135,15 @@ class PlayingScene:
                     if controller.game_session.lose_life():
                         controller.game_board.reset_entities()
                         return
+
+    def _check_update_level(self, controller: GameContext) -> None:
+        if self.current_level_index is None:
+            return
+
+        session_level = controller.game_session.level_index
+        if session_level > self.current_level_index:
+            controller.game_board = controller.level_manager.build_level()
+            self.current_level_index = session_level
 
     def render(self, controller: GameContext) -> None:
         # controller.view.draw_game(

@@ -45,7 +45,6 @@ class GameController:
             self.last_time = current_time
 
             user_input = self.context.view.handle_events()
-            print(self.current_scene)
             self.current_scene = self.current_scene.update(
                 self.context, elapsed_time, user_input)
             if self.current_scene is not None:
