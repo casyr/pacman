@@ -11,6 +11,5 @@ class SpriteModel:
     width: int
     height: int
     file_width: int
-    sprite_surface: Surface
     sprite_name: str
     buffer: ndarray

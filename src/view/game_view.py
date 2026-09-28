@@ -54,6 +54,28 @@ class GameView:
         px_tile_height = usable_height // maze_height
         return min(px_tile_height, px_tile_width)
 
+    # def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
+    #                         dest_image_width: int,
+    #                         dest_x: int, dest_y: int,
+    #                         dest_w: int, dest_h: int,
+    #                         sprite_data: SpriteModel) -> None:
+
+    #     x_gap = np.arange(dest_w)
+    #     y_gap = np.arange(dest_h)
+
+    #     src_x = (sprite_data.width * x_gap) // dest_w
+    #     src_y = (sprite_data.height * y_gap) // dest_h
+
+    #     offset_x = sprite_data.pos_x
+    #     offset_y = sprite_data.pos_y
+
+    #     sprite_pos_1d = ((offset_y + src_y)[:, None] * sprite_data.file_width
+    #                      + (offset_x + src_x)).ravel()
+    #     image_pos_1d = ((dest_y + y_gap)[:, None] * dest_image_width
+    #                     + (dest_x + x_gap)).ravel()
+
+    #     dest_image_buffer[image_pos_1d] = sprite_data.buffer[sprite_pos_1d]
+
     def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
                             dest_image_width: int,
                             dest_x: int, dest_y: int,
@@ -66,11 +88,8 @@ class GameView:
         src_x = (sprite_data.width * x_gap) // dest_w
         src_y = (sprite_data.height * y_gap) // dest_h
 
-        offset_x = sprite_data.pos_x
-        offset_y = sprite_data.pos_y
-
-        sprite_pos_1d = ((offset_y + src_y)[:, None] * sprite_data.file_width
-                         + (offset_x + src_x)).ravel()
+        sprite_pos_1d = ((src_y)[:, None] * sprite_data.width
+                         + (src_x)).ravel()
         image_pos_1d = ((dest_y + y_gap)[:, None] * dest_image_width
                         + (dest_x + x_gap)).ravel()
 
