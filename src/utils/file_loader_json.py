@@ -10,7 +10,7 @@ class JsonModelLoader:
     def __init__(self, file: str):
         self.file = file
 
-    def save_json_file(
+    def score_save_json_file(
             self,
             file_name: Path,
             results: BaseModel) -> None:
@@ -47,3 +47,12 @@ class JsonModelLoader:
             raise JsonLoadError(f"File not found: '{file_path}'.")
         except PermissionError:
             raise JsonLoadError(f"Permission reading denied: '{file_path}'.")
+
+    def highscore_file_path(self) -> Path:
+        raw_file = Path(self.file)
+        if raw_file.is_absolute():
+            return raw_file.resolve()
+        project_root = Path(__file__).resolve().parent.parent.parent
+        full_path = (project_root / "data" / raw_file).resolve()
+        full_path.parent.mkdir(parents=True, exist_ok=True)
+        return full_path

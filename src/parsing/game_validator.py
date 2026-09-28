@@ -124,13 +124,13 @@ class GameValidator(BaseGameValidator):
         return name_highscore
 
     @staticmethod
-    def _check_level_isinstance(levels: Any) -> list[dict]:
+    def _check_level_isinstance(levels: Any) -> list[dict[str, Any]]:
         if not isinstance(levels, list):
             logger.warning(
                 "Levels format is not a list. Resetting to default.")
             return []
 
-        cleaned_levels: list[dict] = []
+        cleaned_levels: list[dict[str, Any]] = []
         for item in levels:
             if isinstance(item, dict):
                 cleaned_levels.append(item)
@@ -142,8 +142,9 @@ class GameValidator(BaseGameValidator):
 
     @field_validator("levels", mode="before")
     @classmethod
-    def adjust_levels_count(cls, levels: Any) -> list[dict]:
-        cleaned_levels: list[dict] = cls._check_level_isinstance(levels)
+    def adjust_levels_count(cls, levels: Any) -> list[dict[str, Any]]:
+        cleaned_levels: list[dict[str, Any]] = cls._check_level_isinstance(
+            levels)
 
         nb_levels: int = len(cleaned_levels)
         if nb_levels > 10:

@@ -1,4 +1,4 @@
-from .gameboard import GameBoard
+from .game_board import GameBoard
 from .entities import (
     Ghost,
     PacMan,
