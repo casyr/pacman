@@ -11,10 +11,10 @@ class GameView:
         self.screen_width = screeninfo.get_monitors()[0].width
         self.screen_height = screeninfo.get_monitors()[0].height
         self.graphic = Graphic()
-        self.screen = self.graphic.new_window(self.screen_width,
-                                              self.screen_height)
-        self.dest_img = self.graphic.new_image(self.screen_width,
-                                               self.screen_height)
+        # self.screen = self.graphic.new_window(self.screen_width,
+        #                                       self.screen_height)
+        # self.dest_img = self.graphic.new_image(self.screen_width,
+        #                                        self.screen_height)
         self.maze_width = maze_width
         self.maze_height = maze_height
         self.graphic = Graphic()

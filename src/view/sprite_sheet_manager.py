@@ -51,12 +51,12 @@ class SpriteSheetManager:
     def get_sprite_buffer(self, data: ndarray, pos_x: int, pos_y: int,
                           file_width: int, width: int, height: int
                           ) -> ndarray:
-        sheet_3d = data.reshape(-1, file_width, 4)
+        sheet_2d = data.reshape(-1, file_width)
 
-        # Le slicing se fait uniquement sur l'axe Y et l'axe X
-        sprite_3d = sheet_3d[pos_y: pos_y + height, pos_x: pos_x + width, :]
+        # Slicing direct sur Y et X
+        sprite_2d = sheet_2d[pos_y: pos_y + height, pos_x: pos_x + width]
 
-        return sprite_3d.ravel()
+        return sprite_2d.ravel()
 
     def get_sprite(self, sprite_name: str) -> SpriteModel:
         try:

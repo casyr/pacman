@@ -19,7 +19,7 @@ class Graphic:
 
     @staticmethod
     def new_image(width: int, height: int) -> pygame.Surface:
-        return (pygame.Surface((width, height)))
+        return pygame.Surface((width, height), pygame.SRCALPHA)
 
     @staticmethod
     def update_window() -> None:
@@ -42,24 +42,19 @@ class Graphic:
     @staticmethod
     def to_buffer(sprite: pygame.Surface) -> np.ndarray:
         # return pygame.surfarray.pixels2d(sprite).T.ravel()
-        if not (sprite.get_flags() & pygame.SRCALPHA):
-            sprite = sprite.convert_alpha()
-
-        # Création de vues NumPy directes sur la surface (pas de copie mémoire)
         rgb = pygame.surfarray.pixels3d(sprite)
         alpha = pygame.surfarray.pixels_alpha(sprite)
-
-        # Masque booléen pour cibler les pixels strictement noirs (R=0, G=0, B=0)
+    
+        # 2. Masque pour rendre les pixels noirs transparents
         black_mask = (rgb[:, :, 0] == 0) & (rgb[:, :, 1] == 0) & (rgb[:, :, 2] == 0)
-
-        # Passage de l'alpha à 0 (transparence totale) pour ces pixels
         alpha[black_mask] = 0
-
-        # Suppression des références pour déverrouiller la surface Pygame
+    
+        # 3. Supprimer les références pour déverrouiller la surface
         del rgb, alpha
-
-        # Conversion du buffer de la surface en un tableau NumPy 1D (uint8)
-        return np.frombuffer(sprite.get_buffer(), dtype=np.uint8)
+    
+        # 4. Obtenir une vue 2D uint32 (1 élément = 1 pixel RGBA)
+        # .T transpose (Width, Height) -> (Height, Width) pour correspondre au layout NumPy
+        return pygame.surfarray.pixels2d(sprite).T.ravel()
 
     @staticmethod
     def get_padding() -> int:

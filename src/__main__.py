@@ -32,6 +32,13 @@ def main() -> int:
                                          "sprites/maze_sprites"
                                          "/maze_sprites.yaml",
                                          img)
+
+        pacman_sprite = SpriteSheetManager("sprites/pacman_sprites/"
+                                         "pacman_sprites.bmp",
+                                         "sprites/pacman_sprites"
+                                         "/pacman_sprites.yaml",
+                                         img)
+    
         pacgum = Pacgums(game_session.settings.levels[0].width,
                          game_session.settings.levels[0].height,
                          game_board.pacgums_pos,
@@ -43,15 +50,22 @@ def main() -> int:
                     maze_sprite,
                     game_board.maze.grid)
 
-        maze.render(view.graphic.to_buffer(img),
+        buffer_img = view.graphic.to_buffer(img)
+
+        maze.render(buffer_img,
                     view.screen_width)
 
-        pacgum.render(view.graphic.to_buffer(img),
+        pacgum.render(buffer_img,
                       view.screen_width)
         print(" end render ")
+
+        view.put_sprite_in_image(buffer_img, img.get_width(), 900, 900, 200, 200, pacman_sprite.get_sprite("pacman_right_1"))
+
+        del buffer_img
+
         while (True):
             view.blit_and_update(img, screen)
-            time.sleep(200)
+            time.sleep(0.016)
         return 0
 
     except PacmanError as error:
