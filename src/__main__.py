@@ -25,7 +25,7 @@ def main() -> int:
         view = GameView(game_session.settings.levels[0].width,
                         game_session.settings.levels[0].height)
         view.graphic.initialisation()
-        screen = view.graphic.new_window(view.screen_width, view.screen_width)
+        screen = view.graphic.new_window(view.screen_width, view.screen_height)
         img = view.graphic.new_image(view.screen_width, view.screen_width)
         maze_sprite = SpriteSheetManager("sprites/maze_sprites/"
                                          "maze_sprites.bmp",
@@ -48,6 +48,7 @@ def main() -> int:
 
         pacgum.render(view.graphic.to_buffer(img),
                       view.screen_width)
+        print(" end render ")
         while (True):
             view.blit_and_update(img, screen)
             time.sleep(200)

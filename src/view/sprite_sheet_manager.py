@@ -29,9 +29,11 @@ class SpriteSheetManager:
         self.sprite_dict: dict[str, Any] = {}
         self.graphic = Graphic()
         self.dest_image = dest_image
-        self.sprite_sheet = Graphic.load_sprite(self.sprite_path)
+        self.sprite_sheet = self.graphic.load_sprite(self.sprite_path)
         self.sprite_sheet = self.sprite_sheet.convert(self.dest_image)
-        self.sprite_sheet_buffer = Graphic.to_buffer(self.sprite_sheet)
+        self.sprite_sheet_buffer = self.graphic.to_buffer(self.sprite_sheet)
+        # self.graphic.set_black_transparency(self.sprite_sheet_buffer,
+        #                                     self.sprite_sheet.get_width())
         self._get_sprites_sheet_data()
 
     def _get_sprites_sheet_data(self) -> None:
@@ -49,12 +51,12 @@ class SpriteSheetManager:
     def get_sprite_buffer(self, data: ndarray, pos_x: int, pos_y: int,
                           file_width: int, width: int, height: int
                           ) -> ndarray:
-        sheet_2d = data.reshape(-1, file_width)
+        sheet_3d = data.reshape(-1, file_width, 4)
 
         # Le slicing se fait uniquement sur l'axe Y et l'axe X
-        sprite_2d = sheet_2d[pos_y: pos_y + height, pos_x: pos_x + width]
+        sprite_3d = sheet_3d[pos_y: pos_y + height, pos_x: pos_x + width, :]
 
-        return sprite_2d.ravel()
+        return sprite_3d.ravel()
 
     def get_sprite(self, sprite_name: str) -> SpriteModel:
         try:
