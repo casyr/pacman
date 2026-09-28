@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from pygame import Surface
 from numpy import ndarray
 
 
