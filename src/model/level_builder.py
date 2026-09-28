@@ -1,10 +1,10 @@
 import logging
 import random
-from .game_session_manager import GameSession, GameStatus
+from .game_session_manager import GameSession
 from .maze_adaptater import MazeAdapter
 from .ghost_factory import GhostFactory
 from .entities import Ghost, PacMan
-from .gameboard import GameBoard
+from .game_board import GameBoard
 from ..shared import GhostName, Vector2D, GridBounds, Direction
 from ..errors import LevelError
 
@@ -27,21 +27,20 @@ class LevelBuilder:
         return seed_to_use
 
     def build_level(self) -> GameBoard:
-        if self.current_game.game_status == GameStatus.PLAYING:
-            maze: MazeAdapter = MazeAdapter(
-                self._lvl_data.width,
-                self._lvl_data.height,
-                self.seed)
-            maze.generate_level()
-            super_pacgums_pos = self._setup_collectibles_super_pacgums(maze)
-            player_spawn_pos = self._setup_entities_player_position(
-                super_pacgums_pos, maze)
-            player = self._setup_entities_player(player_spawn_pos, maze)
-            ghosts_spawn_pos = self._setup_entities_ghost_position(
-                super_pacgums_pos, player_spawn_pos, maze)
-            ghosts = self._setup_entities_ghost(ghosts_spawn_pos, maze, player)
-            pacgum_pos = self._setup_collectibles_pacgums(
-                super_pacgums_pos, player_spawn_pos, maze)
+        maze: MazeAdapter = MazeAdapter(
+            self._lvl_data.width,
+            self._lvl_data.height,
+            self.seed)
+        maze.generate_level()
+        super_pacgums_pos = self._setup_collectibles_super_pacgums(maze)
+        player_spawn_pos = self._setup_entities_player_position(
+            super_pacgums_pos, maze)
+        player = self._setup_entities_player(player_spawn_pos, maze)
+        ghosts_spawn_pos = self._setup_entities_ghost_position(
+            super_pacgums_pos, player_spawn_pos, maze)
+        ghosts = self._setup_entities_ghost(ghosts_spawn_pos, maze, player)
+        pacgum_pos = self._setup_collectibles_pacgums(
+            super_pacgums_pos, player_spawn_pos, maze)
         return GameBoard(
             maze=maze,
             player=player,
