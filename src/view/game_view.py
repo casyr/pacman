@@ -15,32 +15,51 @@ class GameView:
         self.sprite_sheet = sprite_sheet
         self.window = window
         self.maze: Maze | None = None
+        self.pacgum = None
+
 
     def load_maze(self, game_board: GameBoard) -> None:
         self.maze = Maze(game_board, self.sprite_sheet, self.window)
-        self.pacgums = Pacgums(game_board, self.sprite_sheet, self.window)
 
-    def clear_window(self) -> None:
-        self.window.fill((0, 0, 0))
-        mlx.update_window()
-
-    def draw_game(
-            self,
-            game_board: GameBoard,
-            game_session: GameSession) -> None:
-
+    def draw_maze(self, game_board: GameBoard,
+                  game_session: GameSession) -> None:
         if self.maze is not None:
             dest_width = self.window.get_width()
             dest_height = self.window.get_height()
             self.render_image = mlx.new_image(dest_width,
                                               dest_height).convert_alpha()
             buffer = mlx.to_buffer(self.render_image)
-
+            self.clear_window()
             self.maze.render(buffer, dest_width)
+            del buffer
+            mlx.blit_img(self.render_image, self.window, (0, 0))
+            mlx.update_window()
+
+    def load_pacgum(self, game_board: GameBoard) -> None:
+        self.pacgum = Pacgums(game_board, self.sprite_sheet, self.window)
+
+    def draw_pacgum(self, game_board: GameBoard, 
+                    game_session: GameSession) -> None:
+        if self.maze is not None:
+            dest_width = self.window.get_width()
+            dest_height = self.window.get_height()
+            self.render_image = mlx.new_image(dest_width,
+                                              dest_height).convert_alpha()
+            buffer = mlx.to_buffer(self.render_image)
+            self.clear_window()
             self.pacgums.render(buffer, dest_width)
             del buffer
             mlx.blit_img(self.render_image, self.window, (0, 0))
             mlx.update_window()
+
+    def load_entities(self) -> None:
+        self.entities = 
+
+
+    def clear_window(self) -> None:
+        self.window.fill((0, 0, 0))
+        mlx.update_window()
+
 
     def handle_events(self) -> str | None:
         key: str | None = None
