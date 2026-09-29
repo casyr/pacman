@@ -2,13 +2,16 @@ import logging
 from yaml import safe_load, YAMLError
 from pathlib import Path
 from pydantic import ValidationError
-from .sprite_validator import SpriteData
+from .sprite_validator import SpriteData, SpriteCoords
 from ..errors import SpriteSheetError
+from . import mlx_wrapper
+from numpy import ndarray
+
 
 logger = logging.getLogger(__name__)
 
 
-class SpriteSheetManager:
+class SpriteSheetsManager:
     def __init__(self, directory: str | Path):
         self.data_dir = self._resolve_directory(directory)
         self.allowed_files: list[str] = [".yaml", ".bmp"]
@@ -47,6 +50,15 @@ class SpriteSheetManager:
                 associated_image = images_map.get(file_path.parent)
                 self._get_sprites_sheet_data(file_path, associated_image)
 
+    def get_sprite_buffer(self, data: ndarray, pos_x: int, pos_y: int,
+                          file_width: int, width: int, height: int
+                          ) -> ndarray:
+        sheet_2d = data.reshape(-1, file_width)
+
+        sprite_2d = sheet_2d[pos_y: pos_y + height, pos_x: pos_x + width]
+
+        return sprite_2d.ravel()
+
     def _get_sprites_sheet_data(
             self, file_path: Path, image_path: Path | None) -> None:
         try:
@@ -54,13 +66,28 @@ class SpriteSheetManager:
                 raw_config_yaml = safe_load(data)
 
             for sprite_key in self.allowed_sprite_name:
+
+                if image_path is not None:
+                    sprite_sheet = mlx_wrapper.load_sprite(image_path)
+                    sprite_sheet_buffer = mlx_wrapper.to_buffer(sprite_sheet)
+
                 if sprite_key in raw_config_yaml:
+
                     for name, coords in raw_config_yaml[sprite_key].items():
                         if image_path is None:
                             raise SpriteSheetError(
                                 f"Image.bmp missing for {name}")
-                        coords["image_path"] = image_path
-                        self.sprites[name] = SpriteData.model_validate(coords)
+                        SpriteCoords.model_validate(coords)
+                        sprite_width = raw_config_yaml["sprite_width"]
+                        buffer = self.get_sprite_buffer(sprite_sheet_buffer,
+                                                        coords["x"],
+                                                        coords["y"],
+                                                        sprite_width,
+                                                        coords["w"],
+                                                        coords["h"])
+                        coords["buffer"] = buffer
+                        elem = {"coords": coords, "buffer": coords["buffer"]}
+                        self.sprites[name] = SpriteData.model_validate(elem)
         except (FileNotFoundError, PermissionError) as e:
             raise SpriteSheetError(e)
         except YAMLError as e:

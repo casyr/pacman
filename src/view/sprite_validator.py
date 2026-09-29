@@ -1,10 +1,16 @@
-from pathlib import Path
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from numpy import ndarray
 
 
-class SpriteData(BaseModel):
+class SpriteCoords(BaseModel):
     x: int
     y: int
     w: int
     h: int
-    image_path: Path | None
+
+
+class SpriteData(BaseModel):
+
+    model_config = ConfigDict(arbitrary_types_allowed=True, strict=True)
+    coords: SpriteCoords
+    buffer: ndarray

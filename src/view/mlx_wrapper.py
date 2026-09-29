@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 from functools import lru_cache
 from ..errors import ViewError
+from pathlib import Path
 
 
 def initialisation() -> None:
@@ -24,7 +25,7 @@ def update_window() -> None:
     pygame.display.update()
 
 
-def load_sprite(path: str) -> pygame.Surface:
+def load_sprite(path: Path) -> pygame.Surface:
     try:
         return (pygame.image.load(path))
     except FileNotFoundError as e:
@@ -40,7 +41,17 @@ def blit_img(image: pygame.Surface,
 
 
 def to_buffer(sprite: pygame.Surface) -> np.ndarray:
-    return pygame.surfarray.array2d(sprite).T.ravel()
+    rgb = pygame.surfarray.pixels3d(sprite)
+    alpha = pygame.surfarray.pixels_alpha(sprite)
+
+    black_mask = ((rgb[:, :, 0] == 0)
+                  & (rgb[:, :, 1] == 0)
+                  & (rgb[:, :, 2] == 0))
+    alpha[black_mask] = 0
+
+    del rgb, alpha
+
+    return pygame.surfarray.pixels2d(sprite).T.ravel()
 
 
 def get_data_addr(image: pygame.Surface) -> np.ndarray:

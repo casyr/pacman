@@ -1,16 +1,15 @@
 import numpy as np
 import pygame
 from numpy import ndarray
-from .sprite_sheet_manager import SpriteSheetManager
+from .sprite_sheet_manager import SpriteSheetsManager
 from .sprite_validator import SpriteData
-from .mlx_wrapper import load_sprite, to_buffer
 from ..model import GameBoard
 
 
 class Pacgums:
 
     def __init__(self, game_board: GameBoard,
-                 pacgums_sprites: SpriteSheetManager,
+                 pacgums_sprites: SpriteSheetsManager,
                  window: pygame.Surface):
 
         self.pacgums_pos = game_board.pacgum_pos
@@ -43,28 +42,28 @@ class Pacgums:
         tile_size = (raw_size // 3) * 3
         return max(tile_size, 3)
 
-    def put_sprite_in_image(self, dest_image_buffer: ndarray,
+    def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
                             dest_image_width: int,
                             dest_x: int, dest_y: int,
                             dest_w: int, dest_h: int,
                             sprite_data: SpriteData) -> None:
 
-        sheet_surface = load_sprite(str(sprite_data.image_path))
-        sheet_buffer = to_buffer(sheet_surface)
-        sheet_width = sheet_surface.get_width()
-
         x_gap = np.arange(dest_w)
         y_gap = np.arange(dest_h)
 
-        src_x = sprite_data.x + (sprite_data.w * x_gap) // dest_w
-        src_y = sprite_data.y + (sprite_data.h * y_gap) // dest_h
+        src_x = (sprite_data.coords.w * x_gap) // dest_w
+        src_y = (sprite_data.coords.h * y_gap) // dest_h
 
-        sprite_pos_1d = ((src_y)[:, None] * sheet_width
-                         + (src_x)).ravel()
-        image_pos_1d = ((dest_y + y_gap)[:, None] * dest_image_width
-                        + (dest_x + x_gap)).ravel()
+        sprite_pos_1d = ((src_y)[:, None] *
+                         sprite_data.coords.w + src_x).ravel()
+        image_pos_1d = ((dest_y + y_gap)[:, None] *
+                        dest_image_width + (dest_x + x_gap)).ravel()
 
-        dest_image_buffer[image_pos_1d] = sheet_buffer[sprite_pos_1d]
+        sprite_pixels = sprite_data.buffer[sprite_pos_1d]
+
+        mask = sprite_pixels != 0
+
+        dest_image_buffer[image_pos_1d[mask]] = sprite_pixels[mask]
 
     def render(self, dest_image_buffer: ndarray,
                dest_img_width: int) -> None:

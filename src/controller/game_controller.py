@@ -52,4 +52,3 @@ class GameController:
             time_to_sleep = self.frame_duration - processing_time
             if time_to_sleep > 0:
                 time.sleep(time_to_sleep)
-        self.context.view.close()

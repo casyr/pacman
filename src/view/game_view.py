@@ -1,6 +1,6 @@
 import pygame
 from . import mlx_wrapper as mlx
-from .sprite_sheet_manager import SpriteSheetManager
+from .sprite_sheet_manager import SpriteSheetsManager
 from .maze_creator import Maze
 from .pacgum import Pacgums
 from ..model import GameBoard, GameSession
@@ -9,7 +9,7 @@ from ..model import GameBoard, GameSession
 class GameView:
     def __init__(
             self,
-            sprite_sheet: SpriteSheetManager,
+            sprite_sheet: SpriteSheetsManager,
             window: pygame.Surface) -> None:
 
         self.sprite_sheet = sprite_sheet
@@ -32,16 +32,13 @@ class GameView:
         if self.maze is not None:
             dest_width = self.window.get_width()
             dest_height = self.window.get_height()
-            self.render_image = mlx.new_image(dest_width, dest_height)
-            buffer = mlx.to_buffer(self.window)
-            self.window.unlock()
+            self.render_image = mlx.new_image(dest_width,
+                                              dest_height).convert_alpha()
+            buffer = mlx.to_buffer(self.render_image)
 
             self.maze.render(buffer, dest_width)
             self.pacgums.render(buffer, dest_width)
-            pixels = mlx.get_data_addr(self.render_image)
-            pixels[:] = buffer.reshape((dest_height, dest_width)).T
-            del pixels
-            mlx.destroy_image(self.render_image)
+            del buffer
             mlx.blit_img(self.render_image, self.window, (0, 0))
             mlx.update_window()
 
@@ -55,6 +52,3 @@ class GameView:
             if action is not None:
                 key = action
         return key
-
-    def close(self) -> None:
-        mlx.quit_window()

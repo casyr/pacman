@@ -2,7 +2,7 @@ import sys
 import logging
 from screeninfo import get_monitors, ScreenInfoError
 from .view import mlx_wrapper as mlx
-from .view import SpriteSheetManager
+from .view import SpriteSheetsManager
 from .utils import setup_logging
 from .errors import PacmanError
 from .parsing import ConfigParser
@@ -38,7 +38,7 @@ def main() -> int:
         level_manager = LevelBuilder(game_session)
         screen_width, screen_height = initialize_graphics()
         window = mlx.new_window(screen_width, screen_height)
-        sprite = SpriteSheetManager("sprites")
+        sprite = SpriteSheetsManager("sprites")
         sprite.processed_sprite()
         game_view = GameView(sprite, window)
         controller = GameController(

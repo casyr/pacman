@@ -3,9 +3,8 @@ import numpy as np
 from enum import Enum
 from typing import Any
 from numpy import ndarray
-from .sprite_sheet_manager import SpriteSheetManager
+from .sprite_sheet_manager import SpriteSheetsManager
 from .sprite_validator import SpriteData
-from .mlx_wrapper import load_sprite, to_buffer
 from ..model import GameBoard
 from ..shared.geometry import Wall
 
@@ -20,7 +19,7 @@ class CornerWall(Enum):
 class Maze:
 
     def __init__(self, game_board: GameBoard,
-                 maze_sprites: SpriteSheetManager,
+                 maze_sprites: SpriteSheetsManager,
                  window: pygame.Surface):
         self.maze_sprites = maze_sprites.sprites
         self.maze_grid: list[list[int]] = game_board.maze.grid
@@ -256,22 +255,22 @@ class Maze:
                             dest_w: int, dest_h: int,
                             sprite_data: SpriteData) -> None:
 
-        sheet_surface = load_sprite(str(sprite_data.image_path))
-        sheet_buffer = to_buffer(sheet_surface)
-        sheet_width = sheet_surface.get_width()
-
         x_gap = np.arange(dest_w)
         y_gap = np.arange(dest_h)
 
-        src_x = sprite_data.x + (sprite_data.w * x_gap) // dest_w
-        src_y = sprite_data.y + (sprite_data.h * y_gap) // dest_h
+        src_x = (sprite_data.coords.w * x_gap) // dest_w
+        src_y = (sprite_data.coords.h * y_gap) // dest_h
 
-        sprite_pos_1d = ((src_y)[:, None] * sheet_width
-                         + (src_x)).ravel()
-        image_pos_1d = ((dest_y + y_gap)[:, None] * dest_image_width
-                        + (dest_x + x_gap)).ravel()
+        sprite_pos_1d = ((src_y)[:, None] * sprite_data.coords.w
+                         + src_x).ravel()
+        image_pos_1d = ((dest_y + y_gap)[:, None] *
+                        dest_image_width + (dest_x + x_gap)).ravel()
 
-        dest_image_buffer[image_pos_1d] = sheet_buffer[sprite_pos_1d]
+        sprite_pixels = sprite_data.buffer[sprite_pos_1d]
+
+        mask = sprite_pixels != 0
+
+        dest_image_buffer[image_pos_1d[mask]] = sprite_pixels[mask]
 
     def put_tile_in_image(self, tile: list[list[SpriteData]],
                           x: int, y: int, dest_img_buffer: ndarray,
