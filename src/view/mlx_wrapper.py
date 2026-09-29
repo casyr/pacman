@@ -40,7 +40,15 @@ def blit_img(image: pygame.Surface,
 
 
 def to_buffer(sprite: pygame.Surface) -> np.ndarray:
-    return pygame.surfarray.pixels2d(sprite).T.ravel()
+    return pygame.surfarray.array2d(sprite).T.ravel()
+
+
+def get_data_addr(image: pygame.Surface) -> np.ndarray:
+    return pygame.surfarray.pixels2d(image)
+
+
+def destroy_image(image: pygame.Surface) -> None:
+    image.unlock()
 
 
 def get_events() -> list[pygame.event.Event]:

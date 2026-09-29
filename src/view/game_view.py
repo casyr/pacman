@@ -30,14 +30,19 @@ class GameView:
             game_session: GameSession) -> None:
 
         if self.maze is not None:
-            buffer = mlx.to_buffer(self.window)
             dest_width = self.window.get_width()
             dest_height = self.window.get_height()
+            self.render_image = mlx.new_image(dest_width, dest_height)
+            buffer = mlx.to_buffer(self.window)
+            self.window.unlock()
+
             self.maze.render(buffer, dest_width)
             self.pacgums.render(buffer, dest_width)
-            pygame.surfarray.blit_array(
-                self.window,
-                buffer.reshape((dest_height, dest_width)).T)
+            pixels = mlx.get_data_addr(self.render_image)
+            pixels[:] = buffer.reshape((dest_height, dest_width)).T
+            del pixels
+            mlx.destroy_image(self.render_image)
+            mlx.blit_img(self.render_image, self.window, (0, 0))
             mlx.update_window()
 
     def handle_events(self) -> str | None:
