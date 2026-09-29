@@ -11,10 +11,6 @@ class GameView:
         self.screen_width = screeninfo.get_monitors()[0].width
         self.screen_height = screeninfo.get_monitors()[0].height
         self.graphic = Graphic()
-        # self.screen = self.graphic.new_window(self.screen_width,
-        #                                       self.screen_height)
-        # self.dest_img = self.graphic.new_image(self.screen_width,
-        #                                        self.screen_height)
         self.maze_width = maze_width
         self.maze_height = maze_height
         self.graphic = Graphic()
@@ -54,27 +50,10 @@ class GameView:
         px_tile_height = usable_height // maze_height
         return min(px_tile_height, px_tile_width)
 
-    # def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
-    #                         dest_image_width: int,
-    #                         dest_x: int, dest_y: int,
-    #                         dest_w: int, dest_h: int,
-    #                         sprite_data: SpriteModel) -> None:
+    def blit_and_update(self, img: Surface, dest_screen: Surface) -> None:
 
-    #     x_gap = np.arange(dest_w)
-    #     y_gap = np.arange(dest_h)
-
-    #     src_x = (sprite_data.width * x_gap) // dest_w
-    #     src_y = (sprite_data.height * y_gap) // dest_h
-
-    #     offset_x = sprite_data.pos_x
-    #     offset_y = sprite_data.pos_y
-
-    #     sprite_pos_1d = ((offset_y + src_y)[:, None] * sprite_data.file_width
-    #                      + (offset_x + src_x)).ravel()
-    #     image_pos_1d = ((dest_y + y_gap)[:, None] * dest_image_width
-    #                     + (dest_x + x_gap)).ravel()
-
-    #     dest_image_buffer[image_pos_1d] = sprite_data.buffer[sprite_pos_1d]
+        self.graphic.blit_img(img, dest_screen, (0, 0))
+        self.graphic.update_window()
 
     def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
                             dest_image_width: int,
@@ -88,14 +67,12 @@ class GameView:
         src_x = (sprite_data.width * x_gap) // dest_w
         src_y = (sprite_data.height * y_gap) // dest_h
 
-        sprite_pos_1d = ((src_y)[:, None] * sprite_data.width
-                         + (src_x)).ravel()
-        image_pos_1d = ((dest_y + y_gap)[:, None] * dest_image_width
-                        + (dest_x + x_gap)).ravel()
+        sprite_pos_1d = ((src_y)[:, None] * sprite_data.width + src_x).ravel()
+        image_pos_1d = ((dest_y + y_gap)[:, None] *
+                        dest_image_width + (dest_x + x_gap)).ravel()
 
-        dest_image_buffer[image_pos_1d] = sprite_data.buffer[sprite_pos_1d]
+        sprite_pixels = sprite_data.buffer[sprite_pos_1d]
 
-    def blit_and_update(self, img: Surface, dest_screen: Surface) -> None:
+        mask = sprite_pixels != 0
 
-        self.graphic.blit_img(img, dest_screen, (0, 0))
-        self.graphic.update_window()
+        dest_image_buffer[image_pos_1d[mask]] = sprite_pixels[mask]

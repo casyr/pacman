@@ -34,11 +34,11 @@ def main() -> int:
                                          img)
 
         pacman_sprite = SpriteSheetManager("sprites/pacman_sprites/"
-                                         "pacman_sprites.bmp",
-                                         "sprites/pacman_sprites"
-                                         "/pacman_sprites.yaml",
-                                         img)
-    
+                                           "pacman_sprites.bmp",
+                                           "sprites/pacman_sprites"
+                                           "/pacman_sprites.yaml",
+                                           img)
+
         pacgum = Pacgums(game_session.settings.levels[0].width,
                          game_session.settings.levels[0].height,
                          game_board.pacgums_pos,
@@ -59,7 +59,9 @@ def main() -> int:
                       view.screen_width)
         print(" end render ")
 
-        view.put_sprite_in_image(buffer_img, img.get_width(), 900, 900, 200, 200, pacman_sprite.get_sprite("pacman_right_1"))
+        view.put_sprite_in_image(buffer_img, img.get_width(), 600,
+                                 600, 200, 200,
+                                 pacman_sprite.get_sprite("pacman_right_1"))
 
         del buffer_img
 

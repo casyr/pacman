@@ -53,7 +53,6 @@ class SpriteSheetManager:
                           ) -> ndarray:
         sheet_2d = data.reshape(-1, file_width)
 
-        # Slicing direct sur Y et X
         sprite_2d = sheet_2d[pos_y: pos_y + height, pos_x: pos_x + width]
 
         return sprite_2d.ravel()
