@@ -1,7 +1,6 @@
 from . import mlx_wrapper
-from .sprite_sheet_manager import SpriteSheetsManager
-from .sprite_validator import SpriteData
-# from ...maze_creator import Maze
+from ..parsing.sprite_sheet_manager import SpriteSheetsManager
+from ..parsing.sprite_validator import SpriteData
 from .game_view import GameView
 from .pacgum import Pacgums
 
@@ -12,5 +11,4 @@ __all__ = [
     "SpriteSheetsManager",
     "SpriteData",
     "Pacgums",
-    # "Maze"
     ]

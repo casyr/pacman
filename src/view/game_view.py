@@ -1,6 +1,6 @@
 import pygame
 from . import mlx_wrapper as mlx
-from .sprite_sheet_manager import SpriteSheetsManager
+from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from .maze_creator import Maze
 from .pacgum import Pacgums
 from ..model import GameBoard, GameSession
