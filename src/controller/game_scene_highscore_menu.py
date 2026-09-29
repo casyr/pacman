@@ -1,4 +1,4 @@
-from .game_scene_commun_object import GameContext
+from .game_context import GameContext
 from .game_scene import GameScene
 
 

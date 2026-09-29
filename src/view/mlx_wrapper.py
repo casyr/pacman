@@ -91,6 +91,11 @@ def _get_key_mapping() -> dict[int, str]:
     }
 
 
+def clear_window(window: pygame.Surface) -> None:
+    window.fill((0, 0, 0))
+    update_window()
+
+
 def get_key_pressed(event: pygame.event.Event) -> str | None:
     if event.type == pygame.KEYDOWN:
         mapping = _get_key_mapping()

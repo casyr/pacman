@@ -1,4 +1,4 @@
-from .game_scene_commun_object import GameContext
+from .game_context import GameContext
 from .game_scene import GameScene
 from .game_scene_paused_menu import PausedScene
 from .game_scene_cheat_menu import CheatScene
@@ -9,11 +9,11 @@ from ..view import mlx_wrapper as mlx
 
 
 class PlayingScene:
-    def __init__(self, dest_width) -> None:
+    def __init__(self, context: GameContext) -> None:
         self.current_level_index: int | None = None
-        self.context = GameContext
-        self.render_image = mlx.new_image(dest_width,
-                                          dest_height).convert_alpha()
+        self.context = context
+        self.render_image = mlx.new_image(context.screen_width,
+                                          context.screen_height).convert_alpha()
         self.buffer = mlx.to_buffer(self.render_image)
 
     def update(
@@ -142,12 +142,12 @@ class PlayingScene:
     def _check_update_level(self, controller: GameContext) -> int:
         if self.current_level_index is None:
             self.current_level_index = controller.game_session.level_index
-            controller.view.load_maze(controller.game_board)
+            # controller.view.load_maze(controller.game_board)
             return 1
 
         session_level = controller.game_session.level_index
         if session_level > self.current_level_index:
-            controller.game_board = controller.level_manager.build_level()
+            self.context.game_board = controller.level_manager.build_level()
             self.current_level_index = session_level
             controller.view.load_maze(controller.game_board)
             return 1
@@ -158,15 +158,18 @@ class PlayingScene:
             maze = Maze(controller.game_board, controller.sprite_sheets,
                         controller.window)
             dest_width = controller.window.get_width()
-            dest_height = controller.window.get_height()
-            self.render_image = mlx.new_image(dest_width,
-                                              dest_height).convert_alpha()
-            buffer = mlx.to_buffer(self.render_image)
-            self.clear_window()
-            maze.render(buffer, dest_width)
-            del buffer
-            mlx.blit_img(self.render_image, self.window, (0, 0))
-            mlx.update_window()
+            # dest_height = controller.window.get_height()
+            # self.render_image = mlx.new_image(dest_width,
+            #                                   dest_height).convert_alpha()
+            # buffer = mlx.to_buffer(self.render_image)
+            mlx.clear_window(self.context.window)
+            maze.render(self.buffer, dest_width)
+
+
         pacgum = Pacgums(controller.game_board, controller.sprite_sheets,
                          controller.window)
-        pacgum.render()
+    
+        pacgum.render(self.buffer, self.context.screen_width)
+        del self.buffer
+        mlx.blit_img(self.render_image, self.context.window, (0, 0))
+        mlx.update_window()

@@ -7,8 +7,10 @@ from pygame import Surface
 @dataclass
 class GameContext:
     game_session: GameSession
-    game_board: GameBoard
+    game_board: GameBoard | None
     level_manager: LevelBuilder
     highscores: HighScoreManager
     sprite_sheets: SpriteSheetsManager
     window: Surface
+    screen_width: int
+    screen_height: int

@@ -9,8 +9,8 @@ from .parsing import ConfigParser
 from .model import HighScoreManager, GameSession, LevelBuilder
 from .utils import JsonModelLoader
 from .controller import GameController
-from .view import GameView
-from controller import GameContext
+# from .view import GameView
+from .controller import GameContext
 
 
 def initialize_graphics() -> tuple[int, int]:
@@ -42,14 +42,17 @@ def main() -> int:
         sprite = SpriteSheetsManager("sprites")
         sprite.processed_sprite()
         # game_view = GameView(sprite, window)
-        context = GameContext(level_manager,
+        context = GameContext(game_session,
+                              None,
+                              level_manager,
                               highscore_manager,
-                              game_session,
                               sprite,
-                              screen_width, screen_height)
+                              window,
+                              screen_width,
+                              screen_height)
         controller = GameController(context)
         logger.debug(game_session.pacgum_remaining)
-        controller.run(sprite, window)
+        controller.run(context)
         return 0
 
     except PacmanError as error:
