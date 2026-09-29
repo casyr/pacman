@@ -72,7 +72,6 @@ class PacMan(Entity):
     def update(self, elapsed_time: float) -> None:
         self.move_timer += elapsed_time
         move_delay: float = 1.0 / self.speed
-
         if self.move_timer >= move_delay:
             self.move_timer -= move_delay
             if not self.can_move(self.move_dir):

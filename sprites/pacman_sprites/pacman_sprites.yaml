@@ -1,5 +1,5 @@
 sprite_width: 225
-sprites:
+entities:
   # --- NORMAL PAC-MAN ---
   pacman_right_1:
     x: 0
