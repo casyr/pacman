@@ -32,7 +32,8 @@ class GameView:
         if self.maze is not None:
             dest_width = self.window.get_width()
             dest_height = self.window.get_height()
-            self.render_image = mlx.new_image(dest_width, dest_height).convert_alpha()
+            self.render_image = mlx.new_image(dest_width,
+                                              dest_height).convert_alpha()
             buffer = mlx.to_buffer(self.render_image)
 
             self.maze.render(buffer, dest_width)

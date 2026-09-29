@@ -3,7 +3,6 @@ import pygame
 from numpy import ndarray
 from .sprite_sheet_manager import SpriteSheetsManager
 from .sprite_validator import SpriteData
-from .mlx_wrapper import load_sprite, to_buffer
 from ..model import GameBoard
 
 
@@ -55,7 +54,8 @@ class Pacgums:
         src_x = (sprite_data.coords.w * x_gap) // dest_w
         src_y = (sprite_data.coords.h * y_gap) // dest_h
 
-        sprite_pos_1d = ((src_y)[:, None] * sprite_data.coords.w + src_x).ravel()
+        sprite_pos_1d = ((src_y)[:, None] *
+                         sprite_data.coords.w + src_x).ravel()
         image_pos_1d = ((dest_y + y_gap)[:, None] *
                         dest_image_width + (dest_x + x_gap)).ravel()
 

@@ -11,6 +11,6 @@ class SpriteCoords(BaseModel):
 
 class SpriteData(BaseModel):
 
-    model_config = ConfigDict(arbitrary_types_allowed=True, strict = True)
+    model_config = ConfigDict(arbitrary_types_allowed=True, strict=True)
     coords: SpriteCoords
     buffer: ndarray

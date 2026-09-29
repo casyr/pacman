@@ -19,9 +19,6 @@ class SpriteSheetsManager:
         self.target_files: list[Path] = []
         self.sprites: dict[str, SpriteData] = {}
 
-
-
-
     def _resolve_directory(self, directory: str | Path) -> Path:
         path = Path(directory)
         if path.exists():
@@ -72,7 +69,6 @@ class SpriteSheetsManager:
 
                 if image_path is not None:
                     sprite_sheet = mlx_wrapper.load_sprite(image_path)
-                    # sprite_sheet = mlx_wrapper.convert()
                     sprite_sheet_buffer = mlx_wrapper.to_buffer(sprite_sheet)
 
                 if sprite_key in raw_config_yaml:
@@ -81,14 +77,17 @@ class SpriteSheetsManager:
                         if image_path is None:
                             raise SpriteSheetError(
                                 f"Image.bmp missing for {name}")
-                        validate_coords = SpriteCoords.model_validate(coords)
-                        print(validate_coords)
-                        print(coords)
-                        coords["buffer"] = self.get_sprite_buffer(sprite_sheet_buffer,
-                                                                         coords["x"], coords["y"], 
-                                                                         raw_config_yaml["sprite_width"],
-                                                                         coords["w"], coords["h"])
-                        self.sprites[name] = SpriteData.model_validate({"coords":coords, "buffer": coords["buffer"]})
+                        SpriteCoords.model_validate(coords)
+                        sprite_width = raw_config_yaml["sprite_width"]
+                        buffer = self.get_sprite_buffer(sprite_sheet_buffer,
+                                                        coords["x"],
+                                                        coords["y"],
+                                                        sprite_width,
+                                                        coords["w"],
+                                                        coords["h"])
+                        coords["buffer"] = buffer
+                        elem = {"coords": coords, "buffer": coords["buffer"]}
+                        self.sprites[name] = SpriteData.model_validate(elem)
         except (FileNotFoundError, PermissionError) as e:
             raise SpriteSheetError(e)
         except YAMLError as e:
