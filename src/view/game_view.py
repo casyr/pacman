@@ -4,9 +4,10 @@ from .sprite_sheet_manager import SpriteSheetsManager
 from .maze_creator import Maze
 from .pacgum import Pacgums
 from ..model import GameBoard, GameSession
+from typing import Protocol
 
 
-class GameView:
+class GameView(Protocol):
     def __init__(
             self,
             sprite_sheet: SpriteSheetsManager,
@@ -17,6 +18,9 @@ class GameView:
         self.maze: Maze | None = None
         self.pacgum = None
 
+    # def load_sprite():
+
+    # def 
 
     def load_maze(self, game_board: GameBoard) -> None:
         self.maze = Maze(game_board, self.sprite_sheet, self.window)
@@ -71,3 +75,7 @@ class GameView:
             if action is not None:
                 key = action
         return key
+
+class MazeView(GameView):
+
+

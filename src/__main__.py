@@ -10,6 +10,7 @@ from .model import HighScoreManager, GameSession, LevelBuilder
 from .utils import JsonModelLoader
 from .controller import GameController
 from .view import GameView
+from controller import GameContext
 
 
 def initialize_graphics() -> tuple[int, int]:
@@ -40,14 +41,15 @@ def main() -> int:
         window = mlx.new_window(screen_width, screen_height)
         sprite = SpriteSheetsManager("sprites")
         sprite.processed_sprite()
-        game_view = GameView(sprite, window)
-        controller = GameController(
-            level_manager,
-            highscore_manager,
-            game_session,
-            game_view)
+        # game_view = GameView(sprite, window)
+        context = GameContext(level_manager,
+                              highscore_manager,
+                              game_session,
+                              sprite,
+                              screen_width, screen_height)
+        controller = GameController(context)
         logger.debug(game_session.pacgum_remaining)
-        controller.run()
+        controller.run(sprite, window)
         return 0
 
     except PacmanError as error:

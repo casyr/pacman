@@ -8,7 +8,9 @@ from ..model import (
     LevelBuilder,
     HighScoreManager,
 )
-from ..view import GameView
+from pygame import Surface
+from ..view.sprite_sheet_manager import SpriteSheetsManager
+# from ..view import GameView
 
 
 logger = logging.getLogger(__name__)
@@ -16,19 +18,9 @@ logger = logging.getLogger(__name__)
 
 class GameController:
     def __init__(
-            self,
-            level_manager: LevelBuilder,
-            highscore_manager: HighScoreManager,
-            game_session: GameSession,
-            game_view: GameView):
+            self, context: GameContext):
 
-        self.context = GameContext(
-            game_session,
-            level_manager.build_level(),
-            level_manager,
-            highscore_manager,
-            game_view
-        )
+        self.context = context
 
         self.current_scene: GameScene | None = MenuScene()
 
