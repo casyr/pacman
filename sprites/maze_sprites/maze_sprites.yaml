@@ -1,5 +1,5 @@
 sprite_width: 143
-sprites:
+maze:
   # --- ROW 0: DOUBLE WALL OUTER CORNERS, VERTICALS & TOP/BOTTOM LINES ---
   wall_double_outer_corner_top_right:
     x: 0

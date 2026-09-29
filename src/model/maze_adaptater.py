@@ -2,7 +2,6 @@ import logging
 from mazegenerator import MazeGenerator
 from ..errors import MazeError
 
-
 logger = logging.getLogger(__name__)
 
 

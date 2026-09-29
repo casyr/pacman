@@ -6,14 +6,15 @@ logger = logging.getLogger(__name__)
 
 
 class HighScore(BaseModel):
-    player: str = Field(default="player_1")
+    player: str = Field(default="player1")
     score: int = Field(default=0)
 
     @staticmethod
     def _handle_player_names(player: str) -> bool:
+        cleaned = player.strip()
         if len(player) > 10:
             return False
-        for letter in player:
+        for letter in cleaned:
             if not (letter.isalnum() or letter == " "):
                 return False
         return True
@@ -24,13 +25,13 @@ class HighScore(BaseModel):
         if not isinstance(value, str):
             logger.warning(
                 f"Invalid player_name '{value}'. Must be a string "
-                "caracteres. Clamped to default: player_1")
+                "caracteres. Clamped to default: player1")
             return "player_1"
         if not cls._handle_player_names(value):
             logger.warning(
                 "You not supposed to be here ! "
                 f"Invalid player_name '{value}'. Numbers of caracteres < 11 "
-                "Clamped to default: player_1")
+                "Clamped to default: player1")
             return "player_1"
         return value
 

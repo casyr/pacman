@@ -81,7 +81,6 @@ The graphical user interface manages the Main Menu, the in-game GUI (Graphical u
 
 
 ## Resources
-# pacman
 
 Here is the function-by-function mapping from MiniLibX (mlx) to Pygame.
 
