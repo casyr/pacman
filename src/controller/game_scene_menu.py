@@ -25,6 +25,6 @@ class MenuScene:
 
     def render(self, controller: GameContext) -> None:
         controller.view.clear_window()
-        # controller.view.draw_main_menu()
-        # self.view.draw_main_menu()
-        pass
+        controller.view.draw_menu(
+            controller.game_board,
+            controller.game_session)
