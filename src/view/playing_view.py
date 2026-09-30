@@ -22,38 +22,31 @@ class PlayingView(GameView):
         self.screen_height = screen_height
         self.window = window
         self.sprite_sheets = sprite_sheet
-
         self.maze_img = mlx.new_image(self.screen_width, self.screen_height)
         self.maze_img = self.maze_img.convert_alpha()
-        self.maze_buffer = mlx.to_buffer(self.maze_img)
-
-
+        self.maze_buffer = mlx.to_buffer(self.maze_img, False)
 
     def render(self, is_updated: bool):
 
-        # if self.is_updated:
-            # maze = Maze(self.game_board,
-            #             self.sprite_sheets,
-            #             self.window)
-            # dest_width = self.window.get_width()
+        if is_updated:
+            maze = Maze(self.game_board,
+                        self.sprite_sheets,
+                        self.window)
+            dest_width = self.window.get_width()
 
             # mlx.clear_window(self.window)
-            # maze.render(self.maze_buffer, dest_width, self.game_board, self.window)
 
-        maze = Maze(self.game_board,
-                    self.sprite_sheets,
-                    self.window)
-        dest_width = self.window.get_width()
+            maze.render(self.maze_buffer, dest_width, self.game_board,
+                        self.window)
 
         # mlx.clear_window(self.window)
-        maze.render(self.maze_buffer, dest_width, self.game_board, self.window)
 
         pacgum = Pacgums(self.game_board,
                          self.sprite_sheets,
                          self.window)
         del self.maze_buffer
         mlx.blit_img(self.maze_img, self.window, (0, 0))
-    
+
         self.pacgum_img = mlx.new_image(self.screen_width, self.screen_height)
         self.pacgum_img = self.pacgum_img.convert_alpha()
         self.pacgum_buffer = mlx.to_buffer(self.pacgum_img)
@@ -66,7 +59,6 @@ class PlayingView(GameView):
         self.pacman_img = mlx.new_image(self.screen_width, self.screen_height)
         self.pacman_img = self.pacman_img.convert_alpha()
         self.pacman_buffer = mlx.to_buffer(self.pacman_img)
-        # mlx.clear_window(self.pacman_img)
         pacman.render(self.pacman_buffer, self.screen_width, self.game_board, self.window)
         del self.pacman_buffer
 

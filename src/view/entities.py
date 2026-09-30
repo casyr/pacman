@@ -38,8 +38,8 @@ class Pacman(Entities):
                game_board: GameBoard,
                window: pygame.Surface) -> None:
 
-        pos_x = self.x_start + self.sprite_size
-        pos_y = self.y_start + self.sprite_size
+        pos_x = self.x_start + self.sprite_size - 8
+        pos_y = self.y_start + self.sprite_size - 8
 
         dest_x = pos_x + game_board.player.current_pos_x * self.tile_size
         dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
@@ -49,6 +49,7 @@ class Pacman(Entities):
                                  dest_x, dest_y,
                                  self.sprite_size * 2, self.sprite_size * 2,
                                  self.sprites.sprites["pacman_right_1"])
+
 
 class Ghost(Entities):
 
@@ -129,4 +130,3 @@ class Clyde(Entities):
                                  dest_x, dest_y,
                                  self.sprite_size * 2, self.sprite_size * 2,
                                  self.sprites.sprites["pacman_right_1"])
-

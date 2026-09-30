@@ -37,8 +37,6 @@ class Maze(GameView):
         self.y_start = center_y - (
             game_board.maze.height * self.tile_size) // 2
 
-
-
     def straight_wall_chooser(self, sprites: list[Any],
                               is_top: bool, is_bottom: bool,
                               is_left: bool, is_right: bool) -> None:
