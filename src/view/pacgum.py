@@ -1,8 +1,8 @@
 import numpy as np
 import pygame
 from numpy import ndarray
-from .sprite_sheet_manager import SpriteSheetsManager
-from .sprite_validator import SpriteData
+from ..parsing.sprite_sheet_manager import SpriteSheetsManager
+from ..parsing.sprite_validator import SpriteData
 from ..model import GameBoard
 
 

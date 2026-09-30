@@ -3,8 +3,8 @@ import numpy as np
 from enum import Enum
 from typing import Any
 from numpy import ndarray
-from .sprite_sheet_manager import SpriteSheetsManager
-from .sprite_validator import SpriteData
+from ..parsing.sprite_sheet_manager import SpriteSheetsManager
+from ..parsing.sprite_validator import SpriteData
 from ..model import GameBoard
 from ..shared.geometry import Wall
 
