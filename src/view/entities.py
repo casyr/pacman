@@ -11,7 +11,7 @@ from .game_view import GameView
 
 
 class Entities(GameView):
-   
+
     def __init__(self, game_board: GameBoard,
                  sprites: SpriteSheetsManager,
                  window: pygame.Surface):
@@ -49,3 +49,84 @@ class Pacman(Entities):
                                  dest_x, dest_y,
                                  self.sprite_size * 2, self.sprite_size * 2,
                                  self.sprites.sprites["pacman_right_1"])
+
+class Ghost(Entities):
+
+    def render(self, dest_img_buffer: ndarray,
+               dest_img_width: int,
+               game_board: GameBoard,
+               window: pygame.Surface) -> None:
+
+        pos_x = self.x_start + self.sprite_size
+        pos_y = self.y_start + self.sprite_size
+
+        for ghost in game_board.ghosts:
+
+            dest_x = pos_x + ghost.current_pos_x * self.tile_size
+            dest_y = pos_y + ghost.current_pos_y * self.tile_size
+
+            self.put_sprite_in_image(dest_img_buffer,
+                                     dest_img_width,
+                                     dest_x, dest_y,
+                                     self.sprite_size * 2, self.sprite_size * 2,
+                                     self.sprites.sprites["pacman_right_1"])
+
+
+class Pinky(Entities):
+
+    def render(self, dest_img_buffer: ndarray,
+               dest_img_width: int,
+               game_board: GameBoard,
+               window: pygame.Surface) -> None:
+
+        pos_x = self.x_start + self.sprite_size
+        pos_y = self.y_start + self.sprite_size
+
+        dest_x = pos_x + game_board.player.current_pos_x * self.tile_size
+        dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
+
+        self.put_sprite_in_image(dest_img_buffer,
+                                 dest_img_width,
+                                 dest_x, dest_y,
+                                 self.sprite_size * 2, self.sprite_size * 2,
+                                 self.sprites.sprites["pacman_right_1"])
+
+class Inky(Entities):
+
+    def render(self, dest_img_buffer: ndarray,
+               dest_img_width: int,
+               game_board: GameBoard,
+               window: pygame.Surface) -> None:
+
+        pos_x = self.x_start + self.sprite_size
+        pos_y = self.y_start + self.sprite_size
+
+        dest_x = pos_x + game_board.player.current_pos_x * self.tile_size
+        dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
+
+        self.put_sprite_in_image(dest_img_buffer,
+                                 dest_img_width,
+                                 dest_x, dest_y,
+                                 self.sprite_size * 2, self.sprite_size * 2,
+                                 self.sprites.sprites["pacman_right_1"])
+
+class Clyde(Entities):
+
+    def render(self, dest_img_buffer: ndarray,
+               dest_img_width: int,
+               game_board: GameBoard,
+               window: pygame.Surface) -> None:
+
+        pos_x = self.x_start + self.sprite_size
+        pos_y = self.y_start + self.sprite_size
+
+        dest_x = pos_x + game_board.player.current_pos_x * self.tile_size
+        dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
+        dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
+
+        self.put_sprite_in_image(dest_img_buffer,
+                                 dest_img_width,
+                                 dest_x, dest_y,
+                                 self.sprite_size * 2, self.sprite_size * 2,
+                                 self.sprites.sprites["pacman_right_1"])
+
