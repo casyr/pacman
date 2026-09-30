@@ -104,3 +104,8 @@ def get_key_pressed(event: pygame.event.Event) -> str | None:
             char = chr(event.key)
             return f"CHAR_{char}"
     return None
+
+
+def clear_window(window: pygame.Surface):
+    window.fill((0, 0, 0))
+    pygame.display.update()

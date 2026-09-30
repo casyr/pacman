@@ -4,9 +4,10 @@ from numpy import ndarray
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..parsing.sprite_validator import SpriteData
 from ..model import GameBoard
+from .game_view import GameView
 
 
-class Pacgums:
+class Pacgums(GameView):
 
     def __init__(self, game_board: GameBoard,
                  pacgums_sprites: SpriteSheetsManager,
@@ -15,7 +16,7 @@ class Pacgums:
         self.pacgums_pos = game_board.pacgum_pos
         self.super_pacgums_pos = game_board.super_pacgums_pos
         self.pacgums_sprites = pacgums_sprites.sprites
-        self.tile_size = self.get_tile_size_pacgums(
+        self.tile_size = self.get_tile_size_maze(
             game_board.maze.width,
             game_board.maze.height,
             window.get_width(),
@@ -27,20 +28,6 @@ class Pacgums:
         self.x_start = center_x - (game_board.maze.width * self.tile_size) // 2
         self.y_start = center_y - (
             game_board.maze.height * self.tile_size) // 2
-
-    @staticmethod
-    def _get_padding() -> int:
-        return 500
-
-    def get_tile_size_pacgums(self, obj_width: int, obj_height: int,
-                              screen_width: int, screen_height: int) -> int:
-        usable_width = screen_width - self._get_padding()
-        usable_height = screen_height - self._get_padding()
-        px_tile_width = usable_width // obj_width
-        px_tile_height = usable_height // obj_height
-        raw_size = min(px_tile_height, px_tile_width)
-        tile_size = (raw_size // 3) * 3
-        return max(tile_size, 3)
 
     def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
                             dest_image_width: int,
