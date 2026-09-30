@@ -4,17 +4,12 @@ from .game_scene_paused_menu import PausedScene
 from .game_scene_cheat_menu import CheatScene
 from ..shared import GhostState, Vector2D
 from ..model import GameStatus
-from ..view import Maze, Pacgums
-from ..view import mlx_wrapper as mlx
 
 
 class PlayingScene:
     def __init__(self, context: GameContext) -> None:
         self.current_level_index: int | None = None
         self.context = context
-        self.render_image = mlx.new_image(context.screen_width,
-                                          context.screen_height).convert_alpha()
-        self.buffer = mlx.to_buffer(self.render_image)
 
     def update(
             self,
@@ -154,22 +149,7 @@ class PlayingScene:
         return 0
 
     def render(self, controller: GameContext) -> None:
-        if self._check_update_level(controller):
-            maze = Maze(controller.game_board, controller.sprite_sheets,
-                        controller.window)
-            dest_width = controller.window.get_width()
-            # dest_height = controller.window.get_height()
-            # self.render_image = mlx.new_image(dest_width,
-            #                                   dest_height).convert_alpha()
-            # buffer = mlx.to_buffer(self.render_image)
-            mlx.clear_window(self.context.window)
-            maze.render(self.buffer, dest_width)
-
-
-        pacgum = Pacgums(controller.game_board, controller.sprite_sheets,
-                         controller.window)
-    
-        pacgum.render(self.buffer, self.context.screen_width)
-        del self.buffer
-        mlx.blit_img(self.render_image, self.context.window, (0, 0))
-        mlx.update_window()
+        from ..view.playing_view import PlayingView
+        is_updated = self._check_update_level(controller)
+        playing_view = PlayingView(controller)
+        playing_view.render(is_updated)

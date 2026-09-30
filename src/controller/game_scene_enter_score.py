@@ -31,7 +31,7 @@ class ScoreScene:
         return self
 
     def render(self, controller: GameContext) -> None:
-        controller.view.clear_window()
+        # controller.view.clear_window()
         # controller.view.draw_enter_name_screen(controller)
         # self.view.draw_enter_name_screen(controller)
         pass

@@ -8,7 +8,7 @@ class GameScene(Protocol):
     def __init__(self, context: GameContext):
         self.context = context
 
-    def update(self, elapsed_time: float,
+    def update(self, controller: GameContext, lapsed_time: float,
                user_input: str | None) -> GameScene | None:
         pass
 

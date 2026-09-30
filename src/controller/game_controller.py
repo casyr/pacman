@@ -3,16 +3,8 @@ import logging
 from .game_context import GameContext
 from .game_scene import GameScene
 from .game_scene_menu import MenuScene
-from ..model import (
-    GameSession,
-    LevelBuilder,
-    HighScoreManager,
-)
-from pygame import Surface
-from ..view.sprite_sheet_manager import SpriteSheetsManager
 from ..view import mlx_wrapper as mlx
 import pygame
-# from ..view import GameView
 
 
 logger = logging.getLogger(__name__)
@@ -29,7 +21,6 @@ class GameController:
         self.last_time = time.perf_counter()
         self.target_fps: int = 60
         self.frame_duration: float = 1.0 / self.target_fps
-
 
     def handle_events(self) -> str | None:
         key: str | None = None
@@ -49,10 +40,11 @@ class GameController:
             self.last_time = current_time
 
             user_input = self.handle_events()
-            self.current_scene = self.current_scene.update(
-                self.context, elapsed_time, user_input)
+            self.current_scene = self.current_scene.update(context,
+                                                           elapsed_time,
+                                                           user_input)
             if self.current_scene is not None:
-                self.current_scene.render(self.context)
+                self.current_scene.render()
 
             processing_time = time.perf_counter() - self.last_time
             time_to_sleep = self.frame_duration - processing_time

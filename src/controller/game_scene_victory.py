@@ -11,7 +11,7 @@ class VictoryScene:
         return ScoreScene()
 
     def render(self, controller: GameContext) -> None:
-        controller.view.clear_window()
+        # controller.view.clear_window()
         # controller.view.draw_victory_screen(
         # controller, controller.game_session.score)
         # self.view.draw_victory_screen(

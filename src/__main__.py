@@ -45,11 +45,7 @@ def main() -> int:
         context = GameContext(game_session,
                               None,
                               level_manager,
-                              highscore_manager,
-                              sprite,
-                              window,
-                              screen_width,
-                              screen_height)
+                              highscore_manager)
         controller = GameController(context)
         logger.debug(game_session.pacgum_remaining)
         controller.run(context)
