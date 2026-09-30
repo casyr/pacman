@@ -4,7 +4,9 @@ from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from .maze_creator import Maze
 from .pacgum import Pacgums
 from .menu_view import Menu
+from .menu_highscore import HighScoresView
 from ..model import GameBoard, GameSession
+from ..model import HighScores
 
 
 class GameView:
@@ -17,6 +19,7 @@ class GameView:
         self.window = window
         self.maze: Maze | None = None
         self.menu: Menu | None = None
+        self.highscores: HighScoresView | None = None
         self._cached_buffer_menu: pygame.Surface | None = None
 
     def load_maze(self, game_board: GameBoard) -> None:
@@ -64,6 +67,21 @@ class GameView:
         dest_height = self.window.get_height()
         cached_image = self._create_cache_menu(dest_width, dest_height)
         mlx.blit_img(cached_image, self.window, (0, 0))
+        mlx.update_window()
+
+    def draw_highscores(
+            self, scores : list[HighScores]) -> None:
+        dest_width = self.window.get_width()
+        dest_height = self.window.get_height()
+        if self.highscores is None:
+            self.highscores = HighScoresView(
+                self.sprite_sheet, self.window, dest_width, dest_height)
+        render_image = mlx.new_image(dest_width,
+                                     dest_height).convert_alpha()
+        buffer = mlx.to_buffer(render_image)
+        self.highscores.render(buffer, dest_width)
+        del buffer
+        mlx.blit_img(render_image, self.window, (0, 0))
         mlx.update_window()
 
     def handle_events(self) -> str | None:

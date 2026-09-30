@@ -1,0 +1,9 @@
+sprite_width: 800
+sprites:
+  # --- HIGH SCORE ---
+  high_score:
+    x: 0
+    y: 0
+    w: 2645
+    h: 888
+
