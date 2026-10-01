@@ -88,22 +88,38 @@ class PlayingScene:
             x=controller.game_board.player.current_pos_x
         )
 
-    def _handle_consumables(
-            self,
-            controller: GameContext,
-            player_pos: Vector2D) -> None:
+    def handle_pacgums(self, controller: GameContext,
+                       player_pos: Vector2D) -> bool:
+        if player_pos in controller.game_board.pacgum_pos:
+            controller.game_board.pacgum_pos.remove(player_pos)
+            controller.game_session.consume_pacgum()
+            return True
+        return False
 
+    def handle_super_pacgums(self, controller: GameContext,
+                       player_pos: Vector2D) -> bool:
         if player_pos in controller.game_board.pacgum_pos:
             controller.game_board.pacgum_pos.remove(player_pos)
             controller.game_session.consume_pacgum()
 
-        if player_pos in controller.game_board.super_pacgums_pos:
-            controller.game_board.super_pacgums_pos.remove(player_pos)
-            controller.game_session.consume_super_pacgum()
+            if player_pos in controller.game_board.super_pacgums_pos:
+                controller.game_board.super_pacgums_pos.remove(player_pos)
+                controller.game_session.consume_super_pacgum()
 
-            for ghost in controller.game_board.ghosts:
-                if ghost.state != GhostState.EATEN:
-                    ghost.state = GhostState.FRIGHTENED
+                for ghost in controller.game_board.ghosts:
+                    if ghost.state != GhostState.EATEN:
+                        ghost.state = GhostState.FRIGHTENED
+                return True
+
+        return False
+
+    def _handle_consumables(
+            self,
+            controller: GameContext,
+            player_pos: Vector2D) -> bool:
+
+        return (self.handle_pacgums(controller, player_pos) or
+                self.handle_super_pacgums(controller, player_pos))
 
     def _handle_ghosts_and_collisions(
             self,
@@ -147,7 +163,9 @@ class PlayingScene:
         return False
 
     def render(self, controller: GameContext) -> None:
-        is_updated = self._check_update_level(controller)
+        is_maze_updated = self._check_update_level(controller)
+        is_pacgum_updated = self._handle_consumables(controller,
+                                                     controller.game_session.)
         controller.view.draw_game(controller.game_board,
                                   controller.game_session,
                                   is_updated)
