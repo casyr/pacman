@@ -1,13 +1,9 @@
 import pygame
-import numpy as np
-from enum import Enum
-from typing import Any
 from numpy import ndarray
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
-from ..parsing.sprite_validator import SpriteData
 from ..model import GameBoard
-from ..shared.geometry import Wall
 from .game_view import GameView
+from .displayer_utils import DisplayerUtils
 
 
 class Entities(GameView):
@@ -17,7 +13,8 @@ class Entities(GameView):
                  window: pygame.Surface):
         self.sprites = sprites
         self.maze_grid: list[list[int]] = game_board.maze.grid
-        self.tile_size = self.get_tile_size_maze(
+        self.utils = DisplayerUtils()
+        self.tile_size = self.utils.get_tile_size_maze(
             game_board.maze.width,
             game_board.maze.height,
             window.get_width(),
@@ -44,11 +41,12 @@ class Pacman(Entities):
         dest_x = pos_x + game_board.player.current_pos_x * self.tile_size
         dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
 
-        self.put_sprite_in_image(dest_img_buffer,
-                                 dest_img_width,
-                                 dest_x, dest_y,
-                                 self.sprite_size * 2, self.sprite_size * 2,
-                                 self.sprites.sprites["pacman_right_1"])
+        self.utils.put_sprite_in_image(dest_img_buffer,
+                                       dest_img_width,
+                                       dest_x, dest_y,
+                                       self.sprite_size * 2,
+                                       self.sprite_size * 2,
+                                       self.sprites.sprites["pacman_right_1"])
 
 
 class Ghost(Entities):
@@ -66,11 +64,14 @@ class Ghost(Entities):
             dest_x = pos_x + ghost.current_pos_x * self.tile_size
             dest_y = pos_y + ghost.current_pos_y * self.tile_size
 
-            self.put_sprite_in_image(dest_img_buffer,
-                                     dest_img_width,
-                                     dest_x, dest_y,
-                                     self.sprite_size * 2, self.sprite_size * 2,
-                                     self.sprites.sprites["pacman_right_1"])
+            put_sprite_in_image = self.utils.put_sprite_in_image
+
+            put_sprite_in_image(dest_img_buffer,
+                                dest_img_width,
+                                dest_x, dest_y,
+                                self.sprite_size * 2,
+                                self.sprite_size * 2,
+                                self.sprites.sprites["pacman_right_1"])
 
 
 class Pinky(Entities):
@@ -86,11 +87,13 @@ class Pinky(Entities):
         dest_x = pos_x + game_board.player.current_pos_x * self.tile_size
         dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
 
-        self.put_sprite_in_image(dest_img_buffer,
-                                 dest_img_width,
-                                 dest_x, dest_y,
-                                 self.sprite_size * 2, self.sprite_size * 2,
-                                 self.sprites.sprites["pacman_right_1"])
+        self.utils.put_sprite_in_image(dest_img_buffer,
+                                       dest_img_width,
+                                       dest_x, dest_y,
+                                       self.sprite_size * 2,
+                                       self.sprite_size * 2,
+                                       self.sprites.sprites["pacman_right_1"])
+
 
 class Inky(Entities):
 
@@ -105,11 +108,13 @@ class Inky(Entities):
         dest_x = pos_x + game_board.player.current_pos_x * self.tile_size
         dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
 
-        self.put_sprite_in_image(dest_img_buffer,
-                                 dest_img_width,
-                                 dest_x, dest_y,
-                                 self.sprite_size * 2, self.sprite_size * 2,
-                                 self.sprites.sprites["pacman_right_1"])
+        self.utils.put_sprite_in_image(dest_img_buffer,
+                                       dest_img_width,
+                                       dest_x, dest_y,
+                                       self.sprite_size * 2,
+                                       self.sprite_size * 2,
+                                       self.sprites.sprites["pacman_right_1"])
+
 
 class Clyde(Entities):
 
@@ -125,8 +130,9 @@ class Clyde(Entities):
         dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
         dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
 
-        self.put_sprite_in_image(dest_img_buffer,
-                                 dest_img_width,
-                                 dest_x, dest_y,
-                                 self.sprite_size * 2, self.sprite_size * 2,
-                                 self.sprites.sprites["pacman_right_1"])
+        self.utils.put_sprite_in_image(dest_img_buffer,
+                                       dest_img_width,
+                                       dest_x, dest_y,
+                                       self.sprite_size * 2,
+                                       self.sprite_size * 2,
+                                       self.sprites.sprites["pacman_right_1"])

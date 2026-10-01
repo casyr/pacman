@@ -1,5 +1,4 @@
 import pygame
-import numpy as np
 from enum import Enum
 from typing import Any
 from numpy import ndarray
@@ -8,6 +7,7 @@ from ..parsing.sprite_validator import SpriteData
 from ..model import GameBoard
 from ..shared.geometry import Wall
 from .game_view import GameView
+from .displayer_utils import DisplayerUtils
 
 
 class CornerWall(Enum):
@@ -24,7 +24,8 @@ class Maze(GameView):
                  window: pygame.Surface):
         self.maze_sprites = maze_sprites.sprites
         self.maze_grid: list[list[int]] = game_board.maze.grid
-        self.tile_size = self.get_tile_size_maze(
+        self.utils = DisplayerUtils()
+        self.tile_size = self.utils.get_tile_size_maze(
             game_board.maze.width,
             game_board.maze.height,
             window.get_width(),
@@ -248,10 +249,10 @@ class Maze(GameView):
                 sub_x_start = tile_x_start + tile_x * self.sprite_size
                 sub_w = self.sprite_size
                 sub_h = self.sprite_size
-                self.put_sprite_in_image(dest_img_buffer, dest_img_width,
-                                         sub_x_start, sub_y_start,
-                                         sub_w, sub_h,
-                                         tile[tile_y][tile_x])
+                self.utils.put_sprite_in_image(dest_img_buffer, dest_img_width,
+                                               sub_x_start, sub_y_start,
+                                               sub_w, sub_h,
+                                               tile[tile_y][tile_x])
 
     def render(self, dest_img_buffer: ndarray,
                dest_img_width: int,

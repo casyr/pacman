@@ -2,10 +2,8 @@ from .maze_creator import Maze
 from .pacgum import Pacgums
 from . import mlx_wrapper as mlx
 from ..model import GameBoard, GameSession
-from .maze_creator import Maze
-from .pacgum import Pacgums
 from pygame import Surface
-from ..parsing.sprite_sheet_manager import SpriteData
+from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from .game_view import GameView
 from .entities import Pacman
 
@@ -14,7 +12,7 @@ class PlayingView(GameView):
 
     def __init__(self, game_board: GameBoard, game_session: GameSession,
                  is_updated: bool, screen_width: int, screen_height: int,
-                 window: Surface, sprite_sheet: SpriteData):
+                 window: Surface, sprite_sheet: SpriteSheetsManager):
         self.game_board = game_board
         self.game_session = game_session
         self.is_updated = is_updated
@@ -26,7 +24,7 @@ class PlayingView(GameView):
         self.maze_img = self.maze_img.convert_alpha()
         self.maze_buffer = mlx.to_buffer(self.maze_img, False)
 
-    def render(self, is_updated: bool):
+    def render(self, is_updated: bool) -> None:
 
         if is_updated:
             maze = Maze(self.game_board,
@@ -59,7 +57,8 @@ class PlayingView(GameView):
         self.pacman_img = mlx.new_image(self.screen_width, self.screen_height)
         self.pacman_img = self.pacman_img.convert_alpha()
         self.pacman_buffer = mlx.to_buffer(self.pacman_img)
-        pacman.render(self.pacman_buffer, self.screen_width, self.game_board, self.window)
+        pacman.render(self.pacman_buffer, self.screen_width, self.game_board,
+                      self.window)
         del self.pacman_buffer
 
         mlx.blit_img(self.pacman_img, self.window, (0, 0))
