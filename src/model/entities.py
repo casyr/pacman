@@ -13,8 +13,8 @@ class Entity(ABC):
             current_x: int,
             maze: MazeAdapter) -> None:
 
-        self.current_pos_y: int = current_y
-        self.current_pos_x: int = current_x
+        self.current_pos_y: float = current_y
+        self.current_pos_x: float = current_x
         self.move_dir: Vector2D = Direction.ZERO.value
         self.spawn_pos: Vector2D = Vector2D(current_y, current_x)
         self.previous_pos: Vector2D = Vector2D(current_y, current_x)
@@ -49,7 +49,8 @@ class Entity(ABC):
         mask = move_masks.get(direction)
         if mask is None:
             return False
-        cell_value: int = self.grid[self.current_pos_y][self.current_pos_x]
+        
+        cell_value: int = self.grid[int(self.current_pos_y)][int(self.current_pos_x)]
         return not (cell_value & mask)
 
     @abstractmethod
@@ -80,8 +81,8 @@ class PacMan(Entity):
 
             self.previous_pos = Vector2D(
                 self.current_pos_y, self.current_pos_x)
-            self.current_pos_y += self.move_dir.y
-            self.current_pos_x += self.move_dir.x
+            self.current_pos_y += self.move_dir.y * elapsed_time * self.speed
+            self.current_pos_x += self.move_dir.x * elapsed_time * self.speed
 
 
 class Ghost(Entity, ABC):

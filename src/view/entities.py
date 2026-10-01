@@ -37,8 +37,8 @@ class Pacman(Entities):
         pos_x = self.x_start + self.sprite_size - 8
         pos_y = self.y_start + self.sprite_size - 8
 
-        dest_x = pos_x + game_board.player.current_pos_x * self.tile_size
-        dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
+        dest_x = int(pos_x + game_board.player.current_pos_x * self.tile_size)
+        dest_y = int(pos_y + game_board.player.current_pos_y * self.tile_size)
 
         self.utils.put_sprite_in_image(dest_img_buffer,
                                        dest_img_width,
