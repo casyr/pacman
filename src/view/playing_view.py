@@ -54,8 +54,8 @@ class PlayingView:
         self.pacgum_img = self.pacgum_img.convert_alpha()
         self.pacgum_buffer = mlx.to_buffer(self.pacgum_img)
         pacgum = Pacgums(game_board,
-                            self.sprite_sheets,
-                            self.window)
+                         self.sprite_sheets,
+                         self.window)
 
         pacgum.render(self.pacgum_buffer, self.screen_width)
 

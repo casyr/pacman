@@ -97,7 +97,7 @@ class PlayingScene:
         return False
 
     def handle_super_pacgums(self, controller: GameContext,
-                       player_pos: Vector2D) -> bool:
+                             player_pos: Vector2D) -> bool:
         if player_pos in controller.game_board.pacgum_pos:
             controller.game_board.pacgum_pos.remove(player_pos)
             controller.game_session.consume_pacgum()
