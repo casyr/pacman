@@ -40,7 +40,12 @@ def blit_img(image: pygame.Surface,
     dest_screen.blit(image, coords)
 
 
-def to_buffer(sprite: pygame.Surface) -> np.ndarray:
+def to_buffer(sprite: pygame.Surface,
+              set_black_transparency: bool = True) -> np.ndarray:
+
+    if not set_black_transparency:
+        return pygame.surfarray.pixels2d(sprite).T.ravel()
+
     rgb = pygame.surfarray.pixels3d(sprite)
     alpha = pygame.surfarray.pixels_alpha(sprite)
 
@@ -104,3 +109,8 @@ def get_key_pressed(event: pygame.event.Event) -> str | None:
             char = chr(event.key)
             return f"CHAR_{char}"
     return None
+
+
+def clear_window(window: pygame.Surface) -> None:
+    window.fill((0, 0, 0))
+    pygame.display.update()

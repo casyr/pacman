@@ -1,46 +1,27 @@
 import pygame
 from . import mlx_wrapper as mlx
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
-from .maze_creator import Maze
-from .pacgum import Pacgums
 from ..model import GameBoard, GameSession
+from .playing_view import PlayingView
 
 
 class GameView:
+
     def __init__(
             self,
+            screen_width: int,
+            screen_height: int,
             sprite_sheet: SpriteSheetsManager,
             window: pygame.Surface) -> None:
-
+        self.screen_width = screen_width
+        self.screen_height = screen_height
         self.sprite_sheet = sprite_sheet
         self.window = window
-        self.maze: Maze | None = None
-
-    def load_maze(self, game_board: GameBoard) -> None:
-        self.maze = Maze(game_board, self.sprite_sheet, self.window)
-        self.pacgums = Pacgums(game_board, self.sprite_sheet, self.window)
-
-    def clear_window(self) -> None:
-        self.window.fill((0, 0, 0))
-        mlx.update_window()
-
-    def draw_game(
-            self,
-            game_board: GameBoard,
-            game_session: GameSession) -> None:
-
-        if self.maze is not None:
-            dest_width = self.window.get_width()
-            dest_height = self.window.get_height()
-            self.render_image = mlx.new_image(dest_width,
-                                              dest_height).convert_alpha()
-            buffer = mlx.to_buffer(self.render_image)
-
-            self.maze.render(buffer, dest_width)
-            self.pacgums.render(buffer, dest_width)
-            del buffer
-            mlx.blit_img(self.render_image, self.window, (0, 0))
-            mlx.update_window()
+        self.playing_view = PlayingView(self.screen_width,
+                                        self.screen_height,
+                                        self.sprite_sheet,
+                                        self.window
+                                        )
 
     def handle_events(self) -> str | None:
         key: str | None = None
@@ -52,3 +33,9 @@ class GameView:
             if action is not None:
                 key = action
         return key
+
+    def draw_game(self, game_board: GameBoard, game_session: GameSession,
+                  is_maze_updated: bool, is_pacgum_updated: bool) -> None:
+
+        self.playing_view.render(is_maze_updated, is_pacgum_updated,
+                                 game_board, game_session)
