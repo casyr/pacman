@@ -54,7 +54,7 @@ class HighScoreManager:
         try:
             validated_data = HighScores.model_validate_json(raw_content)
             validated_data.scores.sort(
-                key=lambda item: item.score, reverse=True)
+                key=lambda item: item.score)
             return validated_data.scores[:10]
         except (ValidationError, Exception) as e:
             return self._reset_corrupted_file(f"Corupts file: {e}")

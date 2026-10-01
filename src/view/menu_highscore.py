@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+from . import mlx_wrapper as mlx
 from ..parsing.sprite_validator import SpriteData
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..model import HighScore
@@ -8,17 +9,20 @@ from ..model import HighScore
 class HighScoresView:
 
     def __init__(self,
-                 highscore_sprites: SpriteSheetsManager,
-                 window: pygame.Surface,
                  width: int,
-                 height: int):
-        self.highscore = highscore_sprites
-        self.width = width
-        self.height = height
-        self.window = window
-        self.size_char_pixel = 35
-        self.gap_pixel = 5
-        self.padding_pixel = 200
+                 height: int,
+                 window: pygame.Surface,
+                 highscore_sprites: SpriteSheetsManager,) -> None:
+
+        self.highscore: SpriteSheetsManager = highscore_sprites
+        self.width: int = width
+        self.height: int = height
+        self.window: pygame.Surface = window
+        self.scores_in_session: list[HighScore] = []
+        self._cached_buffer_menu: pygame.Surface | None = None
+        self.size_char_pixel: int = 35
+        self.gap_pixel: int = 5
+        self.margin_pixel: int = 200
 
     def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
                             dest_image_width: int,
@@ -52,11 +56,11 @@ class HighScoresView:
         logo_name = "high_score"
         logo_sprite = self.highscore.sprites.get(logo_name, None)
         if logo_sprite is None:
-            return 0 + self.padding_pixel
+            return 0 + self.margin_pixel
         logo_h = int(dest_img_height * 0.16)
         logo_w = dest_img_width
         logo_x = 0
-        logo_y = 0 + self.padding_pixel
+        logo_y = 0 + self.margin_pixel
 
         ratio = logo_sprite.coords.w / logo_sprite.coords.h
         logo_w = int(logo_h * ratio)
@@ -73,7 +77,7 @@ class HighScoresView:
             logo_sprite
         )
 
-        return logo_h + self.padding_pixel
+        return logo_h + self.margin_pixel
 
     def _calculate_string_width(
             self,
@@ -127,7 +131,7 @@ class HighScoresView:
 
         total_str_w = self._calculate_string_width(score_str)
         current_x = (dest_img_width - total_str_w) // 2
-
+        current_y = dest_img_height - current_y - self.margin_pixel
         for char in score_str:
             char_w = self._render_single_char(
                 dest_image_buffer,
@@ -158,14 +162,37 @@ class HighScoresView:
                 score_str,
                 start_y
             )
-            start_y += self.size_char_pixel + self.padding_pixel
+            start_y += self.margin_pixel
+
+    def _create_cache_menu(
+            self,
+            dest_width: int,
+            dest_height: int,
+            scores: list[HighScore]) -> pygame.Surface:
+
+        if (self.scores_in_session != scores or
+                self._cached_buffer_menu is None):
+
+            self._cached_buffer_menu = mlx.new_image(
+                dest_width,
+                dest_height).convert_alpha()
+            buffer = mlx.to_buffer(self._cached_buffer_menu)
+            dest_img_height = buffer.size // dest_width
+            logo_h = self._render_highscore_image(
+                buffer, dest_width, dest_img_height)
+            self._render_scores(
+                buffer,
+                dest_width,
+                dest_img_height,
+                logo_h,
+                scores)
+            del buffer
+            self.scores_in_session = scores
+        return self._cached_buffer_menu
 
     def render(self,
-               dest_image_buffer: np.ndarray,
-               dest_img_width: int,
                scores: list[HighScore]) -> None:
-        dest_img_height = dest_image_buffer.size // dest_img_width
-        logo_h = self._render_highscore_image(
-            dest_image_buffer, dest_img_width, dest_img_height)
-        self._render_scores(
-            dest_image_buffer, dest_img_width, dest_img_height, logo_h, scores)
+
+        cached_image = self._create_cache_menu(self.width, self.height, scores)
+        mlx.blit_img(cached_image, self.window, (0, 0))
+        mlx.update_window()

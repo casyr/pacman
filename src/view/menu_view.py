@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+from . import mlx_wrapper as mlx
 from ..parsing.sprite_validator import SpriteData
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 
@@ -7,14 +8,16 @@ from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 class Menu:
 
     def __init__(self,
-                 menu_sprites: SpriteSheetsManager,
-                 window: pygame.Surface,
                  width: int,
-                 height: int):
-        self.menu = menu_sprites
-        self.width = width
-        self.height = height
-        self.window = window
+                 height: int,
+                 window: pygame.Surface,
+                 menu_sprites: SpriteSheetsManager,) -> None:
+
+        self.width: int = width
+        self.height: int = height
+        self.window: pygame.Surface = window
+        self.menu: SpriteSheetsManager = menu_sprites
+        self._cached_buffer_menu: pygame.Surface | None = None
         self.name_sprite_menu: list[str] = [
             "menu_play",
             "menu_score",
@@ -113,11 +116,26 @@ class Menu:
 
             current_y += menu_h + self.padding_pixel
 
-    def render(self, dest_image_buffer: np.ndarray,
-               dest_img_width: int) -> None:
+    def _create_cache_menu(
+            self,
+            dest_width: int,
+            dest_height: int) -> pygame.Surface:
 
-        dest_img_height = dest_image_buffer.size // dest_img_width
-        logo_h = self._render_logo(
-            dest_image_buffer, dest_img_width, dest_img_height)
-        self._render_menus(
-            dest_image_buffer, dest_img_width, dest_img_height, logo_h)
+        if self._cached_buffer_menu is None:
+            self._cached_buffer_menu = mlx.new_image(
+                dest_width,
+                dest_height).convert_alpha()
+            buffer = mlx.to_buffer(self._cached_buffer_menu)
+            dest_img_height = buffer.size // dest_width
+            logo_h = self._render_logo(
+                buffer, dest_width, dest_img_height)
+            self._render_menus(
+                buffer, dest_width, dest_img_height, logo_h)
+            del buffer
+        return self._cached_buffer_menu
+
+    def render(self) -> None:
+
+        cached_image = self._create_cache_menu(self.width, self.height)
+        mlx.blit_img(cached_image, self.window, (0, 0))
+        mlx.update_window()

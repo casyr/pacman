@@ -40,7 +40,7 @@ def main() -> int:
         window = mlx.new_window(screen_width, screen_height)
         sprite = SpriteSheetsManager("sprites")
         sprite.processed_sprite()
-        game_view = GameView(sprite, window)
+        game_view = GameView(screen_width, screen_height, sprite, window)
         controller = GameController(
             level_manager,
             highscore_manager,
