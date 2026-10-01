@@ -143,7 +143,6 @@ class PlayingScene:
         if session_level > self.current_level_index:
             controller.game_board = controller.level_manager.build_level()
             self.current_level_index = session_level
-            self.render(controller)
             return True
         return False
 
