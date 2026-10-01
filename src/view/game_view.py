@@ -35,6 +35,7 @@ class GameView:
         return key
 
     def draw_game(self, game_board: GameBoard, game_session: GameSession,
-                  maze_is_updated: bool) -> None:
+                  is_maze_updated: bool, is_pacgum_updated: bool) -> None:
 
-        self.playing_view.render(maze_is_updated, game_board, game_session)
+        self.playing_view.render(is_maze_updated, is_pacgum_updated,
+                                 game_board, game_session)

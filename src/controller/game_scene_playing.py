@@ -164,8 +164,11 @@ class PlayingScene:
 
     def render(self, controller: GameContext) -> None:
         is_maze_updated = self._check_update_level(controller)
+        player_y = controller.game_board.player.current_pos_y
+        player_x = controller.game_board.player.current_pos_x
         is_pacgum_updated = self._handle_consumables(controller,
-                                                     controller.game_session.)
+                                                     Vector2D(y=player_y,
+                                                              x=player_x))
         controller.view.draw_game(controller.game_board,
                                   controller.game_session,
-                                  is_updated)
+                                  is_maze_updated, is_pacgum_updated)
