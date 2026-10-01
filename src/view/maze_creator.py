@@ -6,7 +6,6 @@ from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..parsing.sprite_validator import SpriteData
 from ..model import GameBoard
 from ..shared.geometry import Wall
-from .game_view import GameView
 from .displayer_utils import DisplayerUtils
 
 
@@ -17,11 +16,12 @@ class CornerWall(Enum):
     SOUTH_WEST = Wall.SOUTH.value + Wall.WEST.value
 
 
-class Maze(GameView):
+class Maze:
 
     def __init__(self, game_board: GameBoard,
+                 window: pygame.Surface,
                  maze_sprites: SpriteSheetsManager,
-                 window: pygame.Surface):
+                 ):
         self.maze_sprites = maze_sprites.sprites
         self.maze_grid: list[list[int]] = game_board.maze.grid
         self.utils = DisplayerUtils()

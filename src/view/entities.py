@@ -2,11 +2,10 @@ import pygame
 from numpy import ndarray
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..model import GameBoard
-from .game_view import GameView
 from .displayer_utils import DisplayerUtils
 
 
-class Entities(GameView):
+class Entities:
 
     def __init__(self, game_board: GameBoard,
                  sprites: SpriteSheetsManager,

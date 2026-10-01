@@ -2,11 +2,10 @@ import pygame
 from numpy import ndarray
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..model import GameBoard
-from .game_view import GameView
 from .displayer_utils import DisplayerUtils
 
 
-class Pacgums(GameView):
+class Pacgums:
 
     def __init__(self, game_board: GameBoard,
                  pacgums_sprites: SpriteSheetsManager,

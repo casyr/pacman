@@ -2,6 +2,7 @@ import pygame
 from . import mlx_wrapper as mlx
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..model import GameBoard, GameSession
+from .playing_view import PlayingView
 
 
 class GameView:
@@ -16,6 +17,11 @@ class GameView:
         self.screen_height = screen_height
         self.sprite_sheet = sprite_sheet
         self.window = window
+        self.playing_view = PlayingView(self.screen_width,
+                                        self.screen_height,
+                                        self.sprite_sheet,
+                                        self.window
+                                        )
 
     def handle_events(self) -> str | None:
         key: str | None = None
@@ -29,11 +35,6 @@ class GameView:
         return key
 
     def draw_game(self, game_board: GameBoard, game_session: GameSession,
-                  is_updated: bool) -> None:
-        from .playing_view import PlayingView
+                  maze_is_updated: bool) -> None:
 
-        playing_view = PlayingView(game_board, game_session, is_updated,
-                                   self.screen_width, self.screen_height,
-                                   self.window, self.sprite_sheet,
-                                   )
-        playing_view.render(is_updated)
+        self.playing_view.render(maze_is_updated, game_board, game_session)
