@@ -1,6 +1,6 @@
 import pygame
 import numpy as np
-from functools import lru_cache
+from typing import Any
 from ..errors import ViewError
 from pathlib import Path
 
@@ -27,7 +27,7 @@ def update_window() -> None:
 
 def load_sprite(path: Path) -> pygame.Surface:
     try:
-        return (pygame.image.load(path))
+        return pygame.image.load(path)
     except FileNotFoundError as e:
         raise ViewError(e)
     except PermissionError as e:
@@ -62,7 +62,7 @@ def destroy_image(image: pygame.Surface) -> None:
     image.unlock()
 
 
-def get_events() -> list[pygame.event.Event]:
+def get_events() -> list[pygame.event.Event] | Any:
     return pygame.event.get()
 
 
@@ -70,7 +70,6 @@ def get_padding() -> int:
     return 500
 
 
-@lru_cache(maxsize=1)
 def _get_key_mapping() -> dict[int, str]:
     return {
         pygame.K_w: "KEY_W",

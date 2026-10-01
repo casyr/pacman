@@ -6,7 +6,7 @@ from .pacgum import Pacgums
 from .menu_view import Menu
 from .menu_highscore import HighScoresView
 from ..model import GameBoard, GameSession
-from ..model import HighScores
+from ..model import HighScore
 
 
 class GameView:
@@ -46,7 +46,11 @@ class GameView:
             mlx.blit_img(render_image, self.window, (0, 0))
             mlx.update_window()
 
-    def _create_cache_menu(self, dest_width: int, dest_height: int):
+    def _create_cache_menu(
+            self,
+            dest_width: int,
+            dest_height: int) -> pygame.Surface:
+
         if self.menu is None:
             self.menu = Menu(
                 self.sprite_sheet, self.window, dest_width, dest_height)
@@ -70,7 +74,7 @@ class GameView:
         mlx.update_window()
 
     def draw_highscores(
-            self, scores : list[HighScores]) -> None:
+            self, scores: list[HighScore]) -> None:
         dest_width = self.window.get_width()
         dest_height = self.window.get_height()
         if self.highscores is None:
@@ -79,7 +83,7 @@ class GameView:
         render_image = mlx.new_image(dest_width,
                                      dest_height).convert_alpha()
         buffer = mlx.to_buffer(render_image)
-        self.highscores.render(buffer, dest_width)
+        self.highscores.render(buffer, dest_width, scores)
         del buffer
         mlx.blit_img(render_image, self.window, (0, 0))
         mlx.update_window()

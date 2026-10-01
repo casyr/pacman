@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 from ..parsing.sprite_validator import SpriteData
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
+from ..model import HighScore
 
 
 class HighScoresView:
@@ -15,6 +16,9 @@ class HighScoresView:
         self.width = width
         self.height = height
         self.window = window
+        self.size_char_pixel = 35
+        self.gap_pixel = 5
+        self.padding_pixel = 200
 
     def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
                             dest_image_width: int,
@@ -39,16 +43,25 @@ class HighScoresView:
 
         dest_image_buffer[image_pos_1d[mask]] = sprite_pixels[mask]
 
-    def _render_highscore_image(self, dest_image_buffer: np.ndarray,
-                                dest_img_width: int, dest_img_height: int) -> int:
+    def _render_highscore_image(
+            self,
+            dest_image_buffer: np.ndarray,
+            dest_img_width: int,
+            dest_img_height: int) -> int:
+
         logo_name = "high_score"
         logo_sprite = self.highscore.sprites.get(logo_name, None)
         if logo_sprite is None:
-            return 0
-        logo_h = int(dest_img_height * 0.35)
+            return 0 + self.padding_pixel
+        logo_h = int(dest_img_height * 0.16)
         logo_w = dest_img_width
         logo_x = 0
-        logo_y = 0
+        logo_y = 0 + self.padding_pixel
+
+        ratio = logo_sprite.coords.w / logo_sprite.coords.h
+        logo_w = int(logo_h * ratio)
+
+        logo_x = (dest_img_width - logo_w) // 2
 
         self.put_sprite_in_image(
             dest_image_buffer,
@@ -60,50 +73,99 @@ class HighScoresView:
             logo_sprite
         )
 
-        return logo_h
+        return logo_h + self.padding_pixel
 
-    def _render_menus(self,
-                      dest_image_buffer: np.ndarray,
-                      dest_img_width: int,
-                      dest_img_height: int,
-                      start_y: int) -> None:
-        padding = 20
-        down_margin = 200
+    def _calculate_string_width(
+            self,
+            text: str) -> int:
 
-        total_menu: int = len()
+        total_w = 0
+        for char in text:
+            if char == " ":
+                total_w += self.size_char_pixel // 2 + self.gap_pixel
+                continue
+            char_sprite = self.highscore.sprites.get(f"char_{char.upper()}")
+            if char_sprite:
+                ratio = char_sprite.coords.w / char_sprite.coords.h
+                total_w += int(self.size_char_pixel * ratio) + self.gap_pixel
+        return total_w
 
-        height_available = dest_img_height - start_y - down_margin - (
-            padding * (total_menu - 1))
+    def _render_single_char(
+            self,
+            dest_image_buffer: np.ndarray,
+            dest_img_width: int,
+            char: str,
+            current_x: int,
+            current_y: int) -> int:
 
-        menu_h = height_available // total_menu
+        if char == " ":
+            return self.size_char_pixel // 2
 
-        current_y = start_y + padding
-
-        for menu in self.name_sprite_menu:
-            menu_sprite = self.menu.sprites[menu]
-
-            ratio = menu_sprite.coords.w / menu_sprite.coords.h
-            menu_w = int(menu_h * ratio)
-
-            menu_x = (dest_img_width - menu_w) // 2
-
+        char_sprite = self.highscore.sprites.get(f"char_{char.upper()}")
+        if char_sprite:
+            ratio = char_sprite.coords.w / char_sprite.coords.h
+            char_w = int(self.size_char_pixel * ratio)
             self.put_sprite_in_image(
                 dest_image_buffer,
                 dest_img_width,
-                menu_x,
+                current_x,
                 current_y,
-                menu_w,
-                menu_h,
-                menu_sprite
+                char_w,
+                self.size_char_pixel,
+                char_sprite
             )
+            return char_w
+        return 0
 
-            current_y += menu_h + padding
+    def _render_score_line(
+            self,
+            dest_image_buffer: np.ndarray,
+            dest_img_width: int,
+            dest_img_height: int,
+            score_str: str,
+            current_y: int) -> None:
 
-    def render(self, dest_image_buffer: np.ndarray,
-               dest_img_width: int) -> None:
+        total_str_w = self._calculate_string_width(score_str)
+        current_x = (dest_img_width - total_str_w) // 2
 
+        for char in score_str:
+            char_w = self._render_single_char(
+                dest_image_buffer,
+                dest_img_width,
+                char,
+                current_x,
+                current_y
+            )
+            current_x += char_w + self.gap_pixel
+
+    def _render_scores(self,
+                       dest_image_buffer: np.ndarray,
+                       dest_img_width: int,
+                       dest_img_height: int,
+                       start_y: int,
+                       scores: list[HighScore]) -> None:
+
+        total_scores = len(scores)
+        if total_scores == 0:
+            return
+
+        for score in scores:
+            score_str = f"Player : {score.player}  score : {score.score}"
+            self._render_score_line(
+                dest_image_buffer,
+                dest_img_width,
+                dest_img_height,
+                score_str,
+                start_y
+            )
+            start_y += self.size_char_pixel + self.padding_pixel
+
+    def render(self,
+               dest_image_buffer: np.ndarray,
+               dest_img_width: int,
+               scores: list[HighScore]) -> None:
         dest_img_height = dest_image_buffer.size // dest_img_width
-        logo_h = self._render_logo(
+        logo_h = self._render_highscore_image(
             dest_image_buffer, dest_img_width, dest_img_height)
-        self._render_menus(
-            dest_image_buffer, dest_img_width, dest_img_height, logo_h)
+        self._render_scores(
+            dest_image_buffer, dest_img_width, dest_img_height, logo_h, scores)

@@ -21,6 +21,8 @@ class Menu:
             "menu_instruction",
             "menu_exit"
         ]
+        self.padding_pixel: int = 20
+        self.margin_pixel: int = 200
 
     def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
                             dest_image_width: int,
@@ -51,10 +53,12 @@ class Menu:
         logo_sprite = self.menu.sprites.get(logo_name, None)
         if logo_sprite is None:
             return 0
-        logo_h = int(dest_img_height * 0.35)
-        logo_w = dest_img_width
-        logo_x = 0
-        logo_y = 0
+        logo_h = int(dest_img_height * 0.25)
+        logo_y = self.margin_pixel
+
+        ratio = logo_sprite.coords.w / logo_sprite.coords.h
+        logo_w = int(logo_h * ratio)
+        logo_x = (dest_img_width - logo_w) // 2
 
         self.put_sprite_in_image(
             dest_image_buffer,
@@ -66,31 +70,35 @@ class Menu:
             logo_sprite
         )
 
-        return logo_h
+        return logo_h + self.margin_pixel
+
+    def _calculate_total_menus_height(self) -> int:
+        total_menu = len(self.name_sprite_menu)
+        if total_menu == 0:
+            return 0
+        return self.padding_pixel * (total_menu - 1)
 
     def _render_menus(self,
                       dest_image_buffer: np.ndarray,
                       dest_img_width: int,
                       dest_img_height: int,
                       start_y: int) -> None:
-        padding = 20
-        down_margin = 200
 
         total_menu: int = len(self.name_sprite_menu)
 
-        height_available = dest_img_height - start_y - down_margin - (
-            padding * (total_menu - 1))
+        height_available = (
+            dest_img_height - start_y - self.margin_pixel - (
+                self.padding_pixel * (total_menu - 1))) // 2
 
         menu_h = height_available // total_menu
-
-        current_y = start_y + padding
+        total_menus_height = self._calculate_total_menus_height()
+        current_y = start_y + (height_available - total_menus_height) // 2
 
         for menu in self.name_sprite_menu:
             menu_sprite = self.menu.sprites[menu]
 
             ratio = menu_sprite.coords.w / menu_sprite.coords.h
             menu_w = int(menu_h * ratio)
-
             menu_x = (dest_img_width - menu_w) // 2
 
             self.put_sprite_in_image(
@@ -103,7 +111,7 @@ class Menu:
                 menu_sprite
             )
 
-            current_y += menu_h + padding
+            current_y += menu_h + self.padding_pixel
 
     def render(self, dest_image_buffer: np.ndarray,
                dest_img_width: int) -> None:

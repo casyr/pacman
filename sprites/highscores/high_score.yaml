@@ -1,9 +1,9 @@
-sprite_width: 800
+sprite_width: 2645
 sprites:
   # --- HIGH SCORE ---
   high_score:
     x: 0
     y: 0
-    w: 2645
-    h: 888
+    w: 2640
+    h: 885
 
