@@ -3,7 +3,7 @@ from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..parsing.sprite_validator import SpriteData
 from .game_view import GameView
 from .pacgum import Pacgums
-from .menu_view import Menu
+from .menu_main import Menu
 from .menu_highscore import HighScoresView
 
 

@@ -49,7 +49,7 @@ class PlayingScene:
             user_input: str | None,
             controller: GameContext
             ) -> GameScene:
-        from .game_scene_victory import VictoryScene
+        from .game_scene_defeat import DefeatScene
 
         if user_input == "KEY_P":
             controller.game_session.switch_status_paused()
@@ -60,7 +60,7 @@ class PlayingScene:
             return CheatScene(previous_scene=self)
 
         elif user_input == "KEY_T":
-            return VictoryScene()
+            return DefeatScene()
 
         if user_input == "KEY_W":
             controller.game_board.player.set_direction(-1, 0)

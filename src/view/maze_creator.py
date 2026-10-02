@@ -1,8 +1,8 @@
 import pygame
 import numpy as np
+from numpy import ndarray
 from enum import Enum
 from typing import Any
-from numpy import ndarray
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..parsing.sprite_validator import SpriteData
 from ..model import GameBoard

@@ -3,8 +3,12 @@ from . import mlx_wrapper as mlx
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from .maze_creator import Maze
 from .pacgum import Pacgums
-from .menu_view import Menu
+from .menu_main import Menu
 from .menu_highscore import HighScoresView
+from .menu_victory import VictoryView
+from .menu_defeat import DefeatView
+from .menu_instructions import InstructionsView
+from .menu_paused import PausedView
 from ..model import GameBoard, GameSession
 from ..model import HighScore
 
@@ -24,6 +28,14 @@ class GameView:
         self.menu: Menu = Menu(
             screen_width, screen_height, window, sprite_sheet)
         self.highscores: HighScoresView = HighScoresView(
+            screen_width, screen_height, window, sprite_sheet)
+        self.victory: VictoryView = VictoryView(
+            screen_width, screen_height, window, sprite_sheet)
+        self.defeat: DefeatView = DefeatView(
+            screen_width, screen_height, window, sprite_sheet)
+        self.instruction: InstructionsView = InstructionsView(
+            screen_width, screen_height, window, sprite_sheet)
+        self.paused: PausedView = PausedView(
             screen_width, screen_height, window, sprite_sheet)
 
     def load_maze(self, game_board: GameBoard) -> None:
@@ -56,6 +68,18 @@ class GameView:
     def draw_highscores(
             self, scores: list[HighScore]) -> None:
         self.highscores.render(scores)
+
+    def draw_victory(self, score: int) -> None:
+        self.victory.render(score)
+
+    def draw_defeat(self, score: int) -> None:
+        self.defeat.render(score)
+
+    def draw_instruction(self) -> None:
+        self.instruction.render()
+
+    def draw_paused(self) -> None:
+        self.paused.render()
 
     def handle_events(self) -> str | None:
         key: str | None = None

@@ -85,8 +85,9 @@ def _get_key_mapping() -> dict[int, str]:
         pygame.K_4: "KEY_4",
         pygame.K_5: "KEY_5",
         pygame.K_6: "KEY_6",
+        pygame.K_BACKSPACE: "KEY_BACKSPACE",
         pygame.K_RETURN: "KEY_RETURN",
-        pygame.K_ESCAPE: "KEY_ESCAPE"
+        pygame.K_SPACE: "KEY_SPACE"
     }
 
 
