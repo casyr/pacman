@@ -19,25 +19,19 @@ class PausedView(BaseMenuView):
         self.lines: list[str] = [
             "press   1   to replay",
             "press   2   to return main menu"]
-        self.size_char_pixel: int = 35
-        self.title_size_pixel: int = 100
+        self.size_char_pixel: int = 25
+        self.title_size_pixel: int = 60
 
     def _render_titles(
             self,
             dest_image_buffer: np.ndarray) -> int:
-        max_width = max(
-            self._calculate_string_width(line, self.title_size_pixel)
-            for line in self.title_lines
-        )
-        current_y = 0 + self.margin_pixel
-        start_x = (self.width - max_width) // 2
+        current_y = self.margin_pixel
         for line in self.title_lines:
             self._render_text(
                 dest_image_buffer,
                 current_y,
                 line,
-                self.title_size_pixel,
-                start_x
+                self.title_size_pixel
             )
             current_y += self.title_size_pixel + (self.gap_pixel * 2)
 
@@ -47,7 +41,8 @@ class PausedView(BaseMenuView):
                       dest_image_buffer: np.ndarray,
                       start_y: int) -> None:
 
-        start_y += self.margin_pixel // 2
+        start_y += self.margin_pixel
+        step = self.size_char_pixel + self.margin_pixel
 
         for line in self.lines:
             self._render_text(
@@ -56,7 +51,7 @@ class PausedView(BaseMenuView):
                 line,
                 self.size_char_pixel
             )
-            start_y += self.margin_pixel
+            start_y += step
 
     def _create_cache_menu(self) -> pygame.Surface:
 

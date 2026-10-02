@@ -6,7 +6,7 @@ class DisplayerUtils:
 
     @staticmethod
     def _get_padding() -> int:
-        return 500
+        return 260
 
     def get_tile_size_maze(self, obj_width: int, obj_height: int,
                            screen_width: int, screen_height: int) -> int:

@@ -25,7 +25,7 @@ class Menu:
             "menu_exit"
         ]
         self.padding_pixel: int = 20
-        self.margin_pixel: int = 200
+        self.margin_pixel: int = 20
 
     def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
                             dest_image_width: int,
@@ -75,27 +75,14 @@ class Menu:
 
         return logo_h + self.margin_pixel
 
-    def _calculate_total_menus_height(self) -> int:
-        total_menu = len(self.name_sprite_menu)
-        if total_menu == 0:
-            return 0
-        return self.padding_pixel * (total_menu - 1)
-
     def _render_menus(self,
                       dest_image_buffer: np.ndarray,
                       dest_img_width: int,
                       dest_img_height: int,
                       start_y: int) -> None:
 
-        total_menu: int = len(self.name_sprite_menu)
-
-        height_available = (
-            dest_img_height - start_y - self.margin_pixel - (
-                self.padding_pixel * (total_menu - 1))) // 2
-
-        menu_h = height_available // total_menu
-        total_menus_height = self._calculate_total_menus_height()
-        current_y = start_y + (height_available - total_menus_height) // 2
+        menu_h = 30
+        current_y = start_y + self.padding_pixel
 
         for menu in self.name_sprite_menu:
             menu_sprite = self.menu.sprites[menu]
