@@ -16,15 +16,16 @@ class BaseMenuView:
         self.text: SpriteSheetsManager = text_sprites
         self._cached_buffer_menu: pygame.Surface | None = None
 
-        self.size_char_pixel: int = 50
-        self.gap_pixel: int = 5
-        self.margin_pixel: int = 200
+        self.size_char_pixel: int = 15
+        self.gap_pixel: int = 2
+        self.margin_pixel: int = 20
 
     def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
                             dest_image_width: int,
                             dest_x: int, dest_y: int,
                             dest_w: int, dest_h: int,
                             sprite_data: SpriteData) -> None:
+
         x_gap = np.arange(dest_w)
         y_gap = np.arange(dest_h)
 

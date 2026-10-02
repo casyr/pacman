@@ -17,8 +17,10 @@ class HighScoresView(BaseMenuView):
         super().__init__(width, height, window, text_sprites)
         self.scores_in_session: list[HighScore] = []
         self.title_lines: list[str] = ["High", "Scores"]
-        self.size_char_pixel: int = 35
-        self.title_size_pixel: int = 100
+        self.margin_pixel: int = 20
+        self.gap_pixel: int = 2
+        self.size_char_pixel: int = 15
+        self.title_size_pixel: int = 25
 
     def _render_titles(
             self,
@@ -33,22 +35,21 @@ class HighScoresView(BaseMenuView):
                 line,
                 self.title_size_pixel
             )
-            current_y += self.title_size_pixel + (self.gap_pixel * 2)
+            current_y += self.title_size_pixel + self.gap_pixel
 
         return current_y
 
     def _render_scores(self,
                        dest_image_buffer: np.ndarray,
                        start_y: int,
-                       scores: list[HighScore]) -> None:
+                       scores: list[HighScore]) -> int:
 
         total_scores = len(scores)
         if total_scores == 0:
-            return
+            return start_y
 
-        start_y += self.margin_pixel // 2
-        available_height = self.height - start_y
-        step = available_height // total_scores
+        start_y += self.margin_pixel
+        step = 30
 
         for score in scores:
             score_str = f"Player : {score.player}  score : {score.score}"
@@ -59,13 +60,13 @@ class HighScoresView(BaseMenuView):
                 self.size_char_pixel
             )
             start_y += step
+        return start_y
 
     def _render_play_instruction(self,
                                  dest_image_buffer: np.ndarray,
                                  start_y: int) -> int:
 
-        start_y += self.margin_pixel // 2
-
+        start_y += self.margin_pixel
         play_str = "Press space to play"
         self._render_text(
             dest_image_buffer,
@@ -88,11 +89,11 @@ class HighScoresView(BaseMenuView):
             buffer = mlx.to_buffer(self._cached_buffer_menu)
 
             title_end_y = self._render_titles(buffer)
-            text_end_y = self._render_play_instruction(buffer, title_end_y)
-            self._render_scores(
+            scores_end_y = self._render_scores(
                 buffer,
-                text_end_y,
+                title_end_y,
                 scores)
+            self._render_play_instruction(buffer, scores_end_y)
 
             del buffer
             self.scores_in_session = scores
