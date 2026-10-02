@@ -88,22 +88,38 @@ class PlayingScene:
             x=controller.game_board.player.current_pos_x
         )
 
-    def _handle_consumables(
-            self,
-            controller: GameContext,
-            player_pos: Vector2D) -> None:
+    def handle_pacgums(self, controller: GameContext,
+                       player_pos: Vector2D) -> bool:
+        if player_pos in controller.game_board.pacgum_pos:
+            controller.game_board.pacgum_pos.remove(player_pos)
+            controller.game_session.consume_pacgum()
+            return True
+        return False
 
+    def handle_super_pacgums(self, controller: GameContext,
+                             player_pos: Vector2D) -> bool:
         if player_pos in controller.game_board.pacgum_pos:
             controller.game_board.pacgum_pos.remove(player_pos)
             controller.game_session.consume_pacgum()
 
-        if player_pos in controller.game_board.super_pacgums_pos:
-            controller.game_board.super_pacgums_pos.remove(player_pos)
-            controller.game_session.consume_super_pacgum()
+            if player_pos in controller.game_board.super_pacgums_pos:
+                controller.game_board.super_pacgums_pos.remove(player_pos)
+                controller.game_session.consume_super_pacgum()
 
-            for ghost in controller.game_board.ghosts:
-                if ghost.state != GhostState.EATEN:
-                    ghost.state = GhostState.FRIGHTENED
+                for ghost in controller.game_board.ghosts:
+                    if ghost.state != GhostState.EATEN:
+                        ghost.state = GhostState.FRIGHTENED
+                return True
+
+        return False
+
+    def _handle_consumables(
+            self,
+            controller: GameContext,
+            player_pos: Vector2D) -> bool:
+
+        return (self.handle_pacgums(controller, player_pos) or
+                self.handle_super_pacgums(controller, player_pos))
 
     def _handle_ghosts_and_collisions(
             self,
@@ -133,18 +149,26 @@ class PlayingScene:
                         controller.game_board.reset_entities()
                         return
 
-    def _check_update_level(self, controller: GameContext) -> None:
+    def _check_update_level(self, controller: GameContext) -> bool:
         if self.current_level_index is None:
             self.current_level_index = controller.game_session.level_index
-            controller.view.load_maze(controller.game_board)
-            return
+            # controller.view.load_maze(controller.game_board)
+            return True
 
         session_level = controller.game_session.level_index
         if session_level > self.current_level_index:
             controller.game_board = controller.level_manager.build_level()
             self.current_level_index = session_level
-            controller.view.load_maze(controller.game_board)
+            return True
+        return False
 
     def render(self, controller: GameContext) -> None:
-        controller.view.draw_game(
-            controller.game_board, controller.game_session)
+        is_maze_updated = self._check_update_level(controller)
+        player_y = controller.game_board.player.current_pos_y
+        player_x = controller.game_board.player.current_pos_x
+        is_pacgum_updated = self._handle_consumables(controller,
+                                                     Vector2D(y=player_y,
+                                                              x=player_x))
+        controller.view.draw_game(controller.game_board,
+                                  controller.game_session,
+                                  is_maze_updated, is_pacgum_updated)

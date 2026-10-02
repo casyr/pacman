@@ -11,9 +11,11 @@ from .menu_instructions import InstructionsView
 from .menu_paused import PausedView
 from ..model import GameBoard, GameSession
 from ..model import HighScore
+from .playing_view import PlayingView
 
 
 class GameView:
+
     def __init__(
             self,
             screen_width: int,
@@ -24,7 +26,8 @@ class GameView:
         self.screen_height = screen_height
         self.sprite_sheet = sprite_sheet
         self.window = window
-        self.maze: Maze | None = None
+        self.playing_view: PlayingView = PlayingView(
+            screen_width, screen_height, window, sprite_sheet)
         self.menu: Menu = Menu(
             screen_width, screen_height, window, sprite_sheet)
         self.highscores: HighScoresView = HighScoresView(
@@ -39,28 +42,17 @@ class GameView:
             screen_width, screen_height, window, sprite_sheet)
 
     def load_maze(self, game_board: GameBoard) -> None:
-        self.maze = Maze(game_board, self.sprite_sheet, self.window)
+        self.maze = Maze(game_board, self.window, self.sprite_sheet)
         self.pacgums = Pacgums(game_board, self.sprite_sheet, self.window)
 
     def clear_window(self) -> None:
         self.window.fill((0, 0, 0))
 
-    def draw_game(
-            self,
-            game_board: GameBoard,
-            game_session: GameSession) -> None:
+    def draw_game(self, game_board: GameBoard, game_session: GameSession,
+                  is_maze_updated: bool, is_pacgum_updated: bool) -> None:
 
-        if self.maze is not None:
-            dest_width = self.window.get_width()
-            dest_height = self.window.get_height()
-            render_image = mlx.new_image(dest_width,
-                                         dest_height).convert_alpha()
-            buffer = mlx.to_buffer(render_image)
-            self.maze.render(buffer, dest_width)
-            self.pacgums.render(buffer, dest_width)
-            del buffer
-            mlx.blit_img(render_image, self.window, (0, 0))
-            mlx.update_window()
+        self.playing_view.render(is_maze_updated, is_pacgum_updated,
+                                 game_board, game_session)
 
     def draw_menu(self) -> None:
         self.menu.render()

@@ -4,8 +4,8 @@ entities:
   pacman_right_1:
     x: 0
     y: 0
-    w: 16
-    h: 16
+    w: 15
+    h: 15
   pacman_right_2:
     x: 16
     y: 0
