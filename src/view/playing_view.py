@@ -49,7 +49,7 @@ class PlayingView:
             maze_sprite = SpriteData(sprite_width=self.screen_width, coords=maze_coords, buffer=maze_buffer)
 
             self.utils.put_sprite_in_image(dest_buffer,
-                                           self.screen_height,
+                                           self.screen_width,
                                            0, 0, self.screen_width,
                                            self.screen_height, maze_sprite)
 
@@ -68,7 +68,7 @@ class PlayingView:
             pacgum_sprite = SpriteData(sprite_width=self.screen_width, coords=pacgum_coords, buffer=pacgum_buffer)
 
             self.utils.put_sprite_in_image(dest_buffer,
-                                           self.screen_height,
+                                           self.screen_width,
                                            0, 0, self.screen_width,
                                            self.screen_height, pacgum_sprite)
 
@@ -83,7 +83,7 @@ class PlayingView:
         pacman_sprite = SpriteData(sprite_width=self.screen_width, coords=pacman_coords, buffer=pacman_buffer)
 
         self.utils.put_sprite_in_image(dest_buffer,
-                                       self.screen_height,
+                                       self.screen_width,
                                        0, 0, self.screen_width,
                                        self.screen_height, pacman_sprite)
 
