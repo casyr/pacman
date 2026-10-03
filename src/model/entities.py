@@ -31,13 +31,6 @@ class Entity(ABC):
         self.previous_pos = self.spawn_pos
 
     def can_move(self, direction: Vector2D) -> bool:
-        next_move_y = self.current_pos_y + direction.y
-        next_move_x = self.current_pos_x + direction.x
-
-        if next_move_y < 0 or next_move_y >= self.height_max:
-            return False
-        if next_move_x < 0 or next_move_x >= self.width_max:
-            return False
 
         move_masks: dict[Vector2D, int] = {
             Direction.NORTH.value: Wall.NORTH.value,
@@ -75,6 +68,8 @@ class PacMan(Entity):
         if self.move_timer >= move_delay:
             self.move_timer -= move_delay
             if not self.can_move(self.move_dir):
+                self.previous_pos = Vector2D(
+                    self.current_pos_y, self.current_pos_x)
                 self.move_dir = Direction.ZERO.value
                 return
 
@@ -92,11 +87,11 @@ class Ghost(Entity, ABC):
             x: int,
             maze: MazeAdapter,
             pacman: PacMan,
-            ghosts: list["Ghost"],
+            ghosts: list[Ghost],
             ) -> None:
         super().__init__(y, x, maze)
         self.pacman: PacMan = pacman
-        self.ghosts: list["Ghost"] = ghosts
+        self.ghosts: list[Ghost] = ghosts
         self.state: GhostState = GhostState.NORMAL
         self.respawn_timer: float = 0.0
 

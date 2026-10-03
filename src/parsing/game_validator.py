@@ -63,7 +63,7 @@ class LevelValidator(BaseGameValidator):
         return cls.apply_fallback(value_setting_name, handler, info)
 
     @model_validator(mode="after")
-    def check_missing_fields(self) -> 'LevelValidator':
+    def check_missing_fields(self) -> LevelValidator:
         missing_fields = (
             set(self.__class__.model_fields.keys()) - self.model_fields_set)
         for field in missing_fields:
@@ -192,7 +192,7 @@ class GameValidator(BaseGameValidator):
         return seed
 
     @model_validator(mode="after")
-    def check_missing_fields(self) -> 'GameValidator':
+    def check_missing_fields(self) -> GameValidator:
         missing_fields = (
             set(self.__class__.model_fields.keys()) - self.model_fields_set)
         for field in missing_fields:
