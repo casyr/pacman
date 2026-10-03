@@ -22,9 +22,12 @@ class GameController:
             game_session: GameSession,
             game_view: GameView):
 
+        game_board = level_manager.build_level()
+        game_view.load_maze(game_board)
+
         self.context = GameContext(
             game_session,
-            level_manager.build_level(),
+            game_board,
             level_manager,
             highscore_manager,
             game_view
@@ -46,6 +49,7 @@ class GameController:
             self.current_scene = self.current_scene.update(
                 self.context, elapsed_time, user_input)
             if self.current_scene is not None:
+                self.context.view.clear_window()
                 self.current_scene.render(self.context)
 
             processing_time = time.perf_counter() - self.last_time

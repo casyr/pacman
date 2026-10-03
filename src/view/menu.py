@@ -14,7 +14,7 @@ class BaseMenuView:
         self.height: int = height
         self.window: pygame.Surface = window
         self.text: SpriteSheetsManager = text_sprites
-        self._cached_buffer_menu: pygame.Surface | None = None
+        self._cached_menu_image: pygame.Surface | None = None
 
         self.size_char_pixel: int = 15
         self.gap_pixel: int = 2

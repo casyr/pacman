@@ -14,6 +14,7 @@ class MenuScene:
         if user_input == "KEY_1" or user_input == "KEY_SPACE":
             controller.game_session.reset_level_data()
             controller.game_board = controller.level_manager.build_level()
+            controller.view.load_maze(controller.game_board)
             return PlayingScene()
         elif user_input == "KEY_2":
             return HighscoreMenuScene()

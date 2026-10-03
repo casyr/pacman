@@ -1,8 +1,6 @@
 import pygame
 from . import mlx_wrapper as mlx
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
-from .maze_creator import Maze
-from .pacgum import Pacgums
 from .menu_main import Menu
 from .menu_highscore import HighScoresView
 from .menu_victory import VictoryView
@@ -42,17 +40,18 @@ class GameView:
             screen_width, screen_height, window, sprite_sheet)
 
     def load_maze(self, game_board: GameBoard) -> None:
-        self.maze = Maze(game_board, self.window, self.sprite_sheet)
-        self.pacgums = Pacgums(game_board, self.sprite_sheet, self.window)
+        self.playing_view.load_level(game_board)
+
+    def update_pacgums(self) -> None:
+        self.playing_view.update_pacgums()
 
     def clear_window(self) -> None:
         self.window.fill((0, 0, 0))
 
-    def draw_game(self, game_board: GameBoard, game_session: GameSession,
-                  is_maze_updated: bool, is_pacgum_updated: bool) -> None:
+    def draw_game(self, game_board: GameBoard,
+                  game_session: GameSession) -> None:
 
-        self.playing_view.render(is_maze_updated, is_pacgum_updated,
-                                 game_board, game_session)
+        self.playing_view.render(game_board, game_session)
 
     def draw_menu(self) -> None:
         self.menu.render()

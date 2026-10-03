@@ -81,12 +81,12 @@ class HighScoresView(BaseMenuView):
             scores: list[HighScore]) -> pygame.Surface:
 
         if (self.scores_in_session != scores or
-                self._cached_buffer_menu is None):
+                self._cached_menu_image is None):
 
-            self._cached_buffer_menu = mlx.new_image(
+            self._cached_menu_image = mlx.new_image(
                 self.width,
                 self.height).convert_alpha()
-            buffer = mlx.to_buffer(self._cached_buffer_menu)
+            buffer = mlx.to_buffer(self._cached_menu_image)
 
             title_end_y = self._render_titles(buffer)
             scores_end_y = self._render_scores(
@@ -97,7 +97,7 @@ class HighScoresView(BaseMenuView):
 
             del buffer
             self.scores_in_session = scores
-        return self._cached_buffer_menu
+        return self._cached_menu_image
 
     def render(self,
                scores: list[HighScore]) -> None:

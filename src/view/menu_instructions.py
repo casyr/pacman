@@ -45,17 +45,17 @@ class InstructionsView(BaseMenuView):
 
     def _create_cache_menu(self) -> pygame.Surface:
 
-        if self._cached_buffer_menu is None:
+        if self._cached_menu_image is None:
 
-            self._cached_buffer_menu = mlx.new_image(
+            self._cached_menu_image = mlx.new_image(
                 self.width,
                 self.height).convert_alpha()
-            buffer = mlx.to_buffer(self._cached_buffer_menu)
+            buffer = mlx.to_buffer(self._cached_menu_image)
 
             self._render_titles(buffer)
 
             del buffer
-        return self._cached_buffer_menu
+        return self._cached_menu_image
 
     def render(self) -> None:
 

@@ -82,18 +82,18 @@ class Menu(BaseMenuView):
             dest_width: int,
             dest_height: int) -> pygame.Surface:
 
-        if self._cached_buffer_menu is None:
-            self._cached_buffer_menu = mlx.new_image(
+        if self._cached_menu_image is None:
+            self._cached_menu_image = mlx.new_image(
                 dest_width,
                 dest_height).convert_alpha()
-            buffer = mlx.to_buffer(self._cached_buffer_menu)
+            buffer = mlx.to_buffer(self._cached_menu_image)
             dest_img_height = buffer.size // dest_width
             logo_h = self._render_logo(
                 buffer, dest_width, dest_img_height)
             self._render_menus(
                 buffer, dest_width, dest_img_height, logo_h)
             del buffer
-        return self._cached_buffer_menu
+        return self._cached_menu_image
 
     def render(self) -> None:
 
