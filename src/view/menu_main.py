@@ -1,11 +1,11 @@
 import pygame
 import numpy as np
 from . import mlx_wrapper as mlx
-from ..parsing.sprite_validator import SpriteData
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
+from .menu import BaseMenuView
 
 
-class Menu:
+class Menu(BaseMenuView):
 
     def __init__(self,
                  width: int,
@@ -13,11 +13,8 @@ class Menu:
                  window: pygame.Surface,
                  menu_sprites: SpriteSheetsManager,) -> None:
 
-        self.width: int = width
-        self.height: int = height
-        self.window: pygame.Surface = window
+        super().__init__(width, height, window, menu_sprites)
         self.menu: SpriteSheetsManager = menu_sprites
-        self._cached_buffer_menu: pygame.Surface | None = None
         self.name_sprite_menu: list[str] = [
             "menu_play",
             "menu_score",
@@ -26,29 +23,6 @@ class Menu:
         ]
         self.padding_pixel: int = 20
         self.margin_pixel: int = 20
-
-    def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
-                            dest_image_width: int,
-                            dest_x: int, dest_y: int,
-                            dest_w: int, dest_h: int,
-                            sprite_data: SpriteData) -> None:
-
-        x_gap = np.arange(dest_w)
-        y_gap = np.arange(dest_h)
-
-        src_x = (sprite_data.coords.w * x_gap) // dest_w
-        src_y = (sprite_data.coords.h * y_gap) // dest_h
-
-        sprite_pos_1d = ((src_y)[:, None] *
-                         sprite_data.coords.w + src_x).ravel()
-        image_pos_1d = ((dest_y + y_gap)[:, None] *
-                        dest_image_width + (dest_x + x_gap)).ravel()
-
-        sprite_pixels = sprite_data.buffer[sprite_pos_1d]
-
-        mask = sprite_pixels != 0
-
-        dest_image_buffer[image_pos_1d[mask]] = sprite_pixels[mask]
 
     def _render_logo(self, dest_image_buffer: np.ndarray,
                      dest_img_width: int, dest_img_height: int) -> int:
