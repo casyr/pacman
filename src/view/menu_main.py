@@ -56,7 +56,7 @@ class Menu:
         logo_sprite = self.menu.sprites.get(logo_name, None)
         if logo_sprite is None:
             return 0
-        logo_h = int(dest_img_height * 0.25)
+        logo_h = int(dest_img_height * 0.15)
         logo_y = self.margin_pixel
 
         ratio = logo_sprite.coords.w / logo_sprite.coords.h
@@ -81,7 +81,7 @@ class Menu:
                       dest_img_height: int,
                       start_y: int) -> None:
 
-        menu_h = 30
+        menu_h = int(dest_img_height * 0.05)
         current_y = start_y + self.padding_pixel
 
         for menu in self.name_sprite_menu:
