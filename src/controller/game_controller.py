@@ -22,12 +22,8 @@ class GameController:
             game_session: GameSession,
             game_view: GameView):
 
-        game_board = level_manager.build_level()
-        game_view.load_maze(game_board)
-
         self.context = GameContext(
             game_session,
-            game_board,
             level_manager,
             highscore_manager,
             game_view

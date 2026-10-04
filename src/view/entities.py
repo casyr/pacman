@@ -30,8 +30,8 @@ class Entities:
     def _render_ghost(self, dest_img_buffer: ndarray,
                       dest_img_width: int, game_board: GameBoard,
                       ghost_name: GhostName, sprite_name: str) -> None:
-        pos_x = self.x_start + self.sprite_size
-        pos_y = self.y_start + self.sprite_size
+        pos_x = self.x_start + self.sprite_size - 8
+        pos_y = self.y_start + self.sprite_size - 8
 
         for ghost in game_board.ghosts:
             if ghost.name != ghost_name:
@@ -42,8 +42,8 @@ class Entities:
             elif ghost.state == GhostState.EATEN:
                 sprite_name = "ghost_eyes_right"
 
-            dest_x = pos_x + ghost.current_pos_x * self.tile_size
-            dest_y = pos_y + ghost.current_pos_y * self.tile_size
+            dest_y = int(pos_y + ghost.move_pixel_y * self.tile_size)
+            dest_x = int(pos_x + ghost.move_pixel_x * self.tile_size)
             self.utils.put_sprite_in_image(
                 dest_img_buffer,
                 dest_img_width,
@@ -65,15 +65,22 @@ class PacmanView(Entities):
         pos_x = self.x_start + self.sprite_size - 8
         pos_y = self.y_start + self.sprite_size - 8
 
-        dest_x = pos_x + game_board.player.current_pos_x * self.tile_size
-        dest_y = pos_y + game_board.player.current_pos_y * self.tile_size
+        dest_y = int(pos_y + game_board.player.move_pixel_y * self.tile_size)
+        dest_x = int(pos_x + game_board.player.move_pixel_x * self.tile_size)
+
+        sprite_name = "pacman_right_1"
+        if game_board.player.is_dying:
+            death_animation = self.sprites.animations["pacman_die"]
+            frame_index = int(
+                game_board.player.death_elapsed * 1000 / death_animation.speed)
+            sprite_name = death_animation.frames[frame_index]
 
         self.utils.put_sprite_in_image(dest_img_buffer,
                                        dest_img_width,
                                        dest_x, dest_y,
                                        self.sprite_size * 2,
                                        self.sprite_size * 2,
-                                       self.sprites.sprites["pacman_right_1"])
+                                       self.sprites.sprites[sprite_name])
 
 
 class BlinkyView(Entities):

@@ -26,7 +26,7 @@ class GameSession:
         self.level_index: int = 0
         self.score: int = 0
         self.lives_remaining: int = settings.lives
-        self.speed_multiplier: int = 1
+        self.speed_multiplier: int = 4
 
         self.time_remaining: float = float(settings.level_max_time)
         self.pacgum_remaining: int = settings.pacgum
@@ -62,6 +62,7 @@ class GameSession:
         self.super_pacgum_remaining = self.settings.super_pacgum
         self.active_power = False
         self.super_mode_timer = 0.0
+        self.speed_multiplier = 1
 
         self.cheat_mode.invincibility = False
         self.cheat_mode.freeze = False
@@ -77,6 +78,7 @@ class GameSession:
         self.super_pacgum_remaining = self.settings.super_pacgum
         self.active_power = False
         self.super_mode_timer = 0.0
+        self.speed_multiplier = 1
 
         self.cheat_mode.invincibility = False
         self.cheat_mode.freeze = False

@@ -15,6 +15,8 @@ class Entity(ABC):
 
         self.current_pos_y: int = current_y
         self.current_pos_x: int = current_x
+        self.move_pixel_y: float = float(current_y)
+        self.move_pixel_x: float = float(current_x)
         self.move_dir: Vector2D = Direction.ZERO.value
         self.spawn_pos: Vector2D = Vector2D(current_y, current_x)
         self.previous_pos: Vector2D = Vector2D(current_y, current_x)
@@ -27,6 +29,8 @@ class Entity(ABC):
     def respawn(self) -> None:
         self.current_pos_y = self.spawn_pos.y
         self.current_pos_x = self.spawn_pos.x
+        self.move_pixel_y = float(self.spawn_pos.y)
+        self.move_pixel_x = float(self.spawn_pos.x)
         self.move_dir = Direction.ZERO.value
         self.previous_pos = self.spawn_pos
 
@@ -45,6 +49,27 @@ class Entity(ABC):
         cell_value: int = self.grid[self.current_pos_y][self.current_pos_x]
         return not (cell_value & mask)
 
+    def move_continuously(self, elapsed_time: float) -> None:
+        if (self.move_dir == Direction.ZERO.value
+                or not self.can_move(self.move_dir)):
+            self.move_pixel_y = float(self.current_pos_y)
+            self.move_pixel_x = float(self.current_pos_x)
+            return
+
+        self.move_pixel_y += self.move_dir.y * self.speed * elapsed_time
+        self.move_pixel_x += self.move_dir.x * self.speed * elapsed_time
+
+        if abs(self.move_pixel_y - self.current_pos_y) >= 1:
+            self.previous_pos = Vector2D(
+                self.current_pos_y, self.current_pos_x)
+            self.current_pos_y += self.move_dir.y
+            self.move_pixel_y = float(self.current_pos_y)
+        elif abs(self.move_pixel_x - self.current_pos_x) >= 1:
+            self.previous_pos = Vector2D(
+                self.current_pos_y, self.current_pos_x)
+            self.current_pos_x += self.move_dir.x
+            self.move_pixel_x = float(self.current_pos_x)
+
     @abstractmethod
     def update(self, elapsed_time: float) -> None:
         pass
@@ -58,25 +83,59 @@ class PacMan(Entity):
             x: int,
             maze: MazeAdapter) -> None:
         super().__init__(y, x, maze)
+        self.speed = 2
+        self.desired_dir: Vector2D = Direction.ZERO.value
+        self.is_dying: bool = False
+        self.death_elapsed: float = 0.0
+        self.death_duration: float = 1.6
+
+    def start_death_animation(self) -> None:
+        self.is_dying = True
+        self.death_elapsed = 0.0
+        self.move_dir = Direction.ZERO.value
+
+    def death_animation_finished(self) -> bool:
+        return self.death_elapsed >= self.death_duration
 
     def set_direction(self, dir_y: int, dir_x: int) -> None:
-        self.move_dir = Vector2D(dir_y, dir_x)
+        self.desired_dir = Vector2D(dir_y, dir_x)
 
     def update(self, elapsed_time: float) -> None:
-        self.move_timer += elapsed_time
-        move_delay: float = 1.0 / self.speed
-        if self.move_timer >= move_delay:
-            self.move_timer -= move_delay
-            if not self.can_move(self.move_dir):
-                self.previous_pos = Vector2D(
-                    self.current_pos_y, self.current_pos_x)
-                self.move_dir = Direction.ZERO.value
-                return
+        if self.is_dying:
+            self.death_elapsed += elapsed_time
+            return
 
-            self.previous_pos = Vector2D(
-                self.current_pos_y, self.current_pos_x)
-            self.current_pos_y += self.move_dir.y
-            self.current_pos_x += self.move_dir.x
+        is_reverse = (
+            self.desired_dir.y == -self.move_dir.y
+            and self.desired_dir.x == -self.move_dir.x
+        )
+        if is_reverse and self.can_move(self.desired_dir):
+            self.move_dir = self.desired_dir
+
+        is_near_center = (
+            abs(self.move_pixel_y - self.current_pos_y) < 0.1
+            and abs(self.move_pixel_x - self.current_pos_x) < 0.1
+        )
+        if is_near_center and self.desired_dir != self.move_dir:
+            if self.can_move(self.desired_dir):
+                self.move_dir = self.desired_dir
+                self.move_pixel_y = float(self.current_pos_y)
+                self.move_pixel_x = float(self.current_pos_x)
+        self.move_continuously(elapsed_time)
+        # self.move_timer += elapsed_time
+        # move_delay: float = 1.0 / self.speed
+        # if self.move_timer >= move_delay:
+        #     self.move_timer -= move_delay
+        #     if not self.can_move(self.move_dir):
+        #         self.previous_pos = Vector2D(
+        #             self.current_pos_y, self.current_pos_x)
+        #         self.move_dir = Direction.ZERO.value
+        #         return
+
+        #     self.previous_pos = Vector2D(
+        #         self.current_pos_y, self.current_pos_x)
+        #     self.current_pos_y += self.move_dir.y
+        #     self.current_pos_x += self.move_dir.x
 
 
 class Ghost(Entity, ABC):
@@ -87,7 +146,7 @@ class Ghost(Entity, ABC):
             x: int,
             maze: MazeAdapter,
             pacman: PacMan,
-            ghosts: list[Ghost],
+            ghosts: list['Ghost'],
             name: GhostName,
             ) -> None:
         super().__init__(y, x, maze)
@@ -97,7 +156,7 @@ class Ghost(Entity, ABC):
         self.state: GhostState = GhostState.NORMAL
         self.respawn_timer: float = 0.0
 
-    def get_eaten(self, respawn_delay: float = 8.0) -> None:
+    def get_eaten(self, respawn_delay: float = 1.0) -> None:
         self.state = GhostState.EATEN
         self.respawn_timer = respawn_delay
 
@@ -112,18 +171,33 @@ class Ghost(Entity, ABC):
             if self.respawn_timer <= 0:
                 self.respawn()
             return
-
-        self.move_timer += elapsed_time
-        move_delay: float = 1.0 / self.speed
-        if self.move_timer >= move_delay:
-            self.move_timer -= move_delay
-
+        is_centered = (
+            abs(self.move_pixel_y - self.current_pos_y) < 0.001
+            and abs(self.move_pixel_x - self.current_pos_x) < 0.001
+        )
+        current_tile = Vector2D(self.current_pos_y, self.current_pos_x)
+        if is_centered:
+            self.move_pixel_y = float(self.current_pos_y)
+            self.move_pixel_x = float(self.current_pos_x)
+            self.decision_made_on_tile = current_tile
             if self.state == GhostState.NORMAL:
                 target = self.get_target()
                 if target is not None:
                     self.chase_behavior(target)
             elif self.state == GhostState.FRIGHTENED:
                 self.flee_behavior()
+        self.move_continuously(elapsed_time)
+        # self.move_timer += elapsed_time
+        # move_delay: float = 1.0 / self.speed
+        # if self.move_timer >= move_delay:
+        #     self.move_timer -= move_delay
+
+        #     if self.state == GhostState.NORMAL:
+        #         target = self.get_target()
+        #         if target is not None:
+        #             self.chase_behavior(target)
+        #     elif self.state == GhostState.FRIGHTENED:
+        #         self.flee_behavior()
 
     @abstractmethod
     def get_target(self) -> Vector2D:
@@ -161,9 +235,7 @@ class Ghost(Entity, ABC):
                 self.previous_pos.y - self.current_pos_y,
                 self.previous_pos.x - self.current_pos_x
             )
-        self.previous_pos = Vector2D(self.current_pos_y, self.current_pos_x)
-        self.current_pos_y += best_direction.y
-        self.current_pos_x += best_direction.x
+        self.move_dir = best_direction
 
     def flee_behavior(self) -> None:
         possible_directions: list[Vector2D] = [
@@ -201,9 +273,7 @@ class Ghost(Entity, ABC):
                 self.previous_pos.x - self.current_pos_x
             )
 
-        self.previous_pos = Vector2D(self.current_pos_y, self.current_pos_x)
-        self.current_pos_y += best_direction.y
-        self.current_pos_x += best_direction.x
+        self.move_dir = best_direction
 
 
 class Blinky(Ghost):
