@@ -4,7 +4,7 @@ from . import mlx_wrapper as mlx
 from ..model import GameBoard, GameSession
 from pygame import Surface
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
-from .entities import Pacman
+from .entities import BlinkyView, ClydeView, InkyView, PacmanView, PinkyView
 
 
 class PlayingView:
@@ -18,7 +18,8 @@ class PlayingView:
         self.game_board: GameBoard | None = None
         self.maze: Maze | None = None
         self.pacgums: Pacgums | None = None
-        self.pacman: Pacman | None = None
+        self.pacman: PacmanView | None = None
+        self.ghosts: list[BlinkyView | PinkyView | InkyView | ClydeView] = []
 
         self.maze_img = mlx.new_image(
             self.screen_width, self.screen_height).convert_alpha()
@@ -35,7 +36,13 @@ class PlayingView:
             self.sprite_sheets,
             self.window,
         )
-        self.pacman = Pacman(game_board, self.sprite_sheets, self.window)
+        self.pacman = PacmanView(game_board, self.sprite_sheets, self.window)
+        self.ghosts = [
+            BlinkyView(game_board, self.sprite_sheets, self.window),
+            PinkyView(game_board, self.sprite_sheets, self.window),
+            InkyView(game_board, self.sprite_sheets, self.window),
+            ClydeView(game_board, self.sprite_sheets, self.window),
+        ]
         self._render_maze_layer()
         self._render_pacgums_layer()
 
@@ -78,6 +85,13 @@ class PlayingView:
                 game_board,
                 self.window,
             )
+            for ghost in self.ghosts:
+                ghost.render(
+                    dynamic_buffer,
+                    self.screen_width,
+                    game_board,
+                    self.window,
+                )
             del dynamic_buffer
 
         mlx.blit_img(self.dynamic_img, self.window, (0, 0))

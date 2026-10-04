@@ -30,6 +30,8 @@ class PlayingScene:
             controller.view.update_pacgums()
         self._handle_ghosts_and_collisions(
             controller, player_pos, elapsed_time)
+        if consumable_updated:
+            controller.game_session.check_level_cleared()
         self._check_update_level(controller)
         return self
 
@@ -129,10 +131,10 @@ class PlayingScene:
             return
 
         for ghost in controller.game_board.ghosts:
-            ghost.update(elapsed_time)
             ghost_pos = Vector2D(y=ghost.current_pos_y, x=ghost.current_pos_x)
 
-            if controller.game_session.power_just_expired:
+            if (controller.game_session.power_just_expired and
+                    ghost.state != GhostState.EATEN):
                 ghost.state = GhostState.NORMAL
 
             if player_pos == ghost_pos:
@@ -140,12 +142,16 @@ class PlayingScene:
                         ghost.state == GhostState.FRIGHTENED):
 
                     ghost.get_eaten()
+                    ghost.respawn()
                     controller.game_session.consume_ghost()
+                    continue
 
                 elif ghost.state == GhostState.NORMAL:
                     if controller.game_session.lose_life():
                         controller.game_board.reset_entities()
                         return
+
+            ghost.update(elapsed_time)
 
     def _check_update_level(self, controller: GameContext) -> None:
         if self.current_level_index is None:

@@ -114,14 +114,12 @@ class GameSession:
         if self.pacgum_remaining > 0:
             self.pacgum_remaining -= 1
             self.add_score(self.settings.points_per_pacgum)
-            self.check_level_cleared()
 
     def consume_super_pacgum(self) -> None:
         if self.super_pacgum_remaining > 0:
             self.super_pacgum_remaining -= 1
             self.add_score(self.settings.points_per_super_pacgum)
             self.activate_power_mode()
-            self.check_level_cleared()
 
     def consume_ghost(self) -> None:
         if self.active_power:

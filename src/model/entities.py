@@ -1,7 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from .maze_adaptater import MazeAdapter
-from ..shared import Vector2D, Direction, GhostState, Wall
+from ..shared import GhostName, Vector2D, Direction, GhostState, Wall
 
 logger = logging.getLogger(__name__)
 
@@ -88,8 +88,10 @@ class Ghost(Entity, ABC):
             maze: MazeAdapter,
             pacman: PacMan,
             ghosts: list[Ghost],
+            name: GhostName,
             ) -> None:
         super().__init__(y, x, maze)
+        self.name: GhostName = name
         self.pacman: PacMan = pacman
         self.ghosts: list[Ghost] = ghosts
         self.state: GhostState = GhostState.NORMAL
@@ -102,12 +104,13 @@ class Ghost(Entity, ABC):
     def respawn(self) -> None:
         super().respawn()
         self.state = GhostState.NORMAL
+        self.respawn_timer = 0.0
 
     def update(self, elapsed_time: float) -> None:
         if self.state == GhostState.EATEN:
             self.respawn_timer -= elapsed_time
             if self.respawn_timer <= 0:
-                self.state = GhostState.NORMAL
+                self.respawn()
             return
 
         self.move_timer += elapsed_time
