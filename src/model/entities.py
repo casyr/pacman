@@ -33,6 +33,7 @@ class Entity(ABC):
         self.move_pixel_x = float(self.spawn_pos.x)
         self.move_dir = Direction.ZERO.value
         self.previous_pos = self.spawn_pos
+        self.is_dying: bool = False
 
     def can_move(self, direction: Vector2D) -> bool:
 
