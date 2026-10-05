@@ -37,9 +37,9 @@ class PlayingScene:
         if consumable_updated:
             controller.view.update_pacgums()
             controller.game_session.check_level_cleared()
-            self._check_update_level(controller)
         self._handle_ghosts_and_collisions(
             controller, player_pixel_pos, elapsed_time)
+        self._check_update_level(controller)
         return self
 
     def _check_game_end_conditions(
