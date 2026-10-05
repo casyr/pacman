@@ -1,4 +1,5 @@
 import logging
+import heapq
 from abc import ABC, abstractmethod
 from .maze_adaptater import MazeAdapter
 from ..shared import GhostName, Vector2D, Direction, GhostState, Wall
@@ -25,6 +26,7 @@ class Entity(ABC):
         self.height_max: int = maze.height
         self.speed: float = 1
         self.move_timer: float = 0.0
+        self.center_tolerance: float = 0.05
 
     def respawn(self) -> None:
         self.current_pos_y = self.spawn_pos.y
@@ -76,6 +78,17 @@ class Entity(ABC):
             return False
         return self.can_move(self.move_dir)
 
+    def is_at_intersection(self) -> bool:
+        return (
+            abs(self.move_pixel_y - self.current_pos_y) < self.center_tolerance
+            and abs(
+                self.move_pixel_x - self.current_pos_x) < self.center_tolerance
+        )
+
+    def perfectly_aligns(self) -> None:
+        self.move_pixel_y = float(self.current_pos_y)
+        self.move_pixel_x = float(self.current_pos_x)
+
     @abstractmethod
     def update(self, elapsed_time: float) -> None:
         pass
@@ -107,33 +120,34 @@ class PacMan(Entity):
     def set_direction(self, dir_y: int, dir_x: int) -> None:
         self.desired_dir = Vector2D(dir_y, dir_x)
 
+    def is_reversing(self) -> bool:
+        return (
+            self.desired_dir.y == -self.move_dir.y
+            and self.desired_dir.x == -self.move_dir.x
+        )
+
+    def handle_death_animation(self, elapsed_time: float) -> None:
+        self.death_elapsed += elapsed_time
+        self.animation_timer = 0.0
+
     def update(self, elapsed_time: float) -> None:
 
         if self.is_dying:
-            self.death_elapsed += elapsed_time
-            self.animation_timer = 0.0
+            self.handle_death_animation(elapsed_time)
             return
 
         if self.is_moving():
             self.death_elapsed = 0.0
             self.animation_timer += elapsed_time
 
-        is_reverse = (
-            self.desired_dir.y == -self.move_dir.y
-            and self.desired_dir.x == -self.move_dir.x
-        )
-        if is_reverse and self.can_move(self.desired_dir):
+        if self.is_reversing() and self.can_move(self.desired_dir):
             self.move_dir = self.desired_dir
 
-        is_near_center = (
-            abs(self.move_pixel_y - self.current_pos_y) < 0.1
-            and abs(self.move_pixel_x - self.current_pos_x) < 0.1
-        )
-        if is_near_center and self.desired_dir != self.move_dir:
+        if self.is_at_intersection() and self.desired_dir != self.move_dir:
             if self.can_move(self.desired_dir):
                 self.move_dir = self.desired_dir
-                self.move_pixel_y = float(self.current_pos_y)
-                self.move_pixel_x = float(self.current_pos_x)
+                self.perfectly_aligns()
+
         self.move_continuously(elapsed_time)
 
 
@@ -154,6 +168,7 @@ class Ghost(Entity, ABC):
         self.ghosts: list[Ghost] = ghosts
         self.state: GhostState = GhostState.NORMAL
         self.respawn_timer: float = 0.0
+        self.decision_made_on_tile: Vector2D | None = None
 
     def get_eaten(self, respawn_delay: float = 1.0) -> None:
         self.state = GhostState.EATEN
@@ -163,6 +178,7 @@ class Ghost(Entity, ABC):
         super().respawn()
         self.state = GhostState.NORMAL
         self.respawn_timer = 0.0
+        self.decision_made_on_tile = None
 
     def update(self, elapsed_time: float) -> None:
         if self.state == GhostState.EATEN:
@@ -170,19 +186,18 @@ class Ghost(Entity, ABC):
             if self.respawn_timer <= 0:
                 self.respawn()
             return
-        is_centered = (
-            abs(self.move_pixel_y - self.current_pos_y) < 0.001
-            and abs(self.move_pixel_x - self.current_pos_x) < 0.001
-        )
         current_tile = Vector2D(self.current_pos_y, self.current_pos_x)
-        if is_centered:
-            self.move_pixel_y = float(self.current_pos_y)
-            self.move_pixel_x = float(self.current_pos_x)
+        if (self.is_at_intersection()
+                and self.decision_made_on_tile != current_tile):
             self.decision_made_on_tile = current_tile
+
             if self.state == GhostState.NORMAL:
                 target = self.get_target()
                 if target is not None:
-                    self.chase_behavior(target)
+                    self.chase_behavior(
+                        self.current_pos_y,
+                        self.current_pos_x,
+                        target)
             elif self.state == GhostState.FRIGHTENED:
                 self.flee_behavior()
         self.move_continuously(elapsed_time)
@@ -191,39 +206,98 @@ class Ghost(Entity, ABC):
     def get_target(self) -> Vector2D:
         pass
 
-    def chase_behavior(self, target: Vector2D) -> None:
-        possible_directions: list[Vector2D] = [
-            Direction.NORTH.value, Direction.WEST.value,
-            Direction.SOUTH.value, Direction.EAST.value
+    def chase_behavior(
+            self,
+            current_pos_y: int,
+            current_pos_x: int,
+            target: Vector2D) -> None:
+        start: Vector2D = Vector2D(current_pos_y, current_pos_x)
+        distances: dict[Vector2D, int] = {start: 0}
+        came_from: dict[Vector2D, Vector2D | None] = {start: None}
+        queue: list[tuple[int, Vector2D]] = [(0, start)]
+        possible_directions: list[Direction] = [
+            Direction.NORTH, Direction.WEST,
+            Direction.SOUTH, Direction.EAST
         ]
-        best_direction: Vector2D = Direction.ZERO.value
-        valid_choice: bool = False
-        min_distance = float('inf')
-        dist = float('inf')
+        wall_check = {
+                Direction.NORTH: Wall.NORTH.value,
+                Direction.EAST: Wall.EAST.value,
+                Direction.SOUTH: Wall.SOUTH.value,
+                Direction.WEST: Wall.WEST.value
+            }
 
-        for direction in possible_directions:
-            if not self.can_move(direction):
+        while queue:
+            current_dist, (pos_y, pos_x) = heapq.heappop(queue)
+            if (pos_y, pos_x) == target:
+                break
+            if current_dist > distances.get(
+                    Vector2D(pos_y, pos_x), float('inf')):
                 continue
-            next_pos = Vector2D(
-                self.current_pos_y + direction.y,
-                self.current_pos_x + direction.x
-            )
+            for direction in possible_directions:
+                if self.grid[pos_y][pos_x] & wall_check[direction]:
+                    continue
+                next_y, next_x = pos_y + direction.value.y, pos_x + direction.value.x
+                if not (0 <= next_y < self.height_max
+                        and 0 <= next_x < self.width_max):
+                    continue
+                next_pos = Vector2D(next_y, next_x)
+                new_dist = current_dist + 1
+                if new_dist < distances.get(next_pos, float('inf')):
+                    distances[next_pos] = new_dist
+                    came_from[next_pos] = Vector2D(pos_y, pos_x)
+                    heapq.heappush(queue, (new_dist, next_pos))
 
-            if next_pos != self.previous_pos:
-                valid_choice = True
-                dist = (
-                    (next_pos.y - target.y) ** 2 + (next_pos.x - target.x) ** 2
-                    )
-                if dist < min_distance:
-                    min_distance = dist
-                    best_direction = direction
+        new_pos = self.get_optimal_path(came_from, target)
+        if new_pos:
+            self.move_dir = self.get_direction_optimal_path(start, new_pos)
 
-        if not valid_choice:
-            best_direction = Vector2D(
-                self.previous_pos.y - self.current_pos_y,
-                self.previous_pos.x - self.current_pos_x
-            )
-        self.move_dir = best_direction
+    def get_optimal_path(self, came_from, target) -> Vector2D | None:
+        if target not in came_from:
+            return None
+        current = target
+        path = []
+        while current is not None:
+            path.append(current)
+            current = came_from[current]
+        path.reverse()
+        return path[1]
+
+    def get_direction_optimal_path(self, current: Vector2D, next_pos: Vector2D) -> Vector2D:
+        diff_y = next_pos.y - current.y
+        diff_x = next_pos.x - current.x
+        for direction in Direction:
+            if direction.value.y == diff_y and direction.value.x == diff_x:
+                return direction.value
+        return Direction.ZERO.value
+
+        # best_direction: Vector2D = Direction.ZERO.value
+        # valid_choice: bool = False
+        # min_distance = float('inf')
+        # dist = float('inf')
+
+        # for direction in possible_directions:
+        #     if not self.can_move(direction):
+        #         continue
+        #     next_pos = Vector2D(
+        #         self.current_pos_y + direction.y,
+        #         self.current_pos_x + direction.x
+        #     )
+
+        #     if next_pos != self.previous_pos:
+        #         valid_choice = True
+        #         dist = (
+        #             (next_pos.y - target.y) ** 2 + (next_pos.x - target.x) ** 2
+        #             )
+        #         if dist < min_distance:
+        #             min_distance = dist
+        #             best_direction = direction
+
+        # if not valid_choice:
+        #     best_direction = Vector2D(
+        #         self.previous_pos.y - self.current_pos_y,
+        #         self.previous_pos.x - self.current_pos_x
+        #     )
+        # self.move_dir = best_direction
 
     def flee_behavior(self) -> None:
         possible_directions: list[Vector2D] = [
