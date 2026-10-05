@@ -11,9 +11,10 @@ class MenuScene:
         from .game_scene_highscore_menu import HighscoreMenuScene
         from .game_scene_instruction import InstructionScene
 
-        if user_input == "KEY_1":
+        if user_input == "KEY_1" or user_input == "KEY_SPACE":
             controller.game_session.reset_level_data()
             controller.game_board = controller.level_manager.build_level()
+            controller.view.load_maze(controller.game_board)
             return PlayingScene()
         elif user_input == "KEY_2":
             return HighscoreMenuScene()
@@ -24,6 +25,5 @@ class MenuScene:
         return self
 
     def render(self, controller: GameContext) -> None:
-        # controller.view.draw_main_menu()
-        # self.view.draw_main_menu()
-        pass
+        controller.view.clear_window()
+        controller.view.draw_menu()

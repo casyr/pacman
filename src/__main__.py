@@ -1,5 +1,8 @@
 import sys
 import logging
+from screeninfo import get_monitors, ScreenInfoError
+from .view import mlx_wrapper as mlx
+from .view import SpriteSheetsManager
 from .utils import setup_logging
 from .errors import PacmanError
 from .parsing import ConfigParser
@@ -7,6 +10,14 @@ from .model import HighScoreManager, GameSession, LevelBuilder
 from .utils import JsonModelLoader
 from .controller import GameController
 from .view import GameView
+
+
+def initialize_graphics() -> tuple[int, int]:
+    mlx.initialisation()
+    monitors = get_monitors()
+    if not monitors:
+        raise ScreenInfoError("No screen detected")
+    return monitors[0].width, monitors[0].height
 
 
 def main() -> int:
@@ -25,14 +36,17 @@ def main() -> int:
         highscore_manager = HighScoreManager(json_loader)
         game_session: GameSession = GameSession(game_config)
         level_manager = LevelBuilder(game_session)
-        game_view = GameView()
+        screen_width, screen_height = initialize_graphics()
+        window = mlx.new_window(screen_width, screen_height)
+        sprite = SpriteSheetsManager("sprites")
+        sprite.processed_sprite()
+        game_view = GameView(screen_width, screen_height, sprite, window)
         controller = GameController(
             level_manager,
             highscore_manager,
             game_session,
             game_view)
-        logger.info(highscore_manager)
-        # logger.info(controller.game_board.ghosts_spawn_pos)
+        logger.debug(game_session.pacgum_remaining)
         controller.run()
         return 0
 

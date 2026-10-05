@@ -15,32 +15,34 @@ class LevelBuilder:
 
     def __init__(self, current_game: GameSession):
         self.current_game = current_game
-        self._lvl_data = current_game.settings.levels[current_game.level_index]
-        self.width = self._lvl_data.width
-        self.height = self._lvl_data.height
-        self.bounds = GridBounds(self.width, self.height)
-        self.level_index = current_game.level_index
-        self.seed = self._seed_using(self.current_game.settings.seed)
 
-    def _seed_using(self, seed: int) -> int:
-        seed_to_use: int = seed if self.level_index == 0 else 0
+    def _seed_using(self, seed: int, level_index: int) -> int:
+        seed_to_use: int = seed if level_index == 0 else 0
         return seed_to_use
 
     def build_level(self) -> GameBoard:
+        level_index = self.current_game.level_index
+        lvl_data = self.current_game.settings.levels[level_index]
+        width = lvl_data.width
+        height = lvl_data.height
+        bounds = GridBounds(width, height)
+        seed = self._seed_using(self.current_game.settings.seed, level_index)
+
         maze: MazeAdapter = MazeAdapter(
-            self._lvl_data.width,
-            self._lvl_data.height,
-            self.seed)
+            width,
+            height,
+            seed)
         maze.generate_level()
-        super_pacgums_pos = self._setup_collectibles_super_pacgums(maze)
+        super_pacgums_pos = self._setup_collectibles_super_pacgums(
+            maze, bounds)
         player_spawn_pos = self._setup_entities_player_position(
-            super_pacgums_pos, maze)
+            super_pacgums_pos, maze, bounds)
         player = self._setup_entities_player(player_spawn_pos, maze)
         ghosts_spawn_pos = self._setup_entities_ghost_position(
-            super_pacgums_pos, player_spawn_pos, maze)
+            super_pacgums_pos, player_spawn_pos, maze, bounds)
         ghosts = self._setup_entities_ghost(ghosts_spawn_pos, maze, player)
         pacgum_pos = self._setup_collectibles_pacgums(
-            super_pacgums_pos, player_spawn_pos, maze)
+            super_pacgums_pos, player_spawn_pos, maze, bounds)
         return GameBoard(
             maze=maze,
             player=player,
@@ -54,24 +56,49 @@ class LevelBuilder:
 
     def _setup_collectibles_super_pacgums(
             self,
-            maze: MazeAdapter
+            maze: MazeAdapter,
+            bounds: GridBounds
             ) -> set[Vector2D]:
-        super_pacgums_pos: set[Vector2D] = set()
 
-        for pos in self.bounds.corners_pos:
+        available_positions: list[Vector2D] = []
+
+        for pos in bounds.corners_pos:
             try:
-                positions = self._check_first_coordonate(pos, maze)
+                positions = self._check_first_coordonate(pos, maze, bounds)
                 if positions is not None:
-                    super_pacgums_pos.add(positions)
+                    available_positions.append(positions)
             except LevelError as err:
                 logging.warning(f"{err}Superpacgum")
-        return super_pacgums_pos
+        super_pacgums_position = (
+            self._check_super_pacgum(
+                self.current_game.settings.super_pacgum, available_positions)
+        )
+        return super_pacgums_position
+
+    def _check_super_pacgum(
+            self,
+            super_pacgum: int,
+            available_positions: list[Vector2D]
+            ) -> set[Vector2D]:
+
+        total_available: int = len(available_positions)
+
+        if total_available < super_pacgum:
+            logging.warning(
+                "GameSettingsError: "
+                f"Requested super pacgums {super_pacgum} exceeds available "
+                f"positions {total_available}. "
+                f"Clamped to default: {total_available} ")
+            super_pacgum = total_available
+        selected_coords = random.sample(available_positions, k=super_pacgum)
+        return set(selected_coords)
 
     def _setup_entities_ghost_position(
             self,
             super_pacgums_pos: set[Vector2D],
             player_spawn_pos: Vector2D,
-            maze: MazeAdapter
+            maze: MazeAdapter,
+            bounds: GridBounds
             ) -> dict[GhostName, Vector2D]:
 
         ghosts_spawn_pos: dict[GhostName, Vector2D] = {}
@@ -79,10 +106,10 @@ class LevelBuilder:
         ignore.update(super_pacgums_pos)
         ignore.add(player_spawn_pos)
 
-        for name, pos in zip(GhostName, self.bounds.corners_pos):
+        for name, pos in zip(GhostName, bounds.corners_pos):
             try:
                 positions = self._available_space(
-                    [pos], {pos}, ignore, maze)
+                    [pos], {pos}, ignore, maze, bounds)
                 if positions is not None:
                     ghosts_spawn_pos[name] = positions
             except LevelError as err:
@@ -106,17 +133,18 @@ class LevelBuilder:
     def _setup_entities_player_position(
             self,
             super_pacgums_pos: set[Vector2D],
-            maze: MazeAdapter
+            maze: MazeAdapter,
+            bounds: GridBounds
             ) -> Vector2D:
         player_spawn_pos: Vector2D = Vector2D(0, 0)
         ignore: set[Vector2D] = set()
         ignore.update(super_pacgums_pos)
 
-        center_pos = Vector2D(self.height // 2, self.width // 2)
+        center_pos = Vector2D(bounds.height // 2, bounds.width // 2)
 
         try:
             positions = self._available_space(
-                    [center_pos], {center_pos}, ignore, maze)
+                    [center_pos], {center_pos}, ignore, maze, bounds)
             if positions is not None:
                 player_spawn_pos = positions
             return player_spawn_pos
@@ -136,7 +164,8 @@ class LevelBuilder:
             self,
             super_pacgums_pos: set[Vector2D],
             player_spawn_pos: Vector2D,
-            maze: MazeAdapter
+            maze: MazeAdapter,
+            bounds: GridBounds
             ) -> set[Vector2D]:
 
         ignore: set[Vector2D] = set()
@@ -147,9 +176,9 @@ class LevelBuilder:
         ignore.update(super_pacgums_pos)
         ignore.add(player_spawn_pos)
 
-        while pos_x < self.width:
+        while pos_x < bounds.width:
             pos_y = 0
-            while pos_y < self.height:
+            while pos_y < bounds.height:
                 current_pos = Vector2D(pos_y, pos_x)
                 if (
                     maze.grid[pos_y][pos_x] != 15
@@ -179,25 +208,27 @@ class LevelBuilder:
                 f"positions {len(available_positions)}. "
                 f"Clamped to default: {len(available_positions)} ")
             self.current_game.pacgum_remaining = total_available
-
+            pacgum = total_available
         selected_coords = random.sample(available_positions, k=pacgum)
         return set(selected_coords)
 
     def _check_first_coordonate(
             self,
             pos: Vector2D,
-            maze: MazeAdapter) -> Vector2D | None:
+            maze: MazeAdapter,
+            bounds: GridBounds) -> Vector2D | None:
         if maze.grid[pos.y][pos.x] != 15:
             return pos
         return self._available_space(
-            [pos], {pos}, set(), maze)
+            [pos], {pos}, set(), maze, bounds)
 
     def _available_space(
             self,
             queue: list[Vector2D],
             seen: set[Vector2D],
             ignore: set[Vector2D],
-            maze: MazeAdapter) -> Vector2D | None:
+            maze: MazeAdapter,
+            bounds: GridBounds) -> Vector2D | None:
 
         directions: list[Vector2D] = [
             Direction.NORTH.value,
@@ -220,8 +251,8 @@ class LevelBuilder:
                     current_pos.y + direction.y, current_pos.x + direction.x)
                 next_pos = Vector2D(ny, nx)
                 if (
-                    0 <= next_pos.y < self.height
-                    and 0 <= next_pos.x < self.width
+                    0 <= next_pos.y < bounds.height
+                    and 0 <= next_pos.x < bounds.width
                 ):
                     if next_pos not in seen:
                         seen.add(next_pos)

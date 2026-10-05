@@ -1,8 +1,8 @@
 {
   "highscore_filename": "highscore.json",
-  "lives": 1,
-  "pacgum": 42,
-  "super_pacgum": 4,
+  "lives": 2,
+  "pacgum": 10000000000,
+  "super_pacgum": 1,
   "points_per_pacgum": 10,
   "points_per_super_pacgum": 50,
   "points_per_ghost": 200,
@@ -11,8 +11,8 @@
   "levels": [
     {
       "level_id": 1,
-      "width": 10,
-      "height": 10
+      "width": 15,
+      "height": 15
     },
     {
       "level_id": 2,

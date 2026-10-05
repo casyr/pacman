@@ -16,12 +16,12 @@ class GhostFactory:
 
         match name:
             case GhostName.BLINKY:
-                return Blinky(pos.y, pos.x, maze, pacman, ghosts)
+                return Blinky(pos.y, pos.x, maze, pacman, ghosts, name)
             case GhostName.PINKY:
-                return Pinky(pos.y, pos.x, maze, pacman, ghosts)
+                return Pinky(pos.y, pos.x, maze, pacman, ghosts, name)
             case GhostName.INKY:
-                return Inky(pos.y, pos.x, maze, pacman, ghosts)
+                return Inky(pos.y, pos.x, maze, pacman, ghosts, name)
             case GhostName.CLYDE:
-                return Clyde(pos.y, pos.x, maze, pacman, ghosts)
+                return Clyde(pos.y, pos.x, maze, pacman, ghosts, name)
             case _:
                 raise ValueError(f"Unknown ghost type: {name}")

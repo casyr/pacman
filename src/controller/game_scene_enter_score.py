@@ -2,6 +2,7 @@ from .game_scene_commun_object import GameContext
 from .game_scene import GameScene
 from .game_scene_menu import MenuScene
 from ..model import HighScore
+from ..model import GameStatus
 
 
 class ScoreScene:
@@ -23,14 +24,30 @@ class ScoreScene:
                     controller.game_session.score)
                 controller.game_session.reset_level_data()
                 return MenuScene()
+        elif user_input == "KEY_BACKSPACE":
+            controller.game_session.player_name = (
+                controller.game_session.player_name[:-1])
+        elif user_input == "KEY_SPACE":
+            if len(controller.game_session.player_name) < 10:
+                controller.game_session.player_name += " "
         elif user_input.startswith("KEY_"):
-            controller.game_session.player_name += user_input[4:].lower()
+            if len(controller.game_session.player_name) < 10:
+                controller.game_session.player_name += user_input[4:].lower()
         elif user_input.startswith("CHAR_"):
-            controller.game_session.player_name += user_input[5:]
-
+            if len(controller.game_session.player_name) < 10:
+                controller.game_session.player_name += user_input[5:]
         return self
 
     def render(self, controller: GameContext) -> None:
-        # controller.view.draw_enter_name_screen(controller)
-        # self.view.draw_enter_name_screen(controller)
+        controller.view.clear_window()
+        if controller.game_session.game_status == GameStatus.VICTORY:
+            controller.view.victory.render_enter_score(
+                controller.game_session.score,
+                controller.game_session.player_name
+            )
+        else:
+            controller.view.defeat.render_enter_score(
+                controller.game_session.score,
+                controller.game_session.player_name
+            )
         pass

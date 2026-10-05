@@ -1,3 +1,4 @@
+from __future__ import annotations
 import sys
 import logging
 from pathlib import Path
@@ -45,8 +46,8 @@ class BaseGameValidator(BaseModel, ABC):
 
 class LevelValidator(BaseGameValidator):
     level_index: int = Field(default=0)
-    width: int = Field(default=20, ge=10, le=100)
-    height: int = Field(default=20, ge=10, le=100)
+    width: int = Field(default=10, ge=10, le=20)
+    height: int = Field(default=10, ge=10, le=20)
 
     def to_dataclass(self) -> LevelSettings:
         return LevelSettings(
@@ -63,7 +64,7 @@ class LevelValidator(BaseGameValidator):
         return cls.apply_fallback(value_setting_name, handler, info)
 
     @model_validator(mode="after")
-    def check_missing_fields(self) -> 'LevelValidator':
+    def check_missing_fields(self) -> LevelValidator:
         missing_fields = (
             set(self.__class__.model_fields.keys()) - self.model_fields_set)
         for field in missing_fields:
@@ -192,7 +193,7 @@ class GameValidator(BaseGameValidator):
         return seed
 
     @model_validator(mode="after")
-    def check_missing_fields(self) -> 'GameValidator':
+    def check_missing_fields(self) -> GameValidator:
         missing_fields = (
             set(self.__class__.model_fields.keys()) - self.model_fields_set)
         for field in missing_fields:

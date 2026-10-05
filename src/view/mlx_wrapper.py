@@ -1,6 +1,8 @@
 import pygame
+import numpy as np
+from typing import Any
 from ..errors import ViewError
-from functools import lru_cache
+from pathlib import Path
 
 
 def initialisation() -> None:
@@ -23,9 +25,9 @@ def update_window() -> None:
     pygame.display.update()
 
 
-def load_sprite(path: str) -> pygame.Surface:
+def load_sprite(path: Path) -> pygame.Surface:
     try:
-        return (pygame.image.load(path))
+        return pygame.image.load(path)
     except FileNotFoundError as e:
         raise ViewError(e)
     except PermissionError as e:
@@ -38,11 +40,41 @@ def blit_img(image: pygame.Surface,
     dest_screen.blit(image, coords)
 
 
-def get_events() -> list[pygame.event.Event]:
+def to_buffer(sprite: pygame.Surface,
+              set_black_transparency: bool = True) -> np.ndarray:
+
+    if not set_black_transparency:
+        return pygame.surfarray.pixels2d(sprite).T.ravel()
+
+    rgb = pygame.surfarray.pixels3d(sprite)
+    alpha = pygame.surfarray.pixels_alpha(sprite)
+
+    black_mask = ((rgb[:, :, 0] == 0)
+                  & (rgb[:, :, 1] == 0)
+                  & (rgb[:, :, 2] == 0))
+    alpha[black_mask] = 0
+
+    del rgb, alpha
+
+    return pygame.surfarray.pixels2d(sprite).T.ravel()
+
+
+def get_data_addr(image: pygame.Surface) -> np.ndarray:
+    return pygame.surfarray.pixels2d(image)
+
+
+def destroy_image(image: pygame.Surface) -> None:
+    image.unlock()
+
+
+def get_events() -> list[pygame.event.Event] | Any:
     return pygame.event.get()
 
 
-@lru_cache(maxsize=1)
+def get_padding() -> int:
+    return 500
+
+
 def _get_key_mapping() -> dict[int, str]:
     return {
         pygame.K_w: "KEY_W",
@@ -58,8 +90,9 @@ def _get_key_mapping() -> dict[int, str]:
         pygame.K_4: "KEY_4",
         pygame.K_5: "KEY_5",
         pygame.K_6: "KEY_6",
+        pygame.K_BACKSPACE: "KEY_BACKSPACE",
         pygame.K_RETURN: "KEY_RETURN",
-        pygame.K_ESCAPE: "KEY_ESCAPE"
+        pygame.K_SPACE: "KEY_SPACE"
     }
 
 
@@ -76,3 +109,8 @@ def get_key_pressed(event: pygame.event.Event) -> str | None:
             char = chr(event.key)
             return f"CHAR_{char}"
     return None
+
+
+def clear_window(window: pygame.Surface) -> None:
+    window.fill((0, 0, 0))
+    pygame.display.update()

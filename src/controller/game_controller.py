@@ -24,7 +24,6 @@ class GameController:
 
         self.context = GameContext(
             game_session,
-            level_manager.build_level(),
             level_manager,
             highscore_manager,
             game_view
@@ -37,8 +36,6 @@ class GameController:
         self.frame_duration: float = 1.0 / self.target_fps
 
     def run(self) -> None:
-        self.context.view.initialize_graphics()
-        # self.view.load_assets()
         while self.current_scene is not None:
             current_time = time.perf_counter()
             elapsed_time = current_time - self.last_time
@@ -48,10 +45,10 @@ class GameController:
             self.current_scene = self.current_scene.update(
                 self.context, elapsed_time, user_input)
             if self.current_scene is not None:
+                self.context.view.clear_window()
                 self.current_scene.render(self.context)
 
             processing_time = time.perf_counter() - self.last_time
             time_to_sleep = self.frame_duration - processing_time
             if time_to_sleep > 0:
                 time.sleep(time_to_sleep)
-        self.context.view.close()
