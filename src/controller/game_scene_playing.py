@@ -137,7 +137,7 @@ class PlayingScene:
             controller.game_board.super_pacgums_pos.remove(super_pacgum_pos)
             controller.game_session.consume_super_pacgum()
 
-            for ghost in controller.game_board.ghosts:
+            for ghost in controller.game_board.ghosts.values():
                 if ghost.state != GhostState.EATEN:
                     ghost.state = GhostState.FRIGHTENED
             return True
@@ -161,7 +161,7 @@ class PlayingScene:
             elapsed_time: float) -> None:
 
         if controller.game_session.power_just_expired:
-            for ghost in controller.game_board.ghosts:
+            for ghost in controller.game_board.ghosts.values():
                 if ghost.state != GhostState.EATEN:
                     ghost.state = GhostState.NORMAL
 
@@ -170,7 +170,7 @@ class PlayingScene:
 
         player = controller.game_board.player
 
-        for ghost in controller.game_board.ghosts:
+        for ghost in controller.game_board.ghosts.values():
             ghost.update(elapsed_time)
 
             same_position = (

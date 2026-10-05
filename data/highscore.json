@@ -1,6 +1,10 @@
 {
     "scores": [
         {
+            "player": "w11",
+            "score": 150
+        },
+        {
             "player": "c",
             "score": 0
         }

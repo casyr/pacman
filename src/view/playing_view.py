@@ -2,17 +2,14 @@ from pygame import Surface
 from . import mlx_wrapper as mlx
 from .maze_creator import Maze
 from .pacgum import Pacgums
-from .entities_view import (
-        BlinkyView,
-        ClydeView,
-        InkyView,
-        PacmanView,
-        PinkyView
-    )
+from .entities_view import GhostView, PacmanView
+
 from .menu import BaseMenuView
 from .session_view import SessionView
 from ..model import GameBoard, GameSession
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
+
+import time
 
 
 class PlayingView(BaseMenuView):
@@ -28,7 +25,7 @@ class PlayingView(BaseMenuView):
         self.pacgums: Pacgums | None = None
         self.pacman: PacmanView | None = None
         self.session_info: SessionView | None = None
-        self.ghosts: list[BlinkyView | PinkyView | InkyView | ClydeView] = []
+        self.ghostView = GhostView | None
 
         self.maze_img = mlx.new_image(
             self.screen_width, self.screen_height).convert_alpha()
@@ -52,12 +49,9 @@ class PlayingView(BaseMenuView):
             self.window,
             self.sprite_sheets
         )
-        self.ghosts = [
-            BlinkyView(game_board, self.sprite_sheets, self.window),
-            PinkyView(game_board, self.sprite_sheets, self.window),
-            InkyView(game_board, self.sprite_sheets, self.window),
-            ClydeView(game_board, self.sprite_sheets, self.window),
-        ]
+        self.ghosts = GhostView(game_board,
+                                self.sprite_sheets,
+                                self.window)
         self._render_maze_layer()
         self._render_pacgums_layer()
 
@@ -68,7 +62,7 @@ class PlayingView(BaseMenuView):
         if self.maze is None or self.game_board is None:
             return
         self.maze_img.fill((0, 0, 0, 0))
-        maze_buffer = mlx.to_buffer(self.maze_img)
+        maze_buffer = mlx.to_buffer(self.maze_img, False)
         self.maze.render(
             maze_buffer,
             self.screen_width,
@@ -88,8 +82,11 @@ class PlayingView(BaseMenuView):
 
     def render(self, game_board: GameBoard,
                game_session: GameSession) -> None:
+
         mlx.blit_img(self.maze_img, self.window, (0, 0))
         mlx.blit_img(self.commestible_img, self.window, (0, 0))
+
+        # start = time.time()
 
         if self.pacman is not None:
             self.dynamic_img.fill((0, 0, 0, 0))
@@ -97,16 +94,10 @@ class PlayingView(BaseMenuView):
             self.pacman.render(
                 dynamic_buffer,
                 self.screen_width,
-                game_board,
-                self.window,
-            )
-            for ghost in self.ghosts:
-                ghost.render(
-                    dynamic_buffer,
-                    self.screen_width,
-                    game_board,
-                    self.window,
-                )
+                game_board)
+            self.ghosts.render(dynamic_buffer,
+                               self.screen_width,
+                               game_board)
             if self.session_info is not None:
                 self.session_info.render(
                         dynamic_buffer,
@@ -117,3 +108,6 @@ class PlayingView(BaseMenuView):
 
         mlx.blit_img(self.dynamic_img, self.window, (0, 0))
         mlx.update_window()
+
+        # end = time.time()
+        # print(f"{((end - start))}")

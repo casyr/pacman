@@ -192,7 +192,7 @@ entities:
     w: 16
     h: 16
   ghost_blinky_up_2:
-    x: 64
+    x: 80
     y: 64
     w: 16
     h: 16
@@ -238,7 +238,7 @@ entities:
     w: 16
     h: 16
   ghost_pinky_down_1:
-    x: 80
+    x: 96
     y: 80
     w: 16
     h: 16
@@ -284,7 +284,7 @@ entities:
     w: 16
     h: 16
   ghost_inky_down_2:
-    x: 96
+    x: 112
     y: 96
     w: 16
     h: 16
@@ -389,10 +389,18 @@ animations:
     speed: 100
     loop: true
     frames: [pacman_closed, pacman_down_2, pacman_down_1, pacman_down_2]
+  PacMan.ZERO:
+    speed: 100
+    loop: true
+    frames: [pacman_closed, pacman_down_2, pacman_down_1, pacman_down_2]
   pacman_die:
     speed: 150
     loop: false
     frames: [pacman_death_1, pacman_death_2, pacman_death_3, pacman_death_4, pacman_death_5, pacman_death_6, pacman_death_7, pacman_death_8, pacman_death_9, pacman_death_10, pacman_death_11]
+  Blinky.ZERO:
+    speed: 150
+    loop: true
+    frames: [ghost_blinky_right_1, ghost_blinky_right_2]
   Blinky.EAST:
     speed: 150
     loop: true
@@ -409,6 +417,10 @@ animations:
     speed: 150
     loop: true
     frames: [ghost_blinky_down_1, ghost_blinky_down_2]
+  Pinky.ZERO:
+    speed: 150
+    loop: true
+    frames: [ghost_pinky_right_1, ghost_pinky_right_2]
   Pinky.EAST:
     speed: 150
     loop: true
@@ -425,6 +437,10 @@ animations:
     speed: 150
     loop: true
     frames: [ghost_pinky_down_1, ghost_pinky_down_2]
+  Inky.ZERO:
+    speed: 150
+    loop: true
+    frames: [ghost_inky_right_1, ghost_inky_right_2]
   Inky.EAST:
     speed: 150
     loop: true
@@ -441,6 +457,10 @@ animations:
     speed: 150
     loop: true
     frames: [ghost_inky_down_1, ghost_inky_down_2]
+  Clyde.ZERO:
+    speed: 150
+    loop: true
+    frames: [ghost_clyde_right_1, ghost_clyde_right_2]
   Clyde.EAST:
     speed: 150
     loop: true

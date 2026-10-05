@@ -12,7 +12,7 @@ class GhostFactory:
             pos: Vector2D,
             maze: MazeAdapter,
             pacman: PacMan,
-            ghosts: list[Ghost]) -> Ghost:
+            ghosts: dict[GhostName, Ghost]) -> Ghost:
 
         match name:
             case GhostName.BLINKY:

@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from .maze_adaptater import MazeAdapter
 from ..shared import GhostName, Vector2D, Direction, GhostState, Wall
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -111,6 +112,7 @@ class PacMan(Entity):
         self.desired_dir = direction.value
         self.desired_state_dir = direction
 
+
     def update(self, elapsed_time: float) -> None:
 
         if self.is_dying:
@@ -128,14 +130,16 @@ class PacMan(Entity):
         )
         if is_reverse and self.can_move(self.desired_dir):
             self.move_dir = self.desired_dir
+            self.move_dir_state = self.desired_state_dir
 
         is_near_center = (
             abs(self.move_pixel_y - self.current_pos_y) < 0.1
             and abs(self.move_pixel_x - self.current_pos_x) < 0.1
         )
-        if is_near_center and self.desired_dir != self.move_dir:
-            if self.can_move(self.desired_dir):
+        if ((is_near_center and self.desired_dir != self.move_dir)
+             and (self.can_move(self.desired_dir))):
                 self.move_dir = self.desired_dir
+                self.move_dir_state = self.desired_state_dir
                 self.move_pixel_y = float(self.current_pos_y)
                 self.move_pixel_x = float(self.current_pos_x)
         self.move_continuously(elapsed_time)
@@ -149,15 +153,16 @@ class Ghost(Entity, ABC):
             x: int,
             maze: MazeAdapter,
             pacman: PacMan,
-            ghosts: list['Ghost'],
+            ghosts: dict[GhostName, 'Ghost'],
             name: GhostName,
             ) -> None:
         super().__init__(y, x, maze)
         self.name: GhostName = name
         self.pacman: PacMan = pacman
-        self.ghosts: list[Ghost] = ghosts
+        self.ghosts: dict[GhostName, Ghost] = ghosts
         self.state: GhostState = GhostState.NORMAL
         self.respawn_timer: float = 0.0
+        self.animation_timer: float = 0.0
 
     def get_eaten(self, respawn_delay: float = 1.0) -> None:
         self.state = GhostState.EATEN
@@ -174,6 +179,7 @@ class Ghost(Entity, ABC):
             if self.respawn_timer <= 0:
                 self.respawn()
             return
+        self.animation_timer += elapsed_time
         is_centered = (
             abs(self.move_pixel_y - self.current_pos_y) < 0.001
             and abs(self.move_pixel_x - self.current_pos_x) < 0.001
@@ -228,15 +234,27 @@ class Ghost(Entity, ABC):
                 self.previous_pos.x - self.current_pos_x
             )
         self.move_dir = best_direction
+        self.move_dir_state = self.best_dir(best_direction)
 
     def best_dir(self, vector: Vector2D) -> Direction:
-        if vector.x == 0 and vector.y == 0:
+        x, y = vector.x, vector.y
+
+        if x == 0 and y == 0:
             return Direction.ZERO
 
-        if abs(vector.x) >= abs(vector.y):
-            return Direction.SOUTH if vector.x > 0 else Direction.NORTH
-        else:
-            return Direction.EAST if vector.y > 0 else Direction.WEST
+        if x == 0 and y == 1:
+            return Direction.SOUTH
+
+        elif x == 0 and y == -1:
+            return Direction.NORTH
+
+        elif x == 1 and y == 0:
+            return Direction.EAST
+
+        elif x == -1 and y == 0:
+            return Direction.WEST
+
+        return Direction.ZERO
 
     def flee_behavior(self) -> None:
         possible_directions: list[Vector2D] = [

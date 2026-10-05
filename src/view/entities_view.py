@@ -28,50 +28,24 @@ class Entities:
         self.x_start = center_x - (game_board.maze.width * self.tile_size) // 2
         self.y_start = center_y - (
             game_board.maze.height * self.tile_size) // 2
-        self.ghost_name = GhostName
+        self.game_board = game_board
 
-    def _render_ghost(self, dest_img_buffer: ndarray,
-                      dest_img_width: int, game_board: GameBoard,
-                      ghost_name: GhostName, sprite_name: str) -> None:
-        pos_x = self.x_start + self.sprite_size - 8
-        pos_y = self.y_start + self.sprite_size - 8
-
-        for ghost in game_board.ghosts:
-            if ghost.name != ghost_name:
-                continue
-
-            if ghost.state == GhostState.FRIGHTENED:
-                sprite_name = "ghost_scared_blue_1"
-            elif ghost.state == GhostState.EATEN:
-                sprite_name = "ghost_eyes_right"
-
-            dest_y = int(pos_y + ghost.move_pixel_y * self.tile_size)
-            dest_x = int(pos_x + ghost.move_pixel_x * self.tile_size)
-            self.utils.put_sprite_in_image(
-                dest_img_buffer,
-                dest_img_width,
-                dest_x,
-                dest_y,
-                self.sprite_size * 2,
-                self.sprite_size * 2,
-                self.sprites.sprites[sprite_name],
-            )
+    def render(self, dest_img_buffer: ndarray,
+               dest_img_width: int, game_board: GameBoard) -> None:
+        pass
 
     def select_animation(self, dir: Direction, entity: Entity) -> str:
-        print(f"\n{entity.__class__.__name__}.{dir._name_}\n")
         return f"{entity.__class__.__name__}.{dir._name_}"
 
 
 class PacmanView(Entities):
 
     def render(self, dest_img_buffer: ndarray,
-               dest_img_width: int,
-               game_board: GameBoard,
-               window: pygame.Surface) -> None:
+               dest_img_width: int, game_board: GameBoard) -> None:
 
         pacman = game_board.player
 
-        dir_sprite = self.select_animation(pacman.desired_state_dir, pacman)
+        dir_sprite = self.select_animation(pacman.move_dir_state, pacman)
 
         pos_x = self.x_start + self.sprite_size - 8
         pos_y = self.y_start + self.sprite_size - 8
@@ -106,52 +80,44 @@ class PacmanView(Entities):
                                        self.sprites.sprites[sprite_name])
 
 
-class BlinkyView(Entities):
+class GhostView(Entities):
+
+    # def __init__(self, game_board: GameBoard):
+    #     self.ghost_dict = game_board.ghosts
 
     def render(self, dest_img_buffer: ndarray,
-               dest_img_width: int,
-               game_board: GameBoard,
-               window: pygame.Surface) -> None:
-        ghost = game_board.ghosts[self.ghost_name.BLINKY]
-        ghost_dir = ghost.move_dir_state
-        sprites = self.select_animation(ghost_dir, ghost)
+               dest_img_width: int, game_board: GameBoard) -> None:
 
-        self._render_ghost(
-            dest_img_buffer, dest_img_width, game_board,
-            GhostName.BLINKY, sprites)
+        ghost_dict = game_board.ghosts
 
+        for ghost in ghost_dict.values():
 
-class PinkyView(Entities):
+            pos_x = self.x_start + self.sprite_size - 8
+            pos_y = self.y_start + self.sprite_size - 8
 
-    def render(self, dest_img_buffer: ndarray,
-               dest_img_width: int,
-               game_board: GameBoard,
-               window: pygame.Surface) -> None:
+            sprites_name = self.select_animation(ghost.move_dir_state, ghost)
 
-        self._render_ghost(
-            dest_img_buffer, dest_img_width, game_board,
-            GhostName.PINKY, "ghost_pinky_right_1")
+            animation = self.sprites.animations[sprites_name]
+            animation_time = ghost.animation_timer * 1000
+            frame_index = int(
+                animation_time / animation.speed) % len(animation.frames)
+            sprite_name = animation.frames[frame_index]
+            # print(frame_index)
+            # print(animation_time)
+            dest_y = int(pos_y + ghost.move_pixel_y * self.tile_size)
+            dest_x = int(pos_x + ghost.move_pixel_x * self.tile_size)
 
+            if ghost.state == GhostState.FRIGHTENED:
+                sprite_name = "ghost_scared_blue_1"
+            elif ghost.state == GhostState.EATEN:
+                sprite_name = "ghost_eyes_right"
 
-class InkyView(Entities):
-
-    def render(self, dest_img_buffer: ndarray,
-               dest_img_width: int,
-               game_board: GameBoard,
-               window: pygame.Surface) -> None:
-
-        self._render_ghost(
-            dest_img_buffer, dest_img_width, game_board,
-            GhostName.INKY, "ghost_inky_right_1")
-
-
-class ClydeView(Entities):
-
-    def render(self, dest_img_buffer: ndarray,
-               dest_img_width: int,
-               game_board: GameBoard,
-               window: pygame.Surface) -> None:
-
-        self._render_ghost(
-            dest_img_buffer, dest_img_width, game_board,
-            GhostName.CLYDE, "ghost_clyde_right_1")
+            self.utils.put_sprite_in_image(
+                dest_img_buffer,
+                dest_img_width,
+                dest_x,
+                dest_y,
+                self.sprite_size * 2,
+                self.sprite_size * 2,
+                self.sprites.sprites[sprite_name],
+            )

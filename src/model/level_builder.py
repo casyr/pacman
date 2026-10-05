@@ -121,13 +121,13 @@ class LevelBuilder:
             ghosts_spawn_pos: dict[GhostName, Vector2D],
             maze: MazeAdapter,
             pacman: PacMan
-            ) -> list[Ghost]:
+            ) -> dict[GhostName, Ghost]:
 
-        ghosts: list[Ghost] = []
+        ghosts: dict[GhostName, Ghost] = {}
         for name, pos in ghosts_spawn_pos.items():
             new_ghost = GhostFactory.create(
                 name, pos, maze, pacman, ghosts)
-            ghosts.append(new_ghost)
+            ghosts[name] = new_ghost
         return ghosts
 
     def _setup_entities_player_position(
@@ -155,10 +155,9 @@ class LevelBuilder:
             self,
             player_spawn_pos: Vector2D,
             maze: MazeAdapter) -> PacMan:
-        return PacMan(
-            player_spawn_pos.y,
-            player_spawn_pos.x,
-            maze)
+        return PacMan(player_spawn_pos.y,
+                      player_spawn_pos.x,
+                      maze)
 
     def _setup_collectibles_pacgums(
             self,
