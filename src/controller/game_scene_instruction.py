@@ -14,7 +14,5 @@ class InstructionScene:
         return self
 
     def render(self, controller: GameContext) -> None:
-        # controller.view.clear_window()
-        # controller.view.draw_instruction_screen(controller)
-        # self.view.draw_instruction_screen(controller)
-        pass
+        controller.view.clear_window()
+        controller.view.draw_instruction()

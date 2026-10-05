@@ -57,18 +57,41 @@ class LevelBuilder:
     def _setup_collectibles_super_pacgums(
             self,
             maze: MazeAdapter,
-            bounds: GridBounds,
+            bounds: GridBounds
             ) -> set[Vector2D]:
-        super_pacgums_pos: set[Vector2D] = set()
+
+        available_positions: list[Vector2D] = []
 
         for pos in bounds.corners_pos:
             try:
                 positions = self._check_first_coordonate(pos, maze, bounds)
                 if positions is not None:
-                    super_pacgums_pos.add(positions)
+                    available_positions.append(positions)
             except LevelError as err:
                 logging.warning(f"{err}Superpacgum")
-        return super_pacgums_pos
+        super_pacgums_position = (
+            self._check_super_pacgum(
+                self.current_game.settings.super_pacgum, available_positions)
+        )
+        return super_pacgums_position
+
+    def _check_super_pacgum(
+            self,
+            super_pacgum: int,
+            available_positions: list[Vector2D]
+            ) -> set[Vector2D]:
+
+        total_available: int = len(available_positions)
+
+        if total_available < super_pacgum:
+            logging.warning(
+                "GameSettingsError: "
+                f"Requested super pacgums {super_pacgum} exceeds available "
+                f"positions {total_available}. "
+                f"Clamped to default: {total_available} ")
+            super_pacgum = total_available
+        selected_coords = random.sample(available_positions, k=super_pacgum)
+        return set(selected_coords)
 
     def _setup_entities_ghost_position(
             self,
@@ -185,7 +208,7 @@ class LevelBuilder:
                 f"positions {len(available_positions)}. "
                 f"Clamped to default: {len(available_positions)} ")
             self.current_game.pacgum_remaining = total_available
-
+            pacgum = total_available
         selected_coords = random.sample(available_positions, k=pacgum)
         return set(selected_coords)
 
