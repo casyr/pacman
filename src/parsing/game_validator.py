@@ -45,8 +45,8 @@ class BaseGameValidator(BaseModel, ABC):
 
 class LevelValidator(BaseGameValidator):
     level_index: int = Field(default=0)
-    width: int = Field(default=20, ge=10, le=100)
-    height: int = Field(default=20, ge=10, le=100)
+    width: int = Field(default=10, ge=10, le=20)
+    height: int = Field(default=10, ge=10, le=20)
 
     def to_dataclass(self) -> LevelSettings:
         return LevelSettings(
