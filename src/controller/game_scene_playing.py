@@ -2,7 +2,7 @@ from .game_scene_commun_object import GameContext
 from .game_scene import GameScene
 from .game_scene_paused_menu import PausedScene
 from .game_scene_cheat_menu import CheatScene
-from ..shared import GhostState, Vector2D
+from ..shared import GhostState, Vector2D, Direction
 from ..model import GameStatus
 
 
@@ -73,14 +73,16 @@ class PlayingScene:
         elif user_input == "KEY_T":
             return DefeatScene()
 
+        direction = Direction
+
         if user_input == "KEY_W":
-            controller.game_board.player.set_direction(-1, 0)
+            controller.game_board.player.set_direction(direction.NORTH)
         elif user_input == "KEY_S":
-            controller.game_board.player.set_direction(1, 0)
+            controller.game_board.player.set_direction(direction.SOUTH)
         elif user_input == "KEY_A":
-            controller.game_board.player.set_direction(0, -1)
+            controller.game_board.player.set_direction(direction.WEST)
         elif user_input == "KEY_D":
-            controller.game_board.player.set_direction(0, 1)
+            controller.game_board.player.set_direction(direction.EAST)
 
         return self
 

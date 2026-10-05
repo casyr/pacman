@@ -4,6 +4,8 @@ from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..model import GameBoard
 from ..shared import GhostName, GhostState
 from .displayer_utils import DisplayerUtils
+from ..shared import Direction
+from ..model.entities import Entity
 
 
 class Entities:
@@ -26,6 +28,7 @@ class Entities:
         self.x_start = center_x - (game_board.maze.width * self.tile_size) // 2
         self.y_start = center_y - (
             game_board.maze.height * self.tile_size) // 2
+        self.ghost_name = GhostName
 
     def _render_ghost(self, dest_img_buffer: ndarray,
                       dest_img_width: int, game_board: GameBoard,
@@ -54,6 +57,10 @@ class Entities:
                 self.sprites.sprites[sprite_name],
             )
 
+    def select_animation(self, dir: Direction, entity: Entity) -> str:
+        print(f"\n{entity.__class__.__name__}.{dir._name_}\n")
+        return f"{entity.__class__.__name__}.{dir._name_}"
+
 
 class PacmanView(Entities):
 
@@ -62,6 +69,10 @@ class PacmanView(Entities):
                game_board: GameBoard,
                window: pygame.Surface) -> None:
 
+        pacman = game_board.player
+
+        dir_sprite = self.select_animation(pacman.desired_state_dir, pacman)
+
         pos_x = self.x_start + self.sprite_size - 8
         pos_y = self.y_start + self.sprite_size - 8
 
@@ -69,10 +80,10 @@ class PacmanView(Entities):
         dest_x = int(pos_x + game_board.player.move_pixel_x * self.tile_size)
 
         if not game_board.player.is_moving():
-            animation = self.sprites.animations["pacman_walk_right"]
+            animation = self.sprites.animations["PacMan.WEST"]
             sprite_name = animation.frames[2]
         else:
-            animation = self.sprites.animations["pacman_walk_right"]
+            animation = self.sprites.animations[dir_sprite]
             animation_time = game_board.player.animation_timer * 1000
             frame_index = int(
                 animation_time / animation.speed) % len(animation.frames)
@@ -101,10 +112,13 @@ class BlinkyView(Entities):
                dest_img_width: int,
                game_board: GameBoard,
                window: pygame.Surface) -> None:
+        ghost = game_board.ghosts[self.ghost_name.BLINKY]
+        ghost_dir = ghost.move_dir_state
+        sprites = self.select_animation(ghost_dir, ghost)
 
         self._render_ghost(
             dest_img_buffer, dest_img_width, game_board,
-            GhostName.BLINKY, "ghost_blinky_right_1")
+            GhostName.BLINKY, sprites)
 
 
 class PinkyView(Entities):

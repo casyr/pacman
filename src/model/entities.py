@@ -18,6 +18,7 @@ class Entity(ABC):
         self.move_pixel_y: float = float(current_y)
         self.move_pixel_x: float = float(current_x)
         self.move_dir: Vector2D = Direction.ZERO.value
+        self.move_dir_state: Direction = Direction.ZERO
         self.spawn_pos: Vector2D = Vector2D(current_y, current_x)
         self.previous_pos: Vector2D = Vector2D(current_y, current_x)
         self.grid: list[list[int]] = maze.grid
@@ -47,7 +48,7 @@ class Entity(ABC):
         mask = move_masks.get(direction)
         if mask is None:
             return False
-        
+
         cell_value: int = self.grid[int(self.current_pos_y)][int(self.current_pos_x)]
         return not (cell_value & mask)
 
@@ -92,6 +93,7 @@ class PacMan(Entity):
         super().__init__(y, x, maze)
         self.speed = 2
         self.desired_dir: Vector2D = Direction.ZERO.value
+        self.desired_state_dir: Direction = Direction.ZERO
         self.is_dying: bool = False
         self.death_elapsed: float = 0.0
         self.death_duration: float = 1.6
@@ -105,8 +107,9 @@ class PacMan(Entity):
     def death_animation_finished(self) -> bool:
         return self.death_elapsed >= self.death_duration
 
-    def set_direction(self, dir_y: int, dir_x: int) -> None:
-        self.desired_dir = Vector2D(dir_y, dir_x)
+    def set_direction(self, direction: Direction) -> None:
+        self.desired_dir = direction.value
+        self.desired_state_dir = direction
 
     def update(self, elapsed_time: float) -> None:
 
@@ -226,6 +229,15 @@ class Ghost(Entity, ABC):
             )
         self.move_dir = best_direction
 
+    def best_dir(self, vector: Vector2D) -> Direction:
+        if vector.x == 0 and vector.y == 0:
+            return Direction.ZERO
+
+        if abs(vector.x) >= abs(vector.y):
+            return Direction.SOUTH if vector.x > 0 else Direction.NORTH
+        else:
+            return Direction.EAST if vector.y > 0 else Direction.WEST
+
     def flee_behavior(self) -> None:
         possible_directions: list[Vector2D] = [
             Direction.NORTH.value, Direction.WEST.value,
@@ -263,6 +275,7 @@ class Ghost(Entity, ABC):
             )
 
         self.move_dir = best_direction
+        self.move_dir_state = self.best_dir(best_direction)
 
 
 class Blinky(Ghost):
