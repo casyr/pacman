@@ -68,11 +68,23 @@ class PacmanView(Entities):
         dest_y = int(pos_y + game_board.player.move_pixel_y * self.tile_size)
         dest_x = int(pos_x + game_board.player.move_pixel_x * self.tile_size)
 
-        sprite_name = "pacman_right_1"
+        if not game_board.player.is_moving():
+            animation = self.sprites.animations["pacman_walk_right"]
+            sprite_name = animation.frames[2]
+        else:
+            animation = self.sprites.animations["pacman_walk_right"]
+            animation_time = game_board.player.animation_timer * 1000
+            frame_index = int(
+                animation_time / animation.speed) % len(animation.frames)
+            sprite_name = animation.frames[frame_index]
+
         if game_board.player.is_dying:
             death_animation = self.sprites.animations["pacman_die"]
-            frame_index = int(
-                game_board.player.death_elapsed * 1000 / death_animation.speed)
+            death_time = game_board.player.death_elapsed * 1000
+            frame_index = min(
+                    int(death_time / death_animation.speed),
+                    len(death_animation.frames) - 1
+                )
             sprite_name = death_animation.frames[frame_index]
 
         self.utils.put_sprite_in_image(dest_img_buffer,

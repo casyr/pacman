@@ -6,6 +6,7 @@ from .pacgum import Pacgums
 from .menu_main import Menu
 from .menu_highscore import HighScoresView
 from .displayer_utils import DisplayerUtils
+from .session_view import SessionView
 
 
 __all__ = [
@@ -16,5 +17,6 @@ __all__ = [
     "Pacgums",
     "Menu",
     "HighScoresView",
-    "DisplayerUtils"
+    "DisplayerUtils",
+    "SessionView"
     ]

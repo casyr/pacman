@@ -70,6 +70,11 @@ class Entity(ABC):
             self.current_pos_x += self.move_dir.x
             self.move_pixel_x = float(self.current_pos_x)
 
+    def is_moving(self) -> bool:
+        if self.move_dir == Direction.ZERO.value:
+            return False
+        return self.can_move(self.move_dir)
+
     @abstractmethod
     def update(self, elapsed_time: float) -> None:
         pass
@@ -88,6 +93,7 @@ class PacMan(Entity):
         self.is_dying: bool = False
         self.death_elapsed: float = 0.0
         self.death_duration: float = 1.6
+        self.animation_timer: float = 0.0
 
     def start_death_animation(self) -> None:
         self.is_dying = True
@@ -101,9 +107,15 @@ class PacMan(Entity):
         self.desired_dir = Vector2D(dir_y, dir_x)
 
     def update(self, elapsed_time: float) -> None:
+
         if self.is_dying:
             self.death_elapsed += elapsed_time
+            self.animation_timer = 0.0
             return
+
+        if self.is_moving():
+            self.death_elapsed = 0.0
+            self.animation_timer += elapsed_time
 
         is_reverse = (
             self.desired_dir.y == -self.move_dir.y
@@ -122,20 +134,6 @@ class PacMan(Entity):
                 self.move_pixel_y = float(self.current_pos_y)
                 self.move_pixel_x = float(self.current_pos_x)
         self.move_continuously(elapsed_time)
-        # self.move_timer += elapsed_time
-        # move_delay: float = 1.0 / self.speed
-        # if self.move_timer >= move_delay:
-        #     self.move_timer -= move_delay
-        #     if not self.can_move(self.move_dir):
-        #         self.previous_pos = Vector2D(
-        #             self.current_pos_y, self.current_pos_x)
-        #         self.move_dir = Direction.ZERO.value
-        #         return
-
-        #     self.previous_pos = Vector2D(
-        #         self.current_pos_y, self.current_pos_x)
-        #     self.current_pos_y += self.move_dir.y
-        #     self.current_pos_x += self.move_dir.x
 
 
 class Ghost(Entity, ABC):
@@ -187,17 +185,6 @@ class Ghost(Entity, ABC):
             elif self.state == GhostState.FRIGHTENED:
                 self.flee_behavior()
         self.move_continuously(elapsed_time)
-        # self.move_timer += elapsed_time
-        # move_delay: float = 1.0 / self.speed
-        # if self.move_timer >= move_delay:
-        #     self.move_timer -= move_delay
-
-        #     if self.state == GhostState.NORMAL:
-        #         target = self.get_target()
-        #         if target is not None:
-        #             self.chase_behavior(target)
-        #     elif self.state == GhostState.FRIGHTENED:
-        #         self.flee_behavior()
 
     @abstractmethod
     def get_target(self) -> Vector2D:

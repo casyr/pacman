@@ -31,16 +31,15 @@ class PlayingScene:
                 controller.game_board.reset_entities()
             return self
 
-        player_pos = self._get_player_position(controller)
         player_pixel_pos = self._get_player_pixel_position(controller)
         consumable_updated = self._handle_consumables(
-            controller, player_pos, player_pixel_pos)
+            controller, player_pixel_pos)
         if consumable_updated:
             controller.view.update_pacgums()
             controller.game_session.check_level_cleared()
             self._check_update_level(controller)
         self._handle_ghosts_and_collisions(
-            controller, player_pos, elapsed_time)
+            controller, player_pixel_pos, elapsed_time)
         return self
 
     def _check_game_end_conditions(
@@ -119,7 +118,6 @@ class PlayingScene:
         return None
 
     def handle_pacgums(self, controller: GameContext,
-                       player_pos: Vector2D,
                        player_pixel_pos: tuple[float, float]) -> bool:
         pacgum_pos = self._find_nearby_position(
             controller.game_board.pacgum_pos, player_pixel_pos)
@@ -130,7 +128,6 @@ class PlayingScene:
         return False
 
     def handle_super_pacgums(self, controller: GameContext,
-                             player_pos: Vector2D,
                              player_pixel_pos: tuple[float, float]) -> bool:
         super_pacgum_pos = self._find_nearby_position(
             controller.game_board.super_pacgums_pos, player_pixel_pos)
@@ -148,18 +145,17 @@ class PlayingScene:
     def _handle_consumables(
             self,
             controller: GameContext,
-            player_pos: Vector2D,
             player_pixel_pos: tuple[float, float]) -> bool:
 
         return (self.handle_super_pacgums(
-                    controller, player_pos, player_pixel_pos) or
+                    controller, player_pixel_pos) or
                 self.handle_pacgums(
-                    controller, player_pos, player_pixel_pos))
+                    controller, player_pixel_pos))
 
     def _handle_ghosts_and_collisions(
             self,
             controller: GameContext,
-            player_pos: Vector2D,
+            player_pixel_pos: tuple[float, float],
             elapsed_time: float) -> None:
 
         if controller.game_session.power_just_expired:
@@ -205,5 +201,5 @@ class PlayingScene:
             self.current_level_index = session_level
 
     def render(self, controller: GameContext) -> None:
-        controller.view.draw_game(controller.game_board,
-                                  controller.game_session)
+        controller.view.draw_game(
+            controller.game_board, controller.game_session)

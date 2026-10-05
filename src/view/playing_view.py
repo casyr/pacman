@@ -1,13 +1,21 @@
+from pygame import Surface
+from . import mlx_wrapper as mlx
 from .maze_creator import Maze
 from .pacgum import Pacgums
-from . import mlx_wrapper as mlx
+from .entities_view import (
+        BlinkyView,
+        ClydeView,
+        InkyView,
+        PacmanView,
+        PinkyView
+    )
+from .menu import BaseMenuView
+from .session_view import SessionView
 from ..model import GameBoard, GameSession
-from pygame import Surface
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
-from .entities import BlinkyView, ClydeView, InkyView, PacmanView, PinkyView
 
 
-class PlayingView:
+class PlayingView(BaseMenuView):
 
     def __init__(self, screen_width: int, screen_height: int,
                  window: Surface, sprite_sheet: SpriteSheetsManager):
@@ -19,6 +27,7 @@ class PlayingView:
         self.maze: Maze | None = None
         self.pacgums: Pacgums | None = None
         self.pacman: PacmanView | None = None
+        self.session_info: SessionView | None = None
         self.ghosts: list[BlinkyView | PinkyView | InkyView | ClydeView] = []
 
         self.maze_img = mlx.new_image(
@@ -37,6 +46,12 @@ class PlayingView:
             self.window,
         )
         self.pacman = PacmanView(game_board, self.sprite_sheets, self.window)
+        self.session_info = SessionView(
+            self.screen_width,
+            self.screen_height,
+            self.window,
+            self.sprite_sheets
+        )
         self.ghosts = [
             BlinkyView(game_board, self.sprite_sheets, self.window),
             PinkyView(game_board, self.sprite_sheets, self.window),
@@ -44,6 +59,9 @@ class PlayingView:
             ClydeView(game_board, self.sprite_sheets, self.window),
         ]
         self._render_maze_layer()
+        self._render_pacgums_layer()
+
+    def update_pacgums(self) -> None:
         self._render_pacgums_layer()
 
     def _render_maze_layer(self) -> None:
@@ -68,9 +86,6 @@ class PlayingView:
         self.pacgums.render(pacgums_buffer, self.screen_width)
         del pacgums_buffer
 
-    def update_pacgums(self) -> None:
-        self._render_pacgums_layer()
-
     def render(self, game_board: GameBoard,
                game_session: GameSession) -> None:
         mlx.blit_img(self.maze_img, self.window, (0, 0))
@@ -92,8 +107,13 @@ class PlayingView:
                     game_board,
                     self.window,
                 )
+            if self.session_info is not None:
+                self.session_info.render(
+                        dynamic_buffer,
+                        game_session
+                    )
+
             del dynamic_buffer
 
         mlx.blit_img(self.dynamic_img, self.window, (0, 0))
-
         mlx.update_window()

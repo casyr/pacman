@@ -11,7 +11,7 @@ class PausedView(BaseMenuView):
                  width: int,
                  height: int,
                  window: pygame.Surface,
-                 text_sprites: SpriteSheetsManager,) -> None:
+                 text_sprites: SpriteSheetsManager) -> None:
 
         super().__init__(width, height, window, text_sprites)
         self.title_lines: list[str] = [

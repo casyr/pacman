@@ -48,8 +48,8 @@ class GameView:
     def clear_window(self) -> None:
         self.window.fill((0, 0, 0))
 
-    def draw_game(self, game_board: GameBoard,
-                  game_session: GameSession) -> None:
+    def draw_game(
+            self, game_board: GameBoard, game_session: GameSession) -> None:
 
         self.playing_view.render(game_board, game_session)
 
