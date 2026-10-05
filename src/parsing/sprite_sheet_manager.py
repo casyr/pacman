@@ -27,7 +27,6 @@ class SpriteSheetsManager:
     def _resolve_directory(self, directory: str | Path) -> Path:
         path = Path(directory)
         if path.exists():
-            print()
             return path
         root_dir = Path(__file__).resolve().parent.parent.parent
         resolved_path = root_dir / directory

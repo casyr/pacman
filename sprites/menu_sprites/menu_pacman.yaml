@@ -1,0 +1,31 @@
+sprite_width: 2800
+menu:
+  logo:
+    x: 0
+    y: 0
+    w: 2608
+    h: 560
+
+  menu_play:
+    x: 0
+    y: 606
+    w: 640
+    h: 193
+
+  menu_instruction:
+    x: 0
+    y: 894
+    w: 1248
+    h: 198
+
+  menu_score:
+    x: 0
+    y: 1193
+    w: 1280
+    h: 200
+  
+  menu_exit:
+    x: 0
+    y: 1469
+    w: 639
+    h: 195

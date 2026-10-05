@@ -1,22 +1,36 @@
+from pygame import Surface
+from . import mlx_wrapper as mlx
 from .maze_creator import Maze
 from .pacgum import Pacgums
-from . import mlx_wrapper as mlx
+from .entities_view import (
+        BlinkyView,
+        ClydeView,
+        InkyView,
+        PacmanView,
+        PinkyView
+    )
+from .menu import BaseMenuView
+from .session_view import SessionView
 from ..model import GameBoard, GameSession
-from pygame import Surface
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
-from .entities import Pacman
 from .displayer_utils import DisplayerUtils
-from ..parsing.sprite_validator import SpriteData, SpriteCoords
 
 
-class PlayingView:
+class PlayingView(BaseMenuView):
 
     def __init__(self, screen_width: int, screen_height: int,
-                 sprite_sheet: SpriteSheetsManager, window: Surface):
+                 window: Surface, sprite_sheet: SpriteSheetsManager):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.window = window
         self.sprite_sheets = sprite_sheet
+        self.game_board: GameBoard | None = None
+        self.maze: Maze | None = None
+        self.pacgums: Pacgums | None = None
+        self.pacman: PacmanView | None = None
+        self.session_info: SessionView | None = None
+        self.ghosts: list[BlinkyView | PinkyView | InkyView | ClydeView] = []
+
 
         self.maze_img: Surface | None = None
         self.pacgum_img: Surface | None = None
@@ -24,72 +38,84 @@ class PlayingView:
 
         self.utils = DisplayerUtils()
 
-    def render(self, is_maze_updated: bool,
-               is_pacgum_updated: bool,
-               game_board: GameBoard,
+    def load_level(self, game_board: GameBoard) -> None:
+        self.game_board = game_board
+        self.maze = Maze(game_board, self.window, self.sprite_sheets)
+        self.pacgums = Pacgums(
+            game_board,
+            self.sprite_sheets,
+            self.window,
+        )
+        self.pacman = PacmanView(game_board, self.sprite_sheets, self.window)
+        self.session_info = SessionView(
+            self.screen_width,
+            self.screen_height,
+            self.window,
+            self.sprite_sheets
+        )
+        self.ghosts = [
+            BlinkyView(game_board, self.sprite_sheets, self.window),
+            PinkyView(game_board, self.sprite_sheets, self.window),
+            InkyView(game_board, self.sprite_sheets, self.window),
+            ClydeView(game_board, self.sprite_sheets, self.window),
+        ]
+        self._render_maze_layer()
+        self._render_pacgums_layer()
+
+    def update_pacgums(self) -> None:
+        self._render_pacgums_layer()
+
+    def _render_maze_layer(self) -> None:
+        if self.maze is None or self.game_board is None:
+            return
+        self.maze_img.fill((0, 0, 0, 0))
+        self.maze.render(
+            maze_buffer,
+            self.screen_width,
+            self.game_board,
+            self.window,
+        )
+        del maze_buffer
+
+    def _render_pacgums_layer(self) -> None:
+        if self.pacgums is None:
+            return
+
+        self.commestible_img.fill((0, 0, 0, 0))
+        pacgums_buffer = mlx.to_buffer(self.commestible_img)
+        self.pacgums.render(pacgums_buffer, self.screen_width)
+        del pacgums_buffer
+
+    def render(self, game_board: GameBoard,
                game_session: GameSession) -> None:
+        mlx.blit_img(self.maze_img, self.window, (0, 0))
+        mlx.blit_img(self.commestible_img, self.window, (0, 0))
 
-        dest_img = mlx.new_image(self.screen_width,
-                                 self.screen_height).convert_alpha()
-        dest_buffer = mlx.to_buffer(dest_img)
+        if self.pacman is not None:
+            self.dynamic_img.fill((0, 0, 0, 0))
+            dynamic_buffer = mlx.to_buffer(self.dynamic_img)
+            self.pacman.render(
+                dynamic_buffer,
+                self.screen_width,
+                game_board,
+                self.window,
+            )
+            for ghost in self.ghosts:
+                ghost.render(
+                    dynamic_buffer,
+                    self.screen_width,
+                    game_board,
+                    self.window,
+                )
+            if self.session_info is not None:
+                self.session_info.render(
+                        dynamic_buffer,
+                        game_session
+                    )
 
-        # print("la")
+            del dynamic_buffer
 
-        if is_maze_updated or self.maze_img is None:
-            # print("la")
-            self.maze_img = mlx.new_image(self.screen_width,
-                                          self.screen_height)
-            self.maze_img = self.maze_img.convert_alpha()
-            maze_buffer = mlx.to_buffer(self.maze_img, False)
-            maze = Maze(game_board, self.window,
-                        self.sprite_sheets)
-            maze.render(maze_buffer, self.screen_width,
-                        game_board, self.window)
-            maze_coords = SpriteCoords(x=0, y=0, w=self.screen_width, h=self.screen_height)
-            maze_sprite = SpriteData(sprite_width=self.screen_width, coords=maze_coords, buffer=maze_buffer)
-
-            self.utils.put_sprite_in_image(dest_buffer,
-                                           self.screen_width,
-                                           0, 0, self.screen_width,
-                                           self.screen_height, maze_sprite)
-
-        if is_pacgum_updated or self.pacgum_img is None:
-            print("ici")
-            self.pacgum_img = mlx.new_image(self.screen_width,
-                                            self.screen_height)
-            self.pacgum_img = self.pacgum_img.convert_alpha()
-            pacgum_buffer = mlx.to_buffer(self.pacgum_img)
-            pacgum = Pacgums(game_board,
-                             self.sprite_sheets,
-                             self.window)
-
-            pacgum.render(pacgum_buffer, self.screen_width)
-            pacgum_coords = SpriteCoords(x=0, y=0, w=self.screen_width, h=self.screen_height)
-            pacgum_sprite = SpriteData(sprite_width=self.screen_width, coords=pacgum_coords, buffer=pacgum_buffer)
-
-            self.utils.put_sprite_in_image(dest_buffer,
-                                           self.screen_width,
-                                           0, 0, self.screen_width,
-                                           self.screen_height, pacgum_sprite)
-
-        pacman = Pacman(game_board, self.sprite_sheets, self.window)
-        self.pacman_img = mlx.new_image(self.screen_width, self.screen_height)
-        self.pacman_img = self.pacman_img.convert_alpha()
-        pacman_buffer = mlx.to_buffer(self.pacman_img)
-        pacman.render(pacman_buffer, self.screen_width, game_board,
-                      self.window)
-
-        pacman_coords = SpriteCoords(x=0, y=0, w=self.screen_width, h=self.screen_height)
-        pacman_sprite = SpriteData(sprite_width=self.screen_width, coords=pacman_coords, buffer=pacman_buffer)
-
-        self.utils.put_sprite_in_image(dest_buffer,
-                                       self.screen_width,
-                                       0, 0, self.screen_width,
-                                       self.screen_height, pacman_sprite)
-
-        del dest_buffer
-
-        mlx.blit_img(dest_img, self.window, (0, 0))
+        mlx.blit_img(self.dynamic_img, self.window, (0, 0))
         mlx.update_window()
     # def render(self, is_maze_updated: bool,
     #            is_pacgum_updated: bool,

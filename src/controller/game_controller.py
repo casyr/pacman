@@ -24,7 +24,6 @@ class GameController:
 
         self.context = GameContext(
             game_session,
-            level_manager.build_level(),
             level_manager,
             highscore_manager,
             game_view
@@ -46,6 +45,7 @@ class GameController:
             self.current_scene = self.current_scene.update(
                 self.context, elapsed_time, user_input)
             if self.current_scene is not None:
+                self.context.view.clear_window()
                 self.current_scene.render(self.context)
 
             processing_time = time.perf_counter() - self.last_time

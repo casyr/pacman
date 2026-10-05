@@ -21,6 +21,4 @@ class PausedScene:
         return self
 
     def render(self, controller: GameContext) -> None:
-        # controller.view.draw_pause_menu()
-        # self.draw_pause_menu()
-        pass
+        controller.view.draw_paused()

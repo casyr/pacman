@@ -374,7 +374,7 @@ entities:
 
 animations:
   pacman_walk_right:
-    speed: 100
+    speed: 50
     loop: true
     frames: [pacman_closed, pacman_right_2, pacman_right_1, pacman_right_2]
   pacman_walk_left:
