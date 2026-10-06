@@ -10,7 +10,6 @@ from .model import HighScoreManager, GameSession, LevelBuilder
 from .utils import JsonModelLoader
 from .controller import GameController
 from .view import GameView
-import pygame
 
 
 def initialize_graphics() -> tuple[int, int]:

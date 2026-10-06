@@ -2,7 +2,7 @@ import pygame
 from numpy import ndarray
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..model import GameBoard
-from ..shared import GhostName, GhostState
+from ..shared import GhostState
 from .displayer_utils import DisplayerUtils
 from ..shared import Direction
 from ..model.entities import Entity

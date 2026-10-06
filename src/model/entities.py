@@ -50,7 +50,8 @@ class Entity(ABC):
         if mask is None:
             return False
 
-        cell_value: int = self.grid[int(self.current_pos_y)][int(self.current_pos_x)]
+        cell_value: int = (self.grid[int(self.current_pos_y)]
+                           [int(self.current_pos_x)])
         return not (cell_value & mask)
 
     def move_continuously(self, elapsed_time: float) -> None:
@@ -112,7 +113,6 @@ class PacMan(Entity):
         self.desired_dir = direction.value
         self.desired_state_dir = direction
 
-
     def update(self, elapsed_time: float) -> None:
 
         if self.is_dying:
@@ -136,12 +136,12 @@ class PacMan(Entity):
             abs(self.move_pixel_y - self.current_pos_y) < 0.1
             and abs(self.move_pixel_x - self.current_pos_x) < 0.1
         )
-        if ((is_near_center and self.desired_dir != self.move_dir)
-             and (self.can_move(self.desired_dir))):
-                self.move_dir = self.desired_dir
-                self.move_dir_state = self.desired_state_dir
-                self.move_pixel_y = float(self.current_pos_y)
-                self.move_pixel_x = float(self.current_pos_x)
+        can_move = self.can_move(self.desired_dir)
+        if (is_near_center and self.desired_dir != self.move_dir and can_move):
+            self.move_dir = self.desired_dir
+            self.move_dir_state = self.desired_state_dir
+            self.move_pixel_y = float(self.current_pos_y)
+            self.move_pixel_x = float(self.current_pos_x)
         self.move_continuously(elapsed_time)
 
 
@@ -164,7 +164,6 @@ class Ghost(Entity, ABC):
         self.respawn_timer: float = 0.0
         self.animation_timer: float = 0.0
         self.speed: float = 2.1
-
 
     def get_eaten(self, respawn_delay: float = 1.0) -> None:
         self.state = GhostState.EATEN

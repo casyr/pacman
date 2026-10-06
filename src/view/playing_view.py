@@ -9,8 +9,6 @@ from .session_view import SessionView
 from ..model import GameBoard, GameSession
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 
-import time
-
 
 class PlayingView(BaseMenuView):
 
