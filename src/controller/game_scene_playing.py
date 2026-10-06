@@ -32,11 +32,8 @@ class PlayingScene:
             return self
 
         player_pixel_pos = self._get_player_pixel_position(controller)
-        consumable_updated = self._handle_consumables(
-            controller, player_pixel_pos)
-        if consumable_updated:
-            controller.view.update_pacgums()
-            controller.game_session.check_level_cleared()
+        self._handle_consumables(controller, player_pixel_pos)
+        controller.game_session.check_level_cleared()
         self._handle_ghosts_and_collisions(
             controller, player_pixel_pos, elapsed_time)
         self._check_update_level(controller)
@@ -110,11 +107,12 @@ class PlayingScene:
             player_pixel_pos: tuple[float, float]
             ) -> Vector2D | None:
         player_y, player_x = player_pixel_pos
-        for position in positions:
-            distance_y = abs(player_y - position.y)
-            distance_x = abs(player_x - position.x)
-            if distance_y <= 0.5 and distance_x <= 0.5:
-                return position
+        center_y = round(player_y)
+        center_x = round(player_x)
+        if abs(player_y - center_y) <= 0.5 and abs(player_x - center_x) <= 0.5:
+            for position in positions:
+                if position.y == center_y and position.x == center_x:
+                    return position
         return None
 
     def handle_pacgums(self, controller: GameContext,
@@ -124,6 +122,8 @@ class PlayingScene:
         if pacgum_pos is not None:
             controller.game_board.pacgum_pos.remove(pacgum_pos)
             controller.game_session.consume_pacgum()
+            controller.view.playing_view.erase_pacgum(
+                pacgum_pos.y, pacgum_pos.x)
             return True
         return False
 
@@ -134,7 +134,8 @@ class PlayingScene:
         if super_pacgum_pos is not None:
             controller.game_board.super_pacgums_pos.remove(super_pacgum_pos)
             controller.game_session.consume_super_pacgum()
-
+            controller.view.playing_view.erase_pacgum(
+                super_pacgum_pos.y, super_pacgum_pos.x)
             for ghost in controller.game_board.ghosts:
                 if ghost.state != GhostState.EATEN:
                     ghost.state = GhostState.FRIGHTENED
