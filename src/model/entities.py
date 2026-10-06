@@ -108,7 +108,7 @@ class PacMan(Entity):
         super().__init__(y, x, maze)
         self.speed = 2
         self.desired_dir: Vector2D = Direction.ZERO.value
-        self.desired_state_dir: Direction = Direction.ZERO
+        self.desired_state_dir = Direction.ZERO
         self.is_dying: bool = False
         self.death_elapsed: float = 0.0
         self.death_duration: float = 1.6
@@ -153,6 +153,7 @@ class PacMan(Entity):
         if self.is_at_intersection() and self.desired_dir != self.move_dir:
             if self.can_move(self.desired_dir):
                 self.move_dir = self.desired_dir
+                self.move_dir_state = self.desired_state_dir
                 self.perfectly_aligns()
 
         self.move_continuously(elapsed_time)
@@ -217,7 +218,8 @@ class Ghost(Entity, ABC):
                         self.current_pos_y,
                         self.current_pos_x,
                         target)
-            elif self.state == GhostState.FRIGHTENED:
+            elif (self.state == GhostState.FRIGHTENED or
+                  self.state == GhostState.FRIGHTENED_END):
                 self.flee_behavior()
         self.move_continuously(elapsed_time)
 

@@ -11,4 +11,5 @@ class GhostName(Enum):
 class GhostState(Enum):
     NORMAL = auto()
     FRIGHTENED = auto()
+    FRIGHTENED_END = auto()
     EATEN = auto()

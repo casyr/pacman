@@ -60,9 +60,10 @@ class PlayingView(BaseMenuView):
         self._render_pacgums_layer()
 
     def _render_maze_layer(self) -> None:
+        # mlx.clear_window(self.window)
+        mlx.clear_window(self.dynamic_img)
         if self.maze is None or self.game_board is None:
             return
-        # mlx.clear_window(self.dynamic_img)
         maze_buffer = mlx.to_buffer(self.maze_img, False)
         self.maze.render(
             maze_buffer,
@@ -92,20 +93,23 @@ class PlayingView(BaseMenuView):
         self.commestible_img.fill((0, 0, 0, 0), (
             pos_x, pos_y, tile_size, tile_size))
 
+    def clear_all_layers(self) -> None:
+            self.maze_img.fill((0, 0, 0, 255))
+            self.commestible_img.fill((0, 0, 0, 0))
+            self.dynamic_img.fill((0, 0, 0, 0))
+            mlx.clear_window(self.window)
+            mlx.update_window()
+
     def render(self, game_board: GameBoard,
                game_session: GameSession) -> None:
-
         mlx.clear_window(self.dynamic_img)
         mlx.blit_img(self.maze_img, self.window, (0, 0))
         mlx.blit_img(self.commestible_img, self.window, (0, 0))
 
-        # start = time.time()
-
         if self.pacman is None:
             return
         dynamic_buffer = mlx.to_buffer(self.dynamic_img, True)
-        self.pacman.render(
-                           dynamic_buffer,
+        self.pacman.render(dynamic_buffer,
                            self.screen_width,
                            game_board)
         self.ghosts.render(dynamic_buffer,
@@ -121,6 +125,3 @@ class PlayingView(BaseMenuView):
 
         mlx.blit_img(self.dynamic_img, self.window, (0, 0))
         mlx.update_window()
-
-        # end = time.time()
-        # print(f"{((end - start))}")

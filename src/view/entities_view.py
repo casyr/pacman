@@ -47,14 +47,14 @@ class PacmanView(Entities):
 
         dir_sprite = self.select_animation(pacman.move_dir_state, pacman)
 
-        pos_x = self.x_start + self.sprite_size - 8
-        pos_y = self.y_start + self.sprite_size - 8
+        pos_x = self.x_start + self.sprite_size // 3 + 1
+        pos_y = self.y_start + self.sprite_size // 3 + 1
 
         dest_y = int(pos_y + game_board.player.move_pixel_y * self.tile_size)
         dest_x = int(pos_x + game_board.player.move_pixel_x * self.tile_size)
 
         if not game_board.player.is_moving():
-            animation = self.sprites.animations["PacMan.WEST"]
+            animation = self.sprites.animations[dir_sprite]
             sprite_name = animation.frames[2]
         else:
             animation = self.sprites.animations[dir_sprite]
@@ -92,10 +92,15 @@ class GhostView(Entities):
 
         for ghost in ghost_dict.values():
 
-            pos_x = self.x_start + self.sprite_size - 8
-            pos_y = self.y_start + self.sprite_size - 8
+            pos_x = self.x_start + self.sprite_size - 8 - 16
+            pos_y = self.y_start + self.sprite_size - 8 - 16
 
             sprites_name = self.select_animation(ghost.move_dir_state, ghost)
+
+            if ghost.state == GhostState.FRIGHTENED:
+                sprites_name = "ghost_scared_blue"
+            elif ghost.state == GhostState.FRIGHTENED_END:
+                sprites_name = "ghost_scared_flash"
 
             animation = self.sprites.animations[sprites_name]
             animation_time = ghost.animation_timer * 1000
@@ -105,10 +110,8 @@ class GhostView(Entities):
             dest_y = int(pos_y + ghost.move_pixel_y * self.tile_size)
             dest_x = int(pos_x + ghost.move_pixel_x * self.tile_size)
 
-            if ghost.state == GhostState.FRIGHTENED:
-                sprite_name = "ghost_scared_blue_1"
-            elif ghost.state == GhostState.EATEN:
-                sprite_name = "ghost_eyes_right"
+            if ghost.state == GhostState.EATEN:
+                sprite_name = "ghost_eyes_up"
 
             self.utils.put_sprite_in_image(
                 dest_img_buffer,

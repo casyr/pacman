@@ -194,14 +194,18 @@ class PlayingScene:
                         return
 
     def _check_update_level(self, controller: GameContext) -> None:
+
         if self.current_level_index is None:
+            print("la")
             self.current_level_index = controller.game_session.level_index
+            controller.view.playing_view.clear_all_layers()
             controller.view.load_maze(controller.game_board)
             return
 
         session_level = controller.game_session.level_index
         if session_level > self.current_level_index:
             controller.game_board = controller.level_manager.build_level()
+            controller.view.playing_view.clear_all_layers()
             controller.view.load_maze(controller.game_board)
             self.current_level_index = session_level
 
