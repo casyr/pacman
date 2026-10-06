@@ -34,7 +34,7 @@ Key configuration parameters include:
 
 * **levels:** Array defining multiple levels (Default: 10 levels).
 
-* **width, height:** Dimensions for each level configuration. 
+* **width, height:** Dimensions for each level configuration (Default: 10, Minimum: 10, Maximum: 20).
 
 
 ## Highscore
@@ -80,7 +80,6 @@ The codebase strictly adheres to the **flake8** coding standard and uses **mypy*
 The graphical user interface manages the Main Menu, the in-game GUI (Graphical user interface) (displaying score, lives, level, and remaining time), the Pause Menu, and the Game Over / Victory screens.
 
 
-<<<<<<< HEAD
 ## Resources
 
 Here is the function-by-function mapping from MiniLibX (mlx) to Pygame.
@@ -125,13 +124,10 @@ Because MiniLibX relies on an event-driven hook system in C while Pygame uses an
 | `mlx_do_sync` | `pygame.display.flip()` or `pygame.display.update()` | Updates the full display surface to the screen. |
 | `mlx_get_screen_size` | `pygame.display.Info().current_w`, `.current_h` | Fetches the current display monitor resolution. |
 
-# ressources
+## Ressources
 
 - [MLX functions](https://harm-smits.github.io/42docs/libs/minilibx/prototypes.html)
 - [pygame documentation](https://www.pygame.org/docs/)
 - [Game Programming Pattern - Robert Nystrom](https://gameprogrammingpatterns.com/contents.html)
 - [Pacman sprite](https://www.spriters-resource.com/arcade/pacman/asset/52631/)
  
-=======
-## Resources
->>>>>>> dev

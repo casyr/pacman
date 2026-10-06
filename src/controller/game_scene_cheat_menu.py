@@ -38,5 +38,4 @@ class CheatScene:
         return self
 
     def render(self, controller: GameContext) -> None:
-        # controller.view.draw_cheat_menu()
-        pass
+        controller.view.draw_cheat()
