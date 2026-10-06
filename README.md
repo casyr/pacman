@@ -80,6 +80,7 @@ The codebase strictly adheres to the **flake8** coding standard and uses **mypy*
 The graphical user interface manages the Main Menu, the in-game GUI (Graphical user interface) (displaying score, lives, level, and remaining time), the Pause Menu, and the Game Over / Victory screens.
 
 
+<<<<<<< HEAD
 ## Resources
 
 Here is the function-by-function mapping from MiniLibX (mlx) to Pygame.
@@ -131,3 +132,6 @@ Because MiniLibX relies on an event-driven hook system in C while Pygame uses an
 - [Game Programming Pattern - Robert Nystrom](https://gameprogrammingpatterns.com/contents.html)
 - [Pacman sprite](https://www.spriters-resource.com/arcade/pacman/asset/52631/)
  
+=======
+## Resources
+>>>>>>> dev
