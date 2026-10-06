@@ -169,6 +169,16 @@ class Ghost(Entity, ABC):
         self.state: GhostState = GhostState.NORMAL
         self.respawn_timer: float = 0.0
         self.decision_made_on_tile: Vector2D | None = None
+        self.possible_directions: list[Direction] = [
+            Direction.NORTH, Direction.WEST,
+            Direction.SOUTH, Direction.EAST
+        ]
+        self.wall_check = {
+                Direction.NORTH: Wall.NORTH.value,
+                Direction.EAST: Wall.EAST.value,
+                Direction.SOUTH: Wall.SOUTH.value,
+                Direction.WEST: Wall.WEST.value
+            }
 
     def get_eaten(self, respawn_delay: float = 1.0) -> None:
         self.state = GhostState.EATEN
@@ -211,58 +221,55 @@ class Ghost(Entity, ABC):
             current_pos_y: int,
             current_pos_x: int,
             target: Vector2D) -> None:
+
         start: Vector2D = Vector2D(current_pos_y, current_pos_x)
         distances: dict[Vector2D, int] = {start: 0}
         came_from: dict[Vector2D, Vector2D | None] = {start: None}
         queue: list[tuple[int, Vector2D]] = [(0, start)]
-        possible_directions: list[Direction] = [
-            Direction.NORTH, Direction.WEST,
-            Direction.SOUTH, Direction.EAST
-        ]
-        wall_check = {
-                Direction.NORTH: Wall.NORTH.value,
-                Direction.EAST: Wall.EAST.value,
-                Direction.SOUTH: Wall.SOUTH.value,
-                Direction.WEST: Wall.WEST.value
-            }
 
         while queue:
-            current_dist, (pos_y, pos_x) = heapq.heappop(queue)
-            if (pos_y, pos_x) == target:
-                break
-            if current_dist > distances.get(
-                    Vector2D(pos_y, pos_x), float('inf')):
+            current_cost, current_pos = heapq.heappop(queue)
+            if current_pos == target:
+                return self.get_path(came_from, target)
+            if current_cost > distances.get(
+                    current_pos, float('inf')):
                 continue
-            for direction in possible_directions:
-                if self.grid[pos_y][pos_x] & wall_check[direction]:
+            for direction in self.possible_directions:
+                if (self.grid[current_pos.y][current_pos.x] &
+                        self.wall_check[direction]):
                     continue
-                next_y, next_x = pos_y + direction.value.y, pos_x + direction.value.x
-                if not (0 <= next_y < self.height_max
-                        and 0 <= next_x < self.width_max):
-                    continue
-                next_pos = Vector2D(next_y, next_x)
-                new_dist = current_dist + 1
-                if new_dist < distances.get(next_pos, float('inf')):
-                    distances[next_pos] = new_dist
-                    came_from[next_pos] = Vector2D(pos_y, pos_x)
-                    heapq.heappush(queue, (new_dist, next_pos))
+                next_y, next_x = (
+                    current_pos.y + direction.value.y, current_pos.x +
+                    direction.value.x)
+                neighbor = Vector2D(next_y, next_x)
+                cost_to_neighbor = current_cost + 1
+                if cost_to_neighbor < distances.get(neighbor, float('inf')):
+                    distances[neighbor] = cost_to_neighbor
+                    came_from[neighbor] = current_pos
+                    heapq.heappush(queue, (cost_to_neighbor, neighbor))
+        self.fallback_movement(start)
 
-        new_pos = self.get_optimal_path(came_from, target)
-        if new_pos:
-            self.move_dir = self.get_direction_optimal_path(start, new_pos)
+    def get_path(
+            self,
+            came_from: dict[Vector2D, Vector2D | None],
+            target: Vector2D) -> None:
 
-    def get_optimal_path(self, came_from, target) -> Vector2D | None:
-        if target not in came_from:
-            return None
-        current = target
+        current: Vector2D | None = target
         path = []
         while current is not None:
             path.append(current)
             current = came_from[current]
         path.reverse()
-        return path[1]
+        if len(path) > 1:
+            self.move_dir = self.get_direction_optimal_path(path[0], path[1])
+        else:
+            self.fallback_movement(path[0])
 
-    def get_direction_optimal_path(self, current: Vector2D, next_pos: Vector2D) -> Vector2D:
+    def get_direction_optimal_path(
+            self,
+            current: Vector2D,
+            next_pos: Vector2D) -> Vector2D:
+
         diff_y = next_pos.y - current.y
         diff_x = next_pos.x - current.x
         for direction in Direction:
@@ -270,70 +277,40 @@ class Ghost(Entity, ABC):
                 return direction.value
         return Direction.ZERO.value
 
-        # best_direction: Vector2D = Direction.ZERO.value
-        # valid_choice: bool = False
-        # min_distance = float('inf')
-        # dist = float('inf')
+    def fallback_movement(self, current_pos: Vector2D) -> None:
 
-        # for direction in possible_directions:
-        #     if not self.can_move(direction):
-        #         continue
-        #     next_pos = Vector2D(
-        #         self.current_pos_y + direction.y,
-        #         self.current_pos_x + direction.x
-        #     )
-
-        #     if next_pos != self.previous_pos:
-        #         valid_choice = True
-        #         dist = (
-        #             (next_pos.y - target.y) ** 2 + (next_pos.x - target.x) ** 2
-        #             )
-        #         if dist < min_distance:
-        #             min_distance = dist
-        #             best_direction = direction
-
-        # if not valid_choice:
-        #     best_direction = Vector2D(
-        #         self.previous_pos.y - self.current_pos_y,
-        #         self.previous_pos.x - self.current_pos_x
-        #     )
-        # self.move_dir = best_direction
+        for direction in self.possible_directions:
+            if not (
+                self.grid[current_pos.y][current_pos.x] &
+                    self.wall_check[direction]):
+                self.move_dir = direction.value
+                return
 
     def flee_behavior(self) -> None:
-        possible_directions: list[Vector2D] = [
-            Direction.NORTH.value, Direction.WEST.value,
-            Direction.SOUTH.value, Direction.EAST.value
-        ]
         best_direction: Vector2D = Direction.ZERO.value
-        valid_choice: bool = False
-        max_distance = float('-inf')
-        dist = float('-inf')
+        best_score = float('-inf')
 
-        target = Vector2D(self.pacman.current_pos_y, self.pacman.current_pos_x)
+        pacman_pos = Vector2D(
+            self.pacman.current_pos_y, self.pacman.current_pos_x)
 
-        for direction in possible_directions:
-            if not self.can_move(direction):
+        for direction in self.possible_directions:
+            if not self.can_move(direction.value):
                 continue
 
             next_pos = Vector2D(
-                self.current_pos_y + direction.y,
-                self.current_pos_x + direction.x
+                self.current_pos_y + direction.value.y,
+                self.current_pos_x + direction.value.x
             )
 
-            if next_pos != self.previous_pos:
-                valid_choice = True
-                dist = (
-                    (next_pos.y - target.y) ** 2 + (next_pos.x - target.x) ** 2
-                    )
-                if dist >= max_distance:
-                    max_distance = dist
-                    best_direction = direction
+            dist_to_pacman = (
+                (next_pos.y - pacman_pos.y) ** 2 + (
+                    next_pos.x - pacman_pos.x) ** 2)
 
-        if not valid_choice:
-            best_direction = Vector2D(
-                self.previous_pos.y - self.current_pos_y,
-                self.previous_pos.x - self.current_pos_x
-            )
+            score = dist_to_pacman
+
+            if score > best_score:
+                best_score = score
+                best_direction = direction.value
 
         self.move_dir = best_direction
 
@@ -353,25 +330,15 @@ class Pinky(Ghost):
 
 
 class Inky(Ghost):
-    def _get_blinky(self) -> Ghost | None:
-        for ghost in self.ghosts:
-            if isinstance(ghost, Blinky):
-                return ghost
-        return None
 
     def get_target(self) -> Vector2D:
-        blinky = self._get_blinky()
-        if blinky is None:
-            return self.spawn_pos
-
-        front_y = self.pacman.current_pos_y + (self.pacman.move_dir.y * 2)
-        front_x = self.pacman.current_pos_x + (self.pacman.move_dir.x * 2)
-        target_y = front_y + (front_y - blinky.current_pos_y)
-        target_x = front_x + (front_x - blinky.current_pos_x)
+        target_y = self.pacman.current_pos_y + (self.pacman.move_dir.y * 2)
+        target_x = self.pacman.current_pos_x + (self.pacman.move_dir.x * 2)
         return Vector2D(target_y, target_x)
 
 
 class Clyde(Ghost):
+
     def get_target(self) -> Vector2D:
         dist_case = (
             abs(self.current_pos_y - self.pacman.current_pos_y) +
