@@ -34,7 +34,7 @@ Key configuration parameters include:
 
 * **levels:** Array defining multiple levels (Default: 10 levels).
 
-* **width, height:** Dimensions for each level configuration. 
+* **width, height:** Dimensions for each level configuration (Default: 10, Minimum: 10, Maximum: 20).
 
 
 ## Highscore
