@@ -102,8 +102,6 @@ class GhostView(Entities):
             frame_index = int(
                 animation_time / animation.speed) % len(animation.frames)
             sprite_name = animation.frames[frame_index]
-            # print(frame_index)
-            # print(animation_time)
             dest_y = int(pos_y + ghost.move_pixel_y * self.tile_size)
             dest_x = int(pos_x + ghost.move_pixel_x * self.tile_size)
 

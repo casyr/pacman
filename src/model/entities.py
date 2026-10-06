@@ -163,6 +163,8 @@ class Ghost(Entity, ABC):
         self.state: GhostState = GhostState.NORMAL
         self.respawn_timer: float = 0.0
         self.animation_timer: float = 0.0
+        self.speed: float = 2.1
+
 
     def get_eaten(self, respawn_delay: float = 1.0) -> None:
         self.state = GhostState.EATEN
