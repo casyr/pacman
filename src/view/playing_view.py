@@ -81,6 +81,17 @@ class PlayingView(BaseMenuView):
         self.pacgums.render(pacgums_buffer, self.screen_width)
         del pacgums_buffer
 
+    def erase_pacgum(self, grid_y: int, grid_x: int) -> None:
+        if self.pacman is not None:
+            tile_size = self.pacman.tile_size
+            x_start = self.pacman.x_start
+            y_start = self.pacman.y_start
+
+        pos_x = x_start + grid_x * tile_size
+        pos_y = y_start + grid_y * tile_size
+        self.commestible_img.fill((0, 0, 0, 0), (
+            pos_x, pos_y, tile_size, tile_size))
+
     def render(self, game_board: GameBoard,
                game_session: GameSession) -> None:
 

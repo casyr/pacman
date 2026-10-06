@@ -23,8 +23,8 @@ class SessionView(BaseMenuView):
 
         size = 20
         score_str = f"SCORE {game_session.score}"
-        lives_str = f"VIES {game_session.lives_remaining}"
-        time_str = f"TEMPS {int(game_session.time_remaining)}"
+        lives_str = f"LIFES {game_session.lives_remaining}"
+        time_str = f"TIME {int(game_session.time_remaining)}"
 
         time_w = self._calculate_string_width(time_str, size)
         time_x = self.width - time_w - 20

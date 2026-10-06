@@ -155,8 +155,8 @@ class LevelBuilder:
             self,
             player_spawn_pos: Vector2D,
             maze: MazeAdapter) -> PacMan:
-        return PacMan(player_spawn_pos.y,
-                      player_spawn_pos.x,
+        return PacMan(int(player_spawn_pos.y),
+                      int(player_spawn_pos.x),
                       maze)
 
     def _setup_collectibles_pacgums(
@@ -216,7 +216,7 @@ class LevelBuilder:
             pos: Vector2D,
             maze: MazeAdapter,
             bounds: GridBounds) -> Vector2D | None:
-        if maze.grid[pos.y][pos.x] != 15:
+        if maze.grid[int(pos.y)][int(pos.x)] != 15:
             return pos
         return self._available_space(
             [pos], {pos}, set(), maze, bounds)
@@ -240,7 +240,7 @@ class LevelBuilder:
         while queue:
             current_pos = queue.pop(0)
             if (
-                maze.grid[current_pos.y][current_pos.x] != 15
+                maze.grid[int(current_pos.y)][int(current_pos.x)] != 15
                 and current_pos not in ignore
             ):
                 return current_pos

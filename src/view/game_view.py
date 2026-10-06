@@ -7,6 +7,7 @@ from .menu_victory import VictoryView
 from .menu_defeat import DefeatView
 from .menu_instructions import InstructionsView
 from .menu_paused import PausedView
+from .menu_cheat import CheatView
 from ..model import GameBoard, GameSession
 from ..model import HighScore
 from .playing_view import PlayingView
@@ -37,6 +38,8 @@ class GameView:
         self.instruction: InstructionsView = InstructionsView(
             screen_width, screen_height, window, sprite_sheet)
         self.paused: PausedView = PausedView(
+            screen_width, screen_height, window, sprite_sheet)
+        self.cheat: CheatView = CheatView(
             screen_width, screen_height, window, sprite_sheet)
 
     def load_maze(self, game_board: GameBoard) -> None:
@@ -71,6 +74,9 @@ class GameView:
 
     def draw_paused(self) -> None:
         self.paused.render()
+
+    def draw_cheat(self) -> None:
+        self.cheat.render()
 
     def handle_events(self) -> str | None:
         key: str | None = None

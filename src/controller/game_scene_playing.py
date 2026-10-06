@@ -8,6 +8,11 @@ from ..model import GameStatus
 
 class PlayingScene:
     def __init__(self) -> None:
+        from .game_scene_victory import VictoryScene
+        from .game_scene_defeat import DefeatScene
+
+        self.victory_scene = VictoryScene()
+        self.defeat_scene = DefeatScene()
         self.current_level_index: int | None = None
 
     def update(
@@ -32,27 +37,22 @@ class PlayingScene:
             return self
 
         player_pixel_pos = self._get_player_pixel_position(controller)
-        consumable_updated = self._handle_consumables(
-            controller, player_pixel_pos)
-        if consumable_updated:
-            controller.view.update_pacgums()
-            controller.game_session.check_level_cleared()
-            self._check_update_level(controller)
+        self._handle_consumables(controller, player_pixel_pos)
+        controller.game_session.check_level_cleared()
         self._handle_ghosts_and_collisions(
             controller, player_pixel_pos, elapsed_time)
+        self._check_update_level(controller)
         return self
 
     def _check_game_end_conditions(
             self,
             controller: GameContext
             ) -> GameScene:
-        from .game_scene_victory import VictoryScene
-        from .game_scene_defeat import DefeatScene
 
         if controller.game_session.game_status == GameStatus.GAME_OVER:
-            return DefeatScene()
+            return self.defeat_scene
         elif controller.game_session.game_status == GameStatus.VICTORY:
-            return VictoryScene()
+            return self.victory_scene
         return self
 
     def _handle_playing_inputs(
@@ -60,7 +60,6 @@ class PlayingScene:
             user_input: str | None,
             controller: GameContext
             ) -> GameScene:
-        from .game_scene_defeat import DefeatScene
 
         if user_input == "KEY_P":
             controller.game_session.switch_status_paused()
@@ -71,7 +70,7 @@ class PlayingScene:
             return CheatScene(previous_scene=self)
 
         elif user_input == "KEY_T":
-            return DefeatScene()
+            return self.defeat_scene
 
         direction = Direction
 
@@ -112,11 +111,12 @@ class PlayingScene:
             player_pixel_pos: tuple[float, float]
             ) -> Vector2D | None:
         player_y, player_x = player_pixel_pos
-        for position in positions:
-            distance_y = abs(player_y - position.y)
-            distance_x = abs(player_x - position.x)
-            if distance_y <= 0.5 and distance_x <= 0.5:
-                return position
+        center_y = round(player_y)
+        center_x = round(player_x)
+        if abs(player_y - center_y) <= 0.5 and abs(player_x - center_x) <= 0.5:
+            for position in positions:
+                if position.y == center_y and position.x == center_x:
+                    return position
         return None
 
     def handle_pacgums(self, controller: GameContext,
@@ -126,6 +126,8 @@ class PlayingScene:
         if pacgum_pos is not None:
             controller.game_board.pacgum_pos.remove(pacgum_pos)
             controller.game_session.consume_pacgum()
+            controller.view.playing_view.erase_pacgum(
+                int(pacgum_pos.y), int(pacgum_pos.x))
             return True
         return False
 
@@ -136,7 +138,8 @@ class PlayingScene:
         if super_pacgum_pos is not None:
             controller.game_board.super_pacgums_pos.remove(super_pacgum_pos)
             controller.game_session.consume_super_pacgum()
-
+            controller.view.playing_view.erase_pacgum(
+                int(super_pacgum_pos.y), int(super_pacgum_pos.x))
             for ghost in controller.game_board.ghosts.values():
                 if ghost.state != GhostState.EATEN:
                     ghost.state = GhostState.FRIGHTENED
