@@ -237,6 +237,9 @@ class Ghost(Entity, ABC):
         distances: dict[Vector2D, int] = {start: 0}
         came_from: dict[Vector2D, Vector2D | None] = {start: None}
         queue: list[tuple[int, Vector2D]] = [(0, start)]
+        if target.x >= self.width_max or target.y >= self.height_max:
+            target = Vector2D(
+                self.pacman.current_pos_y, self.pacman.current_pos_x)
 
         while queue:
             current_cost, current_pos = heapq.heappop(queue)
