@@ -26,7 +26,7 @@ class Entity(ABC):
         self.grid: list[list[int]] = maze.grid
         self.width_max: int = maze.width
         self.height_max: int = maze.height
-        self.speed: float = 1
+        self.speed: float = 1.5
         self.move_timer: float = 0.0
         self.center_tolerance: float = 0.05
 
