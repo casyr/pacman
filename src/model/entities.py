@@ -2,7 +2,7 @@ import logging
 import heapq
 from abc import ABC, abstractmethod
 from .maze_adaptater import MazeAdapter
-from ..shared import GhostName, Vector2D, Direction, GhostState, Wall
+from ..shared import Vector2D, Direction, GhostState, Wall
 
 
 logger = logging.getLogger(__name__)
