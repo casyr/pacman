@@ -2,12 +2,16 @@ from .game_scene_commun_object import GameContext
 from .game_scene import GameScene
 from .game_scene_paused_menu import PausedScene
 from .game_scene_cheat_menu import CheatScene
-from ..shared import GhostState, Vector2D
+from ..shared import GhostState, Vector2D, Direction
 from ..model import GameStatus
 
 
 class PlayingScene:
     def __init__(self) -> None:
+        from .game_scene_victory import VictoryScene
+        from .game_scene_defeat import DefeatScene
+        self.victory_scene = VictoryScene()
+        self.defeat_scene = DefeatScene()
         self.current_level_index: int | None = None
 
     def update(
@@ -43,13 +47,11 @@ class PlayingScene:
             self,
             controller: GameContext
             ) -> GameScene:
-        from .game_scene_victory import VictoryScene
-        from .game_scene_defeat import DefeatScene
 
         if controller.game_session.game_status == GameStatus.GAME_OVER:
-            return DefeatScene()
+            return self.defeat_scene
         elif controller.game_session.game_status == GameStatus.VICTORY:
-            return VictoryScene()
+            return self.victory_scene
         return self
 
     def _handle_playing_inputs(
@@ -57,7 +59,6 @@ class PlayingScene:
             user_input: str | None,
             controller: GameContext
             ) -> GameScene:
-        from .game_scene_defeat import DefeatScene
 
         if user_input == "KEY_P":
             controller.game_session.switch_status_paused()
@@ -68,16 +69,16 @@ class PlayingScene:
             return CheatScene(previous_scene=self)
 
         elif user_input == "KEY_T":
-            return DefeatScene()
+            return self.victory_scene
 
         if user_input == "KEY_W":
-            controller.game_board.player.set_direction(-1, 0)
+            controller.game_board.player.set_direction(Direction.NORTH)
         elif user_input == "KEY_S":
-            controller.game_board.player.set_direction(1, 0)
+            controller.game_board.player.set_direction(Direction.SOUTH)
         elif user_input == "KEY_A":
-            controller.game_board.player.set_direction(0, -1)
+            controller.game_board.player.set_direction(Direction.WEST)
         elif user_input == "KEY_D":
-            controller.game_board.player.set_direction(0, 1)
+            controller.game_board.player.set_direction(Direction.EAST)
 
         return self
 
@@ -123,7 +124,7 @@ class PlayingScene:
             controller.game_board.pacgum_pos.remove(pacgum_pos)
             controller.game_session.consume_pacgum()
             controller.view.playing_view.erase_pacgum(
-                pacgum_pos.y, pacgum_pos.x)
+                int(pacgum_pos.y), int(pacgum_pos.x))
             return True
         return False
 
@@ -135,8 +136,8 @@ class PlayingScene:
             controller.game_board.super_pacgums_pos.remove(super_pacgum_pos)
             controller.game_session.consume_super_pacgum()
             controller.view.playing_view.erase_pacgum(
-                super_pacgum_pos.y, super_pacgum_pos.x)
-            for ghost in controller.game_board.ghosts:
+                int(super_pacgum_pos.y), int(super_pacgum_pos.x))
+            for ghost in controller.game_board.ghosts.values():
                 if ghost.state != GhostState.EATEN:
                     ghost.state = GhostState.FRIGHTENED
             return True
@@ -160,7 +161,7 @@ class PlayingScene:
             elapsed_time: float) -> None:
 
         if controller.game_session.power_just_expired:
-            for ghost in controller.game_board.ghosts:
+            for ghost in controller.game_board.ghosts.values():
                 if ghost.state != GhostState.EATEN:
                     ghost.state = GhostState.NORMAL
 
@@ -169,7 +170,7 @@ class PlayingScene:
 
         player = controller.game_board.player
 
-        for ghost in controller.game_board.ghosts:
+        for ghost in controller.game_board.ghosts.values():
             ghost.update(elapsed_time)
 
             same_position = (
@@ -190,6 +191,7 @@ class PlayingScene:
                         return
 
     def _check_update_level(self, controller: GameContext) -> None:
+
         if self.current_level_index is None:
             self.current_level_index = controller.game_session.level_index
             controller.view.load_maze(controller.game_board)
@@ -198,6 +200,7 @@ class PlayingScene:
         session_level = controller.game_session.level_index
         if session_level > self.current_level_index:
             controller.game_board = controller.level_manager.build_level()
+            controller.view.playing_view.clear_all_layers()
             controller.view.load_maze(controller.game_board)
             self.current_level_index = session_level
 

@@ -27,7 +27,7 @@ def update_window() -> None:
 
 def load_sprite(path: Path) -> pygame.Surface:
     try:
-        return pygame.image.load(path)
+        return pygame.image.load(path).convert_alpha()
     except FileNotFoundError as e:
         raise ViewError(e)
     except PermissionError as e:
@@ -43,20 +43,16 @@ def blit_img(image: pygame.Surface,
 def to_buffer(sprite: pygame.Surface,
               set_black_transparency: bool = True) -> np.ndarray:
 
-    if not set_black_transparency:
-        return pygame.surfarray.pixels2d(sprite).T.ravel()
+    pixels = pygame.surfarray.pixels2d(sprite)
 
-    rgb = pygame.surfarray.pixels3d(sprite)
-    alpha = pygame.surfarray.pixels_alpha(sprite)
+    if set_black_transparency:
+        masks = sprite.get_masks()
 
-    black_mask = ((rgb[:, :, 0] == 0)
-                  & (rgb[:, :, 1] == 0)
-                  & (rgb[:, :, 2] == 0))
-    alpha[black_mask] = 0
+        rgb_mask = masks[0] | masks[1] | masks[2]
 
-    del rgb, alpha
+        pixels[(pixels & rgb_mask) == 0] = 0
 
-    return pygame.surfarray.pixels2d(sprite).T.ravel()
+    return pixels.T.ravel()
 
 
 def get_data_addr(image: pygame.Surface) -> np.ndarray:
@@ -113,4 +109,3 @@ def get_key_pressed(event: pygame.event.Event) -> str | None:
 
 def clear_window(window: pygame.Surface) -> None:
     window.fill((0, 0, 0))
-    pygame.display.update()

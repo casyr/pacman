@@ -2,13 +2,8 @@ from pygame import Surface
 from . import mlx_wrapper as mlx
 from .maze_creator import Maze
 from .pacgum import Pacgums
-from .entities_view import (
-        BlinkyView,
-        ClydeView,
-        InkyView,
-        PacmanView,
-        PinkyView
-    )
+from .entities_view import GhostView, PacmanView
+
 from .menu import BaseMenuView
 from .session_view import SessionView
 from ..model import GameBoard, GameSession
@@ -28,12 +23,11 @@ class PlayingView(BaseMenuView):
         self.pacgums: Pacgums | None = None
         self.pacman: PacmanView | None = None
         self.session_info: SessionView | None = None
-        self.ghosts: list[BlinkyView | PinkyView | InkyView | ClydeView] = []
+        self.ghostView = GhostView | None
 
         self.maze_img = mlx.new_image(
-            self.screen_width, self.screen_height).convert_alpha()
-        self.commestible_img = mlx.new_image(
-            self.screen_width, self.screen_height).convert_alpha()
+            self.screen_width, self.screen_height)
+
         self.dynamic_img = mlx.new_image(
             self.screen_width, self.screen_height).convert_alpha()
 
@@ -52,79 +46,69 @@ class PlayingView(BaseMenuView):
             self.window,
             self.sprite_sheets
         )
-        self.ghosts = [
-            BlinkyView(game_board, self.sprite_sheets, self.window),
-            PinkyView(game_board, self.sprite_sheets, self.window),
-            InkyView(game_board, self.sprite_sheets, self.window),
-            ClydeView(game_board, self.sprite_sheets, self.window),
-        ]
-        self._render_maze_layer()
-        self._render_pacgums_layer()
+        self.ghosts = GhostView(game_board,
+                                self.sprite_sheets,
+                                self.window)
 
-    def update_pacgums(self) -> None:
-        self._render_pacgums_layer()
+        self._build_maze()
 
-    def _render_maze_layer(self) -> None:
-        if self.maze is None or self.game_board is None:
+    def _build_maze(self) -> None:
+        if (
+            self.maze is None
+            or self.game_board is None
+            or self.pacgums is None
+        ):
             return
-        self.maze_img.fill((0, 0, 0, 0))
-        maze_buffer = mlx.to_buffer(self.maze_img)
+
+        self.maze_img.fill((0, 0, 0))
+        maze_buf = mlx.to_buffer(self.maze_img)
         self.maze.render(
-            maze_buffer,
-            self.screen_width,
-            self.game_board,
-            self.window,
-        )
-        del maze_buffer
-
-    def _render_pacgums_layer(self) -> None:
-        if self.pacgums is None:
-            return
-
-        self.commestible_img.fill((0, 0, 0, 0))
-        pacgums_buffer = mlx.to_buffer(self.commestible_img)
-        self.pacgums.render(pacgums_buffer, self.screen_width)
-        del pacgums_buffer
+            maze_buf, self.screen_width, self.game_board, self.window)
+        self.pacgums.render(maze_buf, self.screen_width)
+        del maze_buf
 
     def erase_pacgum(self, grid_y: int, grid_x: int) -> None:
-        if self.pacman is not None:
-            tile_size = self.pacman.tile_size
-            x_start = self.pacman.x_start
-            y_start = self.pacman.y_start
+        if self.pacman is None:
+            return
+        tile_size = self.pacman.tile_size
+        y_start = self.pacman.y_start
+        x_start = self.pacman.x_start
 
-        pos_x = x_start + grid_x * tile_size
         pos_y = y_start + grid_y * tile_size
-        self.commestible_img.fill((0, 0, 0, 0), (
-            pos_x, pos_y, tile_size, tile_size))
+        pos_x = x_start + grid_x * tile_size
+        gum_size = max(4, tile_size // 3)
+        offset = (tile_size - gum_size) // 2
+        erase_y = pos_y + offset
+        erase_x = pos_x + offset
+        self.maze_img.fill((0, 0, 0), (erase_x, erase_y, gum_size, gum_size))
+
+    def clear_all_layers(self) -> None:
+        self.maze_img.fill((0, 0, 0))
+        self.dynamic_img.fill((0, 0, 0))
+        mlx.clear_window(self.window)
+        mlx.update_window()
 
     def render(self, game_board: GameBoard,
                game_session: GameSession) -> None:
-        mlx.blit_img(self.maze_img, self.window, (0, 0))
-        mlx.blit_img(self.commestible_img, self.window, (0, 0))
+        self.dynamic_img.blit(self.maze_img, (0, 0))
 
-        if self.pacman is not None:
-            self.dynamic_img.fill((0, 0, 0, 0))
-            dynamic_buffer = mlx.to_buffer(self.dynamic_img)
-            self.pacman.render(
-                dynamic_buffer,
-                self.screen_width,
-                game_board,
-                self.window,
-            )
-            for ghost in self.ghosts:
-                ghost.render(
+        if self.pacman is None:
+            return
+
+        dynamic_buffer = mlx.to_buffer(self.dynamic_img, False)
+        self.pacman.render(dynamic_buffer,
+                           self.screen_width,
+                           game_board)
+        self.ghosts.render(dynamic_buffer,
+                           self.screen_width,
+                           game_board)
+        if self.session_info is not None:
+            self.session_info.render(
                     dynamic_buffer,
-                    self.screen_width,
-                    game_board,
-                    self.window,
+                    game_session
                 )
-            if self.session_info is not None:
-                self.session_info.render(
-                        dynamic_buffer,
-                        game_session
-                    )
 
-            del dynamic_buffer
+        del dynamic_buffer
 
         mlx.blit_img(self.dynamic_img, self.window, (0, 0))
         mlx.update_window()

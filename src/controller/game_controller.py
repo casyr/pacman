@@ -28,6 +28,9 @@ class GameController:
             highscore_manager,
             game_view
         )
+        self.frame_count = 0
+        self.fps_timer = 0.0
+        self.current_fps = 0.0
 
         self.current_scene: GameScene | None = MenuScene()
 
@@ -36,16 +39,23 @@ class GameController:
         self.frame_duration: float = 1.0 / self.target_fps
 
     def run(self) -> None:
+
         while self.current_scene is not None:
+
             current_time = time.perf_counter()
             elapsed_time = current_time - self.last_time
             self.last_time = current_time
-
+            self.frame_count += 1
+            self.fps_timer += elapsed_time
+            if self.fps_timer >= 1.0:
+                self.current_fps = self.frame_count / self.fps_timer
+                self.frame_count = 0
+                self.fps_timer = 0.0
+                logger.debug(f"FPS actuels : {self.current_fps:.1f}")
             user_input = self.context.view.handle_events()
             self.current_scene = self.current_scene.update(
                 self.context, elapsed_time, user_input)
             if self.current_scene is not None:
-                self.context.view.clear_window()
                 self.current_scene.render(self.context)
 
             processing_time = time.perf_counter() - self.last_time

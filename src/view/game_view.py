@@ -45,8 +45,8 @@ class GameView:
     def load_maze(self, game_board: GameBoard) -> None:
         self.playing_view.load_level(game_board)
 
-    def update_pacgums(self) -> None:
-        self.playing_view.update_pacgums()
+    # def update_pacgums(self) -> None:
+    #     self.playing_view.update_pacgums()
 
     def clear_window(self) -> None:
         self.window.fill((0, 0, 0))

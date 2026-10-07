@@ -121,13 +121,13 @@ class LevelBuilder:
             ghosts_spawn_pos: dict[GhostName, Vector2D],
             maze: MazeAdapter,
             pacman: PacMan
-            ) -> list[Ghost]:
+            ) -> dict[GhostName, Ghost]:
 
-        ghosts: list[Ghost] = []
+        ghosts: dict[GhostName, Ghost] = {}
         for name, pos in ghosts_spawn_pos.items():
             new_ghost = GhostFactory.create(
                 name, pos, maze, pacman, ghosts)
-            ghosts.append(new_ghost)
+            ghosts[name] = new_ghost
         return ghosts
 
     def _setup_entities_player_position(
@@ -155,10 +155,9 @@ class LevelBuilder:
             self,
             player_spawn_pos: Vector2D,
             maze: MazeAdapter) -> PacMan:
-        return PacMan(
-            player_spawn_pos.y,
-            player_spawn_pos.x,
-            maze)
+        return PacMan(int(player_spawn_pos.y),
+                      int(player_spawn_pos.x),
+                      maze)
 
     def _setup_collectibles_pacgums(
             self,
@@ -172,10 +171,8 @@ class LevelBuilder:
         available_positions: list[Vector2D] = []
         pos_x: int = 0
         pos_y: int = 0
-
         ignore.update(super_pacgums_pos)
         ignore.add(player_spawn_pos)
-
         while pos_x < bounds.width:
             pos_y = 0
             while pos_y < bounds.height:
@@ -217,7 +214,7 @@ class LevelBuilder:
             pos: Vector2D,
             maze: MazeAdapter,
             bounds: GridBounds) -> Vector2D | None:
-        if maze.grid[pos.y][pos.x] != 15:
+        if maze.grid[int(pos.y)][int(pos.x)] != 15:
             return pos
         return self._available_space(
             [pos], {pos}, set(), maze, bounds)
@@ -241,7 +238,7 @@ class LevelBuilder:
         while queue:
             current_pos = queue.pop(0)
             if (
-                maze.grid[current_pos.y][current_pos.x] != 15
+                maze.grid[int(current_pos.y)][int(current_pos.x)] != 15
                 and current_pos not in ignore
             ):
                 return current_pos

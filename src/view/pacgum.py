@@ -39,7 +39,7 @@ class Pacgums:
             dest_y = pos_y + pacgum.y * self.tile_size
             self.utils.put_sprite_in_image(dest_image_buffer,
                                            dest_img_width,
-                                           dest_x, dest_y,
+                                           int(dest_x), int(dest_y),
                                            self.sprite_size, self.sprite_size,
                                            self.pacgums_sprites["pacgum_small"]
                                            )
@@ -49,7 +49,7 @@ class Pacgums:
             dest_y = pos_y + pacgum.y * self.tile_size
             self.utils.put_sprite_in_image(dest_image_buffer,
                                            dest_img_width,
-                                           dest_x, dest_y,
+                                           int(dest_x), int(dest_y),
                                            self.sprite_size, self.sprite_size,
                                            self.pacgums_sprites["pacgum_large"]
                                            )
