@@ -22,8 +22,10 @@ Superpacgum bigger dot can provide you
 the power to eat ghosts and collect
 more points.
 
-Cheat mode is implemented if you want.
+Cheat mode is implemented if you want
+press C inside a game.
 
-
+Paused mode is implemented if you want
+press P inside a game.
 
 Press 1 to return main menu
