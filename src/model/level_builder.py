@@ -171,10 +171,8 @@ class LevelBuilder:
         available_positions: list[Vector2D] = []
         pos_x: int = 0
         pos_y: int = 0
-
         ignore.update(super_pacgums_pos)
         ignore.add(player_spawn_pos)
-
         while pos_x < bounds.width:
             pos_y = 0
             while pos_y < bounds.height:

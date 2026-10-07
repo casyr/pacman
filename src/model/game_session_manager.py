@@ -58,8 +58,6 @@ class GameSession:
     def next_level_data(self) -> None:
         self.game_status = GameStatus.PLAYING
         self.time_remaining = float(self.settings.level_max_time)
-        self.pacgum_remaining = self.settings.pacgum
-        self.super_pacgum_remaining = self.settings.super_pacgum
         self.active_power = False
         self.super_mode_timer = 0.0
         self.speed_multiplier = 1
@@ -74,8 +72,6 @@ class GameSession:
         self.score = 0
         self.lives_remaining = self.settings.lives
         self.time_remaining = float(self.settings.level_max_time)
-        self.pacgum_remaining = self.settings.pacgum
-        self.super_pacgum_remaining = self.settings.super_pacgum
         self.active_power = False
         self.super_mode_timer = 0.0
         self.speed_multiplier = 1

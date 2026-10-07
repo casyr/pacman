@@ -10,7 +10,6 @@ class PlayingScene:
     def __init__(self) -> None:
         from .game_scene_victory import VictoryScene
         from .game_scene_defeat import DefeatScene
-
         self.victory_scene = VictoryScene()
         self.defeat_scene = DefeatScene()
         self.current_level_index: int | None = None
@@ -70,7 +69,7 @@ class PlayingScene:
             return CheatScene(previous_scene=self)
 
         elif user_input == "KEY_T":
-            return self.defeat_scene
+            return self.victory_scene
 
         direction = Direction
 
@@ -197,7 +196,6 @@ class PlayingScene:
 
         if self.current_level_index is None:
             self.current_level_index = controller.game_session.level_index
-            controller.view.playing_view.clear_all_layers()
             controller.view.load_maze(controller.game_board)
             return
 
