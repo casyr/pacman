@@ -22,12 +22,12 @@ class Entities:
             window.get_width(),
             window.get_height()
         )
-        self.sprite_size = self.tile_size // 3
-        center_x = window.get_width() // 2
-        center_y = window.get_height() // 2
-        self.x_start = center_x - (game_board.maze.width * self.tile_size) // 2
-        self.y_start = center_y - (
-            game_board.maze.height * self.tile_size) // 2
+        self.sprite_size = int(self.tile_size / 3)
+        center_x = int(window.get_width() / 2)
+        center_y = int(window.get_height() / 2)
+        self.x_start = int(center_x - (game_board.maze.width * self.tile_size) / 2)
+        self.y_start = int(center_y - (
+            game_board.maze.height * self.tile_size) / 2)
         self.game_board = game_board
 
     def render(self, dest_img_buffer: ndarray,
@@ -47,8 +47,8 @@ class PacmanView(Entities):
 
         dir_sprite = self.select_animation(pacman.move_dir_state, pacman)
 
-        pos_x = self.x_start + self.sprite_size // 2
-        pos_y = self.y_start + self.sprite_size // 2
+        pos_x = int(self.x_start + self.sprite_size / 2)
+        pos_y = int(self.y_start + self.sprite_size / 2)
 
         dest_y = int(pos_y + game_board.player.move_pixel_y * self.tile_size)
         dest_x = int(pos_x + game_board.player.move_pixel_x * self.tile_size)
