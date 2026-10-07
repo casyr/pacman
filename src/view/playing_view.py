@@ -8,6 +8,7 @@ from .menu import BaseMenuView
 from .session_view import SessionView
 from ..model import GameBoard, GameSession
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
+from ..errors import ViewError
 
 
 class PlayingView(BaseMenuView):
@@ -104,19 +105,23 @@ class PlayingView(BaseMenuView):
             return
 
         dynamic_buffer = mlx.to_buffer(self.dynamic_img, False)
-        self.pacman.render(dynamic_buffer,
-                           self.screen_width,
-                           game_board)
-        self.ghosts.render(dynamic_buffer,
-                           self.screen_width,
-                           game_board)
-        if self.session_info is not None:
-            self.session_info.render(
-                    dynamic_buffer,
-                    game_session
-                )
+        try:
+            self.pacman.render(dynamic_buffer,
+                               self.screen_width,
+                               game_board)
+            self.ghosts.render(dynamic_buffer,
+                               self.screen_width,
+                               game_board)
+            if self.session_info is not None:
+                self.session_info.render(
+                        dynamic_buffer,
+                        game_session
+                    )
 
-        del dynamic_buffer
+            del dynamic_buffer
+        except KeyError:
+            raise ViewError("problem found in a .yaml file"
+                            " (file is invalid or is missing)")
 
         mlx.blit_img(self.dynamic_img, self.window, (0, 0))
         mlx.update_window()

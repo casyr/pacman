@@ -49,7 +49,6 @@ class SpriteData(BaseModel):
 
 class AnimationConfig(BaseModel):
     speed: int
-    loop: bool
     frames: list[str] = Field(min_length=2)
 
 

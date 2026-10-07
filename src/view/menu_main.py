@@ -3,6 +3,7 @@ import numpy as np
 from . import mlx_wrapper as mlx
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from .menu import BaseMenuView
+from ..errors import ViewError
 
 
 class Menu(BaseMenuView):
@@ -90,9 +91,13 @@ class Menu(BaseMenuView):
             dest_img_height = buffer.size // dest_width
             logo_h = self._render_logo(
                 buffer, dest_width, dest_img_height)
-            self._render_menus(
-                buffer, dest_width, dest_img_height, logo_h)
-            del buffer
+            try:
+                self._render_menus(
+                    buffer, dest_width, dest_img_height, logo_h)
+                del buffer
+            except KeyError as e:
+                raise ViewError(f"menu_pacman.yaml file is invalid "
+                                f"or is missing: {e}")
         return self._cached_menu_image
 
     def render(self) -> None:

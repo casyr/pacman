@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from .displayer_utils import DisplayerUtils
+from ..errors import ViewError
 
 
 class BaseMenuView:
@@ -45,6 +46,8 @@ class BaseMenuView:
             return size // 2
 
         char_sprite = self.text.sprites.get(f"char_{char.upper()}")
+        if char_sprite is None:
+            raise ViewError("sprites_texte_jaune.yaml is missing or invalid")
         if char_sprite:
             ratio = char_sprite.coords.w / char_sprite.coords.h
             char_w = int(size * ratio)
