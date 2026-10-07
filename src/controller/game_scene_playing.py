@@ -71,16 +71,14 @@ class PlayingScene:
         elif user_input == "KEY_T":
             return self.victory_scene
 
-        direction = Direction
-
         if user_input == "KEY_W":
-            controller.game_board.player.set_direction(direction.NORTH)
+            controller.game_board.player.set_direction(Direction.NORTH)
         elif user_input == "KEY_S":
-            controller.game_board.player.set_direction(direction.SOUTH)
+            controller.game_board.player.set_direction(Direction.SOUTH)
         elif user_input == "KEY_A":
-            controller.game_board.player.set_direction(direction.WEST)
+            controller.game_board.player.set_direction(Direction.WEST)
         elif user_input == "KEY_D":
-            controller.game_board.player.set_direction(direction.EAST)
+            controller.game_board.player.set_direction(Direction.EAST)
 
         return self
 

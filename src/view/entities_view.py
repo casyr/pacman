@@ -47,8 +47,8 @@ class PacmanView(Entities):
 
         dir_sprite = self.select_animation(pacman.move_dir_state, pacman)
 
-        pos_x = self.x_start + self.sprite_size // 3 + 1
-        pos_y = self.y_start + self.sprite_size // 3 + 1
+        pos_x = self.x_start + self.sprite_size // 2
+        pos_y = self.y_start + self.sprite_size // 2
 
         dest_y = int(pos_y + game_board.player.move_pixel_y * self.tile_size)
         dest_x = int(pos_x + game_board.player.move_pixel_x * self.tile_size)
@@ -92,8 +92,8 @@ class GhostView(Entities):
 
         for ghost in ghost_dict.values():
 
-            pos_x = self.x_start + self.sprite_size - 8 - 16
-            pos_y = self.y_start + self.sprite_size - 8 - 16
+            pos_x = self.x_start + self.sprite_size // 2
+            pos_y = self.y_start + self.sprite_size // 2
 
             sprites_name = self.select_animation(ghost.move_dir_state, ghost)
 
