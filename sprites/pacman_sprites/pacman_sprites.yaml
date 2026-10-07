@@ -4,8 +4,8 @@ entities:
   pacman_right_1:
     x: 0
     y: 0
-    w: 15
-    h: 15
+    w: 16
+    h: 16
   pacman_right_2:
     x: 16
     y: 0
@@ -192,7 +192,7 @@ entities:
     w: 16
     h: 16
   ghost_blinky_up_2:
-    x: 64
+    x: 80
     y: 64
     w: 16
     h: 16
@@ -238,7 +238,7 @@ entities:
     w: 16
     h: 16
   ghost_pinky_down_1:
-    x: 80
+    x: 96
     y: 80
     w: 16
     h: 16
@@ -284,7 +284,7 @@ entities:
     w: 16
     h: 16
   ghost_inky_down_2:
-    x: 96
+    x: 112
     y: 96
     w: 16
     h: 16
@@ -373,19 +373,23 @@ entities:
     h: 16
 
 animations:
-  pacman_walk_right:
+  PacMan.EAST:
     speed: 50
     loop: true
     frames: [pacman_closed, pacman_right_2, pacman_right_1, pacman_right_2]
-  pacman_walk_left:
+  PacMan.WEST:
     speed: 100
     loop: true
     frames: [pacman_closed, pacman_left_2, pacman_left_1, pacman_left_2]
-  pacman_walk_up:
+  PacMan.NORTH:
     speed: 100
     loop: true
     frames: [pacman_closed, pacman_up_2, pacman_up_1, pacman_up_2]
-  pacman_walk_down:
+  PacMan.SOUTH:
+    speed: 100
+    loop: true
+    frames: [pacman_closed, pacman_down_2, pacman_down_1, pacman_down_2]
+  PacMan.ZERO:
     speed: 100
     loop: true
     frames: [pacman_closed, pacman_down_2, pacman_down_1, pacman_down_2]
@@ -393,75 +397,91 @@ animations:
     speed: 150
     loop: false
     frames: [pacman_death_1, pacman_death_2, pacman_death_3, pacman_death_4, pacman_death_5, pacman_death_6, pacman_death_7, pacman_death_8, pacman_death_9, pacman_death_10, pacman_death_11]
-  ghost_blinky_walk_right:
-    speed: 150
+  Blinky.ZERO:
+    speed: 100
     loop: true
     frames: [ghost_blinky_right_1, ghost_blinky_right_2]
-  ghost_blinky_walk_left:
-    speed: 150
+  Blinky.EAST:
+    speed: 100
+    loop: true
+    frames: [ghost_blinky_right_1, ghost_blinky_right_2]
+  Blinky.WEST:
+    speed: 100
     loop: true
     frames: [ghost_blinky_left_1, ghost_blinky_left_2]
-  ghost_blinky_walk_up:
-    speed: 150
+  Blinky.NORTH:
+    speed: 100
     loop: true
     frames: [ghost_blinky_up_1, ghost_blinky_up_2]
-  ghost_blinky_walk_down:
-    speed: 150
+  Blinky.SOUTH:
+    speed: 100
     loop: true
     frames: [ghost_blinky_down_1, ghost_blinky_down_2]
-  ghost_pinky_walk_right:
-    speed: 150
+  Pinky.ZERO:
+    speed: 100
     loop: true
     frames: [ghost_pinky_right_1, ghost_pinky_right_2]
-  ghost_pinky_walk_left:
-    speed: 150
+  Pinky.EAST:
+    speed: 100
+    loop: true
+    frames: [ghost_pinky_right_1, ghost_pinky_right_2]
+  Pinky.WEST:
+    speed: 100
     loop: true
     frames: [ghost_pinky_left_1, ghost_pinky_left_2]
-  ghost_pinky_walk_up:
-    speed: 150
+  Pinky.NORTH:
+    speed: 100
     loop: true
     frames: [ghost_pinky_up_1, ghost_pinky_up_2]
-  ghost_pinky_walk_down:
-    speed: 150
+  Pinky.SOUTH:
+    speed: 100
     loop: true
     frames: [ghost_pinky_down_1, ghost_pinky_down_2]
-  ghost_inky_walk_right:
-    speed: 150
+  Inky.ZERO:
+    speed: 100
     loop: true
     frames: [ghost_inky_right_1, ghost_inky_right_2]
-  ghost_inky_walk_left:
-    speed: 150
+  Inky.EAST:
+    speed: 100
+    loop: true
+    frames: [ghost_inky_right_1, ghost_inky_right_2]
+  Inky.WEST:
+    speed: 100
     loop: true
     frames: [ghost_inky_left_1, ghost_inky_left_2]
-  ghost_inky_walk_up:
-    speed: 150
+  Inky.NORTH:
+    speed: 100
     loop: true
     frames: [ghost_inky_up_1, ghost_inky_up_2]
-  ghost_inky_walk_down:
-    speed: 150
+  Inky.SOUTH:
+    speed: 100
     loop: true
     frames: [ghost_inky_down_1, ghost_inky_down_2]
-  ghost_clyde_walk_right:
-    speed: 150
+  Clyde.ZERO:
+    speed: 100
     loop: true
     frames: [ghost_clyde_right_1, ghost_clyde_right_2]
-  ghost_clyde_walk_left:
-    speed: 150
+  Clyde.EAST:
+    speed: 100
+    loop: true
+    frames: [ghost_clyde_right_1, ghost_clyde_right_2]
+  Clyde.WEST:
+    speed: 100
     loop: true
     frames: [ghost_clyde_left_1, ghost_clyde_left_2]
-  ghost_clyde_walk_up:
-    speed: 150
+  Clyde.NORTH:
+    speed: 100
     loop: true
     frames: [ghost_clyde_up_1, ghost_clyde_up_2]
-  ghost_clyde_walk_down:
-    speed: 150
+  Clyde.SOUTH:
+    speed: 100
     loop: true
     frames: [ghost_clyde_down_1, ghost_clyde_down_2]
   ghost_scared_blue:
-    speed: 150
+    speed: 100
     loop: true
     frames: [ghost_scared_blue_1, ghost_scared_blue_2]
   ghost_scared_flash:
-    speed: 150
+    speed: 5
     loop: true
     frames: [ghost_scared_blue_1, ghost_scared_white_1, ghost_scared_blue_2, ghost_scared_white_2]

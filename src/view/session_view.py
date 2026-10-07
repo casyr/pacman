@@ -23,28 +23,32 @@ class SessionView(BaseMenuView):
 
         size = 20
         score_str = f"SCORE {game_session.score}"
-        lives_str = f"VIES {game_session.lives_remaining}"
-        time_str = f"TEMPS {int(game_session.time_remaining)}"
+        lives_str = f"LIFES {game_session.lives_remaining}"
+        time_str = f"TIME {int(game_session.time_remaining)}"
 
-        time_w = self._calculate_string_width(time_str, size)
-        time_x = self.width - time_w - 20
+        score_x = self.width - self._calculate_string_width(
+            score_str, size) - self.margin_pixel
+        lives_x = self.width - self._calculate_string_width(
+            lives_str, size) - self.margin_pixel
+        time_x = self.width - self._calculate_string_width(
+            time_str, size) - self.margin_pixel
 
         self._render_text(
             dest_image_buffer,
             current_y=20,
             text=score_str,
-            size=size, start_x=20
+            size=size, start_x=score_x
         )
         self._render_text(
             dest_image_buffer,
             current_y=50,
             text=lives_str,
             size=size,
-            start_x=20
+            start_x=lives_x
         )
         self._render_text(
             dest_image_buffer,
-            current_y=20,
+            current_y=80,
             text=time_str,
             size=size,
             start_x=time_x

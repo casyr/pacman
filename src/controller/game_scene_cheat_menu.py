@@ -5,15 +5,17 @@ from .game_scene import GameScene
 
 class CheatScene:
     def __init__(self, previous_scene: GameScene):
+        from .game_scene_victory import VictoryScene
+        from .game_scene_playing import PlayingScene
         self.previous_scene = previous_scene
+        self.victory_scene = VictoryScene()
+        self.playing_scene = PlayingScene()
 
     def update(
             self,
             controller: GameContext,
             elapsed_time: float,
             user_input: str | None) -> GameScene | None:
-        from .game_scene_victory import VictoryScene
-        from .game_scene_playing import PlayingScene
 
         if user_input == "KEY_1":
             controller.game_session.switch_invincibility()
@@ -26,10 +28,10 @@ class CheatScene:
         elif user_input == "KEY_5":
             controller.game_session.cheat_skip_level()
             if controller.game_session.game_status == GameStatus.VICTORY:
-                return VictoryScene()
+                return self.victory_scene
             controller.game_board = controller.level_manager.build_level()
             controller.game_session.next_level_data()
-            return PlayingScene()
+            return self.playing_scene
         elif user_input == "KEY_6":
             controller.game_session.cheat_add_score()
         elif user_input == "KEY_C":

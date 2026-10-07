@@ -3,11 +3,12 @@ from typing import NamedTuple
 
 
 class Vector2D(NamedTuple):
-    y: int
-    x: int
+    y: float
+    x: float
 
 
 class Direction(Enum):
+
     NORTH = Vector2D(-1, 0)
     EAST = Vector2D(0, 1)
     SOUTH = Vector2D(1, 0)

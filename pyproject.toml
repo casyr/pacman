@@ -3,14 +3,14 @@ name = "pacman-42"
 version = "0.1.0"
 description = "pacman game"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.14"
 dependencies = [
     "flake8>=7.3.0",
     "mazegenerator",
     "mypy>=2.3.1",
     "numpy>=2.2.6",
     "pydantic>=2.13.4",
-    "pygame>=2.6.1",
+    "pygame-ce>=2.5.0",
     "pyyaml>=6.0.3",
     "screeninfo>=0.8.1",
 ]

@@ -124,7 +124,7 @@ Because MiniLibX relies on an event-driven hook system in C while Pygame uses an
 | `mlx_do_sync` | `pygame.display.flip()` or `pygame.display.update()` | Updates the full display surface to the screen. |
 | `mlx_get_screen_size` | `pygame.display.Info().current_w`, `.current_h` | Fetches the current display monitor resolution. |
 
-# ressources
+## Ressources
 
 - [MLX functions](https://harm-smits.github.io/42docs/libs/minilibx/prototypes.html)
 - [pygame documentation](https://www.pygame.org/docs/)

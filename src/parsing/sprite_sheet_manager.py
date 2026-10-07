@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class SpriteSheetsManager:
     def __init__(self, directory: str | Path):
         self.data_dir = self._resolve_directory(directory)
-        self.allowed_files: list[str] = [".yaml", ".bmp"]
+        self.allowed_files: list[str] = [".yaml", ".bmp", ".png"]
         self.target_files: list[Path] = []
         self.sprites: dict[str, SpriteData] = {}
         self.animations: dict[str, AnimationConfig] = {}
@@ -40,7 +40,7 @@ class SpriteSheetsManager:
     def _map_images(self) -> dict[Path, Path]:
         images_map: dict[Path, Path] = {}
         for image_path in self.target_files:
-            if image_path.suffix == ".bmp":
+            if image_path.suffix in [".bmp", ".png"]:
                 images_map[image_path.parent] = image_path
         return images_map
 

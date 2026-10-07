@@ -2,8 +2,10 @@ import pygame
 from numpy import ndarray
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..model import GameBoard
-from ..shared import GhostName, GhostState
+from ..shared import GhostState
 from .displayer_utils import DisplayerUtils
+from ..shared import Direction
+from ..model.entities import Entity
 
 
 class Entities:
@@ -20,59 +22,43 @@ class Entities:
             window.get_width(),
             window.get_height()
         )
-        self.sprite_size = self.tile_size // 3
-        center_x = window.get_width() // 2
-        center_y = window.get_height() // 2
-        self.x_start = center_x - (game_board.maze.width * self.tile_size) // 2
-        self.y_start = center_y - (
-            game_board.maze.height * self.tile_size) // 2
+        self.sprite_size = int(self.tile_size / 3)
+        center_x = int(window.get_width() / 2)
+        center_y = int(window.get_height() / 2)
+        self.x_start = int(center_x -
+                           (game_board.maze.width * self.tile_size) / 2)
+        self.y_start = int(center_y - (
+            game_board.maze.height * self.tile_size) / 2)
+        self.game_board = game_board
 
-    def _render_ghost(self, dest_img_buffer: ndarray,
-                      dest_img_width: int, game_board: GameBoard,
-                      ghost_name: GhostName, sprite_name: str) -> None:
-        pos_x = self.x_start + self.sprite_size - 8
-        pos_y = self.y_start + self.sprite_size - 8
+    def render(self, dest_img_buffer: ndarray,
+               dest_img_width: int, game_board: GameBoard) -> None:
+        pass
 
-        for ghost in game_board.ghosts:
-            if ghost.name != ghost_name:
-                continue
-
-            if ghost.state == GhostState.FRIGHTENED:
-                sprite_name = "ghost_scared_blue_1"
-            elif ghost.state == GhostState.EATEN:
-                sprite_name = "ghost_eyes_right"
-
-            dest_y = int(pos_y + ghost.move_pixel_y * self.tile_size)
-            dest_x = int(pos_x + ghost.move_pixel_x * self.tile_size)
-            self.utils.put_sprite_in_image(
-                dest_img_buffer,
-                dest_img_width,
-                dest_x,
-                dest_y,
-                self.sprite_size * 2,
-                self.sprite_size * 2,
-                self.sprites.sprites[sprite_name],
-            )
+    def select_animation(self, dir: Direction, entity: Entity) -> str:
+        return f"{entity.__class__.__name__}.{dir._name_}"
 
 
 class PacmanView(Entities):
 
     def render(self, dest_img_buffer: ndarray,
-               dest_img_width: int,
-               game_board: GameBoard,
-               window: pygame.Surface) -> None:
+               dest_img_width: int, game_board: GameBoard) -> None:
 
-        pos_x = self.x_start + self.sprite_size - 8
-        pos_y = self.y_start + self.sprite_size - 8
+        pacman = game_board.player
+
+        dir_sprite = self.select_animation(pacman.move_dir_state, pacman)
+
+        pos_x = int(self.x_start + self.sprite_size / 2)
+        pos_y = int(self.y_start + self.sprite_size / 2)
 
         dest_y = int(pos_y + game_board.player.move_pixel_y * self.tile_size)
         dest_x = int(pos_x + game_board.player.move_pixel_x * self.tile_size)
 
         if not game_board.player.is_moving():
-            animation = self.sprites.animations["pacman_walk_right"]
+            animation = self.sprites.animations[dir_sprite]
             sprite_name = animation.frames[2]
         else:
-            animation = self.sprites.animations["pacman_walk_right"]
+            animation = self.sprites.animations[dir_sprite]
             animation_time = game_board.player.animation_timer * 1000
             frame_index = int(
                 animation_time / animation.speed) % len(animation.frames)
@@ -95,49 +81,45 @@ class PacmanView(Entities):
                                        self.sprites.sprites[sprite_name])
 
 
-class BlinkyView(Entities):
+class GhostView(Entities):
+
+    # def __init__(self, game_board: GameBoard):
+    #     self.ghost_dict = game_board.ghosts
 
     def render(self, dest_img_buffer: ndarray,
-               dest_img_width: int,
-               game_board: GameBoard,
-               window: pygame.Surface) -> None:
+               dest_img_width: int, game_board: GameBoard) -> None:
 
-        self._render_ghost(
-            dest_img_buffer, dest_img_width, game_board,
-            GhostName.BLINKY, "ghost_blinky_right_1")
+        ghost_dict = game_board.ghosts
 
+        for ghost in ghost_dict.values():
 
-class PinkyView(Entities):
+            pos_x = self.x_start + self.sprite_size // 2
+            pos_y = self.y_start + self.sprite_size // 2
 
-    def render(self, dest_img_buffer: ndarray,
-               dest_img_width: int,
-               game_board: GameBoard,
-               window: pygame.Surface) -> None:
+            sprites_name = self.select_animation(ghost.move_dir_state, ghost)
 
-        self._render_ghost(
-            dest_img_buffer, dest_img_width, game_board,
-            GhostName.PINKY, "ghost_pinky_right_1")
+            if ghost.state == GhostState.FRIGHTENED:
+                sprites_name = "ghost_scared_blue"
+            elif ghost.state == GhostState.FRIGHTENED_END:
+                sprites_name = "ghost_scared_flash"
 
+            animation = self.sprites.animations[sprites_name]
+            animation_time = ghost.animation_timer * 1000
+            frame_index = int(
+                animation_time / animation.speed) % len(animation.frames)
+            sprite_name = animation.frames[frame_index]
+            dest_y = int(pos_y + ghost.move_pixel_y * self.tile_size)
+            dest_x = int(pos_x + ghost.move_pixel_x * self.tile_size)
 
-class InkyView(Entities):
+            if ghost.state == GhostState.EATEN:
+                sprite_name = "ghost_eyes_up"
 
-    def render(self, dest_img_buffer: ndarray,
-               dest_img_width: int,
-               game_board: GameBoard,
-               window: pygame.Surface) -> None:
-
-        self._render_ghost(
-            dest_img_buffer, dest_img_width, game_board,
-            GhostName.INKY, "ghost_inky_right_1")
-
-
-class ClydeView(Entities):
-
-    def render(self, dest_img_buffer: ndarray,
-               dest_img_width: int,
-               game_board: GameBoard,
-               window: pygame.Surface) -> None:
-
-        self._render_ghost(
-            dest_img_buffer, dest_img_width, game_board,
-            GhostName.CLYDE, "ghost_clyde_right_1")
+            self.utils.put_sprite_in_image(
+                dest_img_buffer,
+                dest_img_width,
+                dest_x,
+                dest_y,
+                self.sprite_size * 2,
+                self.sprite_size * 2,
+                self.sprites.sprites[sprite_name],
+            )

@@ -9,7 +9,7 @@ class GameBoard:
     maze: MazeAdapter
     player: PacMan
     player_spawn_pos: Vector2D
-    ghosts: list[Ghost]
+    ghosts: dict[GhostName, Ghost]
     ghosts_spawn_pos: dict[GhostName, Vector2D]
     pacgums: int
     pacgum_pos: set[Vector2D]
@@ -17,5 +17,5 @@ class GameBoard:
 
     def reset_entities(self) -> None:
         self.player.respawn()
-        for ghost in self.ghosts:
+        for ghost in self.ghosts.values():
             ghost.respawn()
