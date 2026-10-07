@@ -37,7 +37,7 @@ class Menu(BaseMenuView):
         logo_w = int(logo_h * ratio)
         logo_x = (dest_img_width - logo_w) // 2
 
-        self.put_sprite_in_image(
+        self.utils.put_sprite_in_image(
             dest_image_buffer,
             dest_img_width,
             logo_x,
@@ -65,7 +65,7 @@ class Menu(BaseMenuView):
             menu_w = int(menu_h * ratio)
             menu_x = (dest_img_width - menu_w) // 2
 
-            self.put_sprite_in_image(
+            self.utils.put_sprite_in_image(
                 dest_image_buffer,
                 dest_img_width,
                 menu_x,

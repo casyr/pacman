@@ -1,7 +1,7 @@
 import pygame
 import numpy as np
-from ..parsing.sprite_validator import SpriteData
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
+from .displayer_utils import DisplayerUtils
 
 
 class BaseMenuView:
@@ -20,26 +20,7 @@ class BaseMenuView:
         self.gap_pixel: int = 2
         self.margin_pixel: int = 20
 
-    def put_sprite_in_image(self, dest_image_buffer: np.ndarray,
-                            dest_image_width: int,
-                            dest_x: int, dest_y: int,
-                            dest_w: int, dest_h: int,
-                            sprite_data: SpriteData) -> None:
-
-        x_gap = np.arange(dest_w)
-        y_gap = np.arange(dest_h)
-
-        src_x = (sprite_data.coords.w * x_gap) // dest_w
-        src_y = (sprite_data.coords.h * y_gap) // dest_h
-
-        sprite_pos_1d = ((src_y)[:, None] *
-                         sprite_data.coords.w + src_x).ravel()
-        image_pos_1d = ((dest_y + y_gap)[:, None] *
-                        dest_image_width + (dest_x + x_gap)).ravel()
-
-        sprite_pixels = sprite_data.buffer[sprite_pos_1d]
-        mask = sprite_pixels != 0
-        dest_image_buffer[image_pos_1d[mask]] = sprite_pixels[mask]
+        self.utils = DisplayerUtils()
 
     def _calculate_string_width(self, text: str, size: int) -> int:
         total_w = 0
@@ -67,7 +48,7 @@ class BaseMenuView:
         if char_sprite:
             ratio = char_sprite.coords.w / char_sprite.coords.h
             char_w = int(size * ratio)
-            self.put_sprite_in_image(
+            self.utils.put_sprite_in_image(
                 dest_image_buffer,
                 self.width,
                 current_x,

@@ -1,7 +1,7 @@
 from pygame import Surface
 from . import mlx_wrapper as mlx
-from .maze_creator import Maze
-from .pacgum import Pacgums
+from .maze_creator import MazeView
+from .pacgum import PacgumsView
 from .entities_view import GhostView, PacmanView
 
 from .menu import BaseMenuView
@@ -19,8 +19,8 @@ class PlayingView(BaseMenuView):
         self.window = window
         self.sprite_sheets = sprite_sheet
         self.game_board: GameBoard | None = None
-        self.maze: Maze | None = None
-        self.pacgums: Pacgums | None = None
+        self.maze: MazeView | None = None
+        self.pacgums: PacgumsView | None = None
         self.pacman: PacmanView | None = None
         self.session_info: SessionView | None = None
         self.ghostView = GhostView | None
@@ -33,22 +33,30 @@ class PlayingView(BaseMenuView):
 
     def load_level(self, game_board: GameBoard) -> None:
         self.game_board = game_board
-        self.maze = Maze(game_board, self.window, self.sprite_sheets)
-        self.pacgums = Pacgums(
-            game_board,
-            self.sprite_sheets,
-            self.window,
-        )
-        self.pacman = PacmanView(game_board, self.sprite_sheets, self.window)
-        self.session_info = SessionView(
-            self.screen_width,
-            self.screen_height,
-            self.window,
-            self.sprite_sheets
-        )
+        self.maze = MazeView(game_board,
+                             self.sprite_sheets,
+                             self.screen_width,
+                             self.screen_height)
+
+        self.pacgums = PacgumsView(game_board,
+                                   self.sprite_sheets,
+                                   self.screen_width,
+                                   self.screen_height)
+
+        self.pacman = PacmanView(game_board,
+                                 self.sprite_sheets,
+                                 self.screen_width,
+                                 self.screen_height)
+
+        self.session_info = SessionView(self.screen_width,
+                                        self.screen_height,
+                                        self.window,
+                                        self.sprite_sheets)
+
         self.ghosts = GhostView(game_board,
                                 self.sprite_sheets,
-                                self.window)
+                                self.screen_width,
+                                self.screen_height)
 
         self._build_maze()
 
@@ -60,7 +68,7 @@ class PlayingView(BaseMenuView):
         ):
             return
 
-        self.maze_img.fill((0, 0, 0))
+        mlx.clear_window(self.maze_img)
         maze_buf = mlx.to_buffer(self.maze_img)
         self.maze.render(
             maze_buf, self.screen_width, self.game_board, self.window)
@@ -83,8 +91,8 @@ class PlayingView(BaseMenuView):
         self.maze_img.fill((0, 0, 0), (erase_x, erase_y, gum_size, gum_size))
 
     def clear_all_layers(self) -> None:
-        self.maze_img.fill((0, 0, 0))
-        self.dynamic_img.fill((0, 0, 0))
+        mlx.clear_window(self.maze_img)
+        mlx.clear_window(self.dynamic_img)
         mlx.clear_window(self.window)
         mlx.update_window()
 

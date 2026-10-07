@@ -11,21 +11,16 @@ class GhostFactory:
             name: GhostName,
             pos: Vector2D,
             maze: MazeAdapter,
-            pacman: PacMan,
-            ghosts: dict[GhostName, Ghost]) -> Ghost:
+            pacman: PacMan) -> Ghost:
 
         match name:
             case GhostName.BLINKY:
-                return Blinky(int(pos.y), int(pos.x), maze, pacman, ghosts,
-                              name)
+                return Blinky(pos.y, pos.x, maze, pacman)
             case GhostName.PINKY:
-                return Pinky(int(pos.y), int(pos.x), maze, pacman, ghosts,
-                             name)
+                return Pinky(pos.y, pos.x, maze, pacman)
             case GhostName.INKY:
-                return Inky(int(pos.y), int(pos.x), maze, pacman, ghosts,
-                            name)
+                return Inky(pos.y, pos.x, maze, pacman)
             case GhostName.CLYDE:
-                return Clyde(int(pos.y), int(pos.x), maze, pacman, ghosts,
-                             name)
+                return Clyde(pos.y, pos.x, maze, pacman)
             case _:
                 raise ValueError(f"Unknown ghost type: {name}")
