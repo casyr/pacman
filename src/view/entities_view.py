@@ -25,7 +25,8 @@ class Entities:
         self.sprite_size = int(self.tile_size / 3)
         center_x = int(window.get_width() / 2)
         center_y = int(window.get_height() / 2)
-        self.x_start = int(center_x - (game_board.maze.width * self.tile_size) / 2)
+        self.x_start = int(center_x -
+                           (game_board.maze.width * self.tile_size) / 2)
         self.y_start = int(center_y - (
             game_board.maze.height * self.tile_size) / 2)
         self.game_board = game_board

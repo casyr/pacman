@@ -53,4 +53,3 @@ class SessionView(BaseMenuView):
             size=size,
             start_x=time_x
         )
-
