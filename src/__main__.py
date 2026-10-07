@@ -25,7 +25,7 @@ def main() -> int:
     logger = logging.getLogger(__name__)
     logger.info("Starting the application Pacman...")
     if len(sys.argv) != 2:
-        logger.error("Use: uv run python3 -m src src/config.json")
+        logger.error("Use: uv run python3 -m pac-man.py config.json")
         return 1
     config_file_path: str = sys.argv[1]
 
@@ -46,7 +46,6 @@ def main() -> int:
             highscore_manager,
             game_session,
             game_view)
-        logger.debug(game_session.pacgum_remaining)
         controller.run()
         return 0
 
