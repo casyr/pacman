@@ -36,11 +36,11 @@ class PlayingScene:
             return self
 
         player_pixel_pos = self._get_player_pixel_position(controller)
-        self._handle_consumables(controller, player_pixel_pos)
         controller.game_session.check_level_cleared()
         self._handle_ghosts_and_collisions(
             controller, player_pixel_pos, elapsed_time)
         self._check_update_level(controller)
+        self._handle_consumables(controller, player_pixel_pos)
         return self
 
     def _check_game_end_conditions(
@@ -67,9 +67,6 @@ class PlayingScene:
         elif user_input == "KEY_C":
             controller.game_session.switch_status_paused()
             return CheatScene(previous_scene=self)
-
-        elif user_input == "KEY_T":
-            return self.victory_scene
 
         if user_input == "KEY_W":
             controller.game_board.player.set_direction(Direction.NORTH)

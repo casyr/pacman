@@ -37,6 +37,7 @@ class PacgumsView:
         pos_y = self.y_start + self.sprite_size
 
         for pacgum in self.pacgums_pos:
+            print(len(self.pacgums_pos))
             dest_x = pos_x + pacgum.x * self.tile_size
             dest_y = pos_y + pacgum.y * self.tile_size
             self.utils.put_sprite_in_image(dest_image_buffer,

@@ -72,7 +72,7 @@ class SpriteSheetsManager:
             config_yaml = SpriteSheetYamlConfig.model_validate(raw_config_yaml)
 
             sprite_sheet = mlx_wrapper.load_sprite(image_path)
-            sprite_sheet_buffer = mlx_wrapper.to_buffer(sprite_sheet)
+            sprite_sheet_buffer = mlx_wrapper.to_buffer(sprite_sheet, False)
 
             self._load_static_sprites(config_yaml, sprite_sheet_buffer)
             self._load_animations(raw_config_yaml)
