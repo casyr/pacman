@@ -118,6 +118,15 @@ To ensure optimal visual rendering, Pac-Man assets are stored in the sprites/ di
 
 These files are strictly bound to their respective sprite sheets and must not be altered.
 
+## Project Management
+
+The project was managed collaboratively using **GitHub** to ensure structured organization :
+
+* **Planning & Tracking:** The workload was structured and tracked using GitHub **Milestones**, visualized as a Gantt chart style timeline to define key objectives, and manage deliverables.
+* **Development Workflow:** Daily development relied on a strict branch-based workflow utilizing **Pull Requests (PRs)**. This enabled continuous peer review, ensuring code quality, knowledge sharing.
+
+You can find all project management documents, tracking sheets, and related resources in the [dedicated project management directory](https://github.com/users/casyr/projects/3/views/4).
+
 ## Resources
 
 Here is the function-by-function mapping from MiniLibX (mlx) to Pygame.

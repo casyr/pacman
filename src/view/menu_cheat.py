@@ -20,8 +20,9 @@ class CheatView(BaseMenuView):
             "press   1   to be invincible",
             "press   2   to freeze ghosts",
             "press   3   to speed up",
-            "press   4   to adding 1 live",
+            "press   4   to add 1 live",
             "press   5   to skip level",
+            "press   6   to add 100 points",
             "press   c   to return"]
 
         self.size_char_pixel: int = 25

@@ -43,6 +43,8 @@ class LevelBuilder:
         ghosts = self._setup_entities_ghost(ghosts_spawn_pos, maze, player)
         pacgum_pos = self._setup_collectibles_pacgums(
             super_pacgums_pos, player_spawn_pos, maze, bounds)
+        self.current_game.pacgum_remaining = len(pacgum_pos)
+        self.current_game.super_pacgum_remaining = len(super_pacgums_pos)
         return GameBoard(
             maze=maze,
             player=player,
