@@ -38,7 +38,7 @@ class HighScore(BaseModel):
     @field_validator("score", mode="before")
     @classmethod
     def validate_score(cls, value: Any) -> int:
-        if not isinstance(value, int) or value < 0 or value > 2147483647:
+        if not isinstance(value, int) or value < 0 or value > 999999999:
             logger.warning(
                 "You not supposed to be here ! "
                 f"Invalid score '{value}'."

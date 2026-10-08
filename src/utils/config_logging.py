@@ -5,7 +5,7 @@ from typing import Any
 
 
 def get_logging_config(
-        log_dir: Path, default_level: str = "DEBUG") -> dict[str, Any]:
+        log_dir: Path, default_level: str = "INFO") -> dict[str, Any]:
     return {
         "version": 1,
         "disable_existing_loggers": False,

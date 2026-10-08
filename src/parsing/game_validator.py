@@ -88,7 +88,7 @@ class GameValidator(BaseGameValidator):
     points_per_super_pacgum: int = Field(default=50, ge=1, le=50)
     points_per_ghost: int = Field(default=200, ge=1, le=200)
     seed: int = Field(default=42)
-    level_max_time: float = Field(default=90, ge=40, le=3600)
+    level_max_time: int = Field(default=90, ge=40, le=3600)
 
     def to_dataclass(self) -> GameSettings:
         return GameSettings(
@@ -175,7 +175,7 @@ class GameValidator(BaseGameValidator):
         mode="wrap"
     )
     @classmethod
-    def validate_level_fields(
+    def validate_game_fields(
             cls,
             value_setting_name: Any,
             handler: ValidatorFunctionWrapHandler,

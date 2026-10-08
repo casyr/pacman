@@ -43,6 +43,7 @@ class GameSession:
 
     def add_score(self, score: int) -> None:
         self.score += max(0, score)
+        self.score = min(self.score, 999999999)
 
     def _next_level(self) -> None:
         if self.level_index + 1 < self.total_levels:
