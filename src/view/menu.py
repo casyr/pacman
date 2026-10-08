@@ -3,6 +3,9 @@ import numpy as np
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from .displayer_utils import DisplayerUtils
 from ..errors import ViewError
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class BaseMenuView:
@@ -46,9 +49,10 @@ class BaseMenuView:
             return size // 2
 
         char_sprite = self.text.sprites.get(f"char_{char.upper()}")
-        if char_sprite is None:
-            raise ViewError("sprites_texte_jaune.yaml is missing or invalid")
-        if char_sprite:
+        try:
+            if char_sprite is None:
+                raise ViewError(f"Character '{char}' not found in sprites.")
+
             ratio = char_sprite.coords.w / char_sprite.coords.h
             char_w = int(size * ratio)
             self.utils.put_sprite_in_image(
@@ -61,7 +65,9 @@ class BaseMenuView:
                 char_sprite
             )
             return char_w
-        return 0
+        except ViewError as e:
+            logger.warning(f"Ignored character : {e}")
+            return 0
 
     def _render_text(
             self,

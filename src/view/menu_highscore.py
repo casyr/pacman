@@ -52,7 +52,7 @@ class HighScoresView(BaseMenuView):
         step = 30
 
         for score in scores:
-            score_str = f"Player : {score.player}  score : {score.score}"
+            score_str = f"Player  {score.player}  score  {score.score}"
             self._render_text(
                 dest_image_buffer,
                 start_y,

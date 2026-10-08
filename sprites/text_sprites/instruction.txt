@@ -9,23 +9,23 @@ Game Rules
 
 The Objective is to navigate the maze
 and eat all the pac-gums on the board
-to achieve victory.
+to achieve victory
 
 Watch out for the ghosts your enemies
 patrolling the corridors! Each has its
-own AI and pursuit behavior.
+own AI and pursuit behavior
 
-If they touch you, you lose the game.
-Observe their movement.
+If they touch you you lose the game
+Observe their movement
 
 Superpacgum bigger dot can provide you
 the power to eat ghosts and collect
-more points.
+more points
 
 Cheat mode is implemented if you want
-press C inside a game.
+press C inside a game
 
 Paused mode is implemented if you want
-press P inside a game.
+press P inside a game
 
 Press 1 to return main menu
