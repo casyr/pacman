@@ -162,13 +162,11 @@ class PlayingScene:
                 if ghost.state != GhostState.EATEN:
                     ghost.state = GhostState.NORMAL
 
-        if controller.game_session.cheat_mode.freeze:
-            return
-
         player = controller.game_board.player
 
         for ghost in controller.game_board.ghosts.values():
-            ghost.update(elapsed_time)
+            if not controller.game_session.cheat_mode.freeze:
+                ghost.update(elapsed_time)
 
             same_position = (
                 abs(player.move_pixel_y - ghost.move_pixel_y) < 0.5

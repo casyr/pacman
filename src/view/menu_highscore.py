@@ -67,7 +67,7 @@ class HighScoresView(BaseMenuView):
                                  start_y: int) -> int:
 
         start_y += self.margin_pixel
-        play_str = "Press space to play"
+        play_str = "Press space to play or press 1 to return menu"
         self._render_text(
             dest_image_buffer,
             start_y,

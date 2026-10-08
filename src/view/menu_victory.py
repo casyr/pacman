@@ -38,7 +38,7 @@ class VictoryView(BaseMenuView):
         self._render_text(
             buffer, score_y, score_text, self.size_char_pixel)
         name_y = score_y + self.size_char_pixel + 50
-        display_name = f"NAME {player_name}_"
+        display_name = f"NAME {player_name} "
         self._render_text(buffer, name_y, display_name, self.size_char_pixel)
         del buffer
         mlx.blit_img(image, self.window, (0, 0))
