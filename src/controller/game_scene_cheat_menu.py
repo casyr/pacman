@@ -30,7 +30,8 @@ class CheatScene:
             if controller.game_session.game_status == GameStatus.VICTORY:
                 return self.victory_scene
             controller.game_board = controller.level_manager.build_level()
-            controller.game_session.next_level_data()
+            controller.view.playing_view.clear_all_layers()
+            controller.view.load_maze(controller.game_board)
             return self.playing_scene
         elif user_input == "KEY_6":
             controller.game_session.cheat_add_score()
