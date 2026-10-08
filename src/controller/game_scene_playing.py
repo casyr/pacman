@@ -39,8 +39,9 @@ class PlayingScene:
         controller.game_session.check_level_cleared()
         self._handle_ghosts_and_collisions(
             controller, player_pixel_pos, elapsed_time)
-        self._check_update_level(controller)
+
         self._handle_consumables(controller, player_pixel_pos)
+        self._check_update_level(controller)
         return self
 
     def _check_game_end_conditions(
@@ -136,6 +137,7 @@ class PlayingScene:
                 super_pacgum_pos.y, super_pacgum_pos.x)
             for ghost in controller.game_board.ghosts.values():
                 if ghost.state != GhostState.EATEN:
+                    print("here")
                     ghost.state = GhostState.FRIGHTENED
             return True
 

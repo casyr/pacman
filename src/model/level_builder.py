@@ -5,7 +5,7 @@ from .maze_adaptater import MazeAdapter
 from .ghost_factory import GhostFactory
 from .entities import Ghost, PacMan
 from .game_board import GameBoard
-from ..shared import GhostName, Vector2D, GridBounds, Direction
+from ..shared import GhostName, Vector2D, GridBounds, Direction, GhostState
 from ..errors import LevelError
 
 logger = logging.getLogger(__name__)
@@ -46,14 +46,14 @@ class LevelBuilder:
         self.current_game.pacgum_remaining = len(pacgum_pos)
         self.current_game.super_pacgum_remaining = len(super_pacgums_pos)
         return GameBoard(
-            maze=maze,
-            player=player,
-            player_spawn_pos=player_spawn_pos,
-            ghosts=ghosts,
-            ghosts_spawn_pos=ghosts_spawn_pos,
-            pacgums=self.current_game.pacgum_remaining,
-            pacgum_pos=pacgum_pos,
-            super_pacgums_pos=super_pacgums_pos,
+                         maze=maze,
+                         player=player,
+                         player_spawn_pos=player_spawn_pos,
+                         ghosts=ghosts,
+                         ghosts_spawn_pos=ghosts_spawn_pos,
+                         pacgums=self.current_game.pacgum_remaining,
+                         pacgum_pos=pacgum_pos,
+                         super_pacgums_pos=super_pacgums_pos,
         )
 
     def _setup_collectibles_super_pacgums(
@@ -129,6 +129,7 @@ class LevelBuilder:
         for name, pos in ghosts_spawn_pos.items():
             new_ghost = GhostFactory.create(
                 name, pos, maze, pacman)
+            new_ghost.state = GhostState.NORMAL
             ghosts[name] = new_ghost
         return ghosts
 

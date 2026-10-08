@@ -92,3 +92,23 @@ class BaseMenuView:
                 size
             )
             current_x += char_w + self.gap_pixel
+
+    def _render_text_left(
+            self,
+            dest_image_buffer: np.ndarray,
+            current_y: int,
+            text: str,
+            size: int,
+            start_x: int | None = None) -> None:
+
+        current_x = 0
+
+        for char in text:
+            char_w = self._render_single_char(
+                dest_image_buffer,
+                char,
+                current_x,
+                current_y,
+                size
+            )
+            current_x += char_w + self.gap_pixel

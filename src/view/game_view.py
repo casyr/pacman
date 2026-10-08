@@ -50,7 +50,6 @@ class GameView:
 
     def draw_game(
             self, game_board: GameBoard, game_session: GameSession) -> None:
-
         self.playing_view.render(game_board, game_session)
 
     def draw_menu(self) -> None:

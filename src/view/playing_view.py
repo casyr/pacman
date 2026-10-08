@@ -97,7 +97,8 @@ class PlayingView(BaseMenuView):
             raise ViewError("maze_sprites.yaml is missing or invalid")
         self.utils.put_sprite_in_image(buffer, self.screen_width, erase_x,
                                        erase_y, gum_size, gum_size,
-                                       self.sprite_sheets.sprites.get("empty_tile"))
+                                       self.sprite_sheets.sprites.get("empty_"
+                                                                      "tile"))
         del buffer
 
     def clear_all_layers(self) -> None:
