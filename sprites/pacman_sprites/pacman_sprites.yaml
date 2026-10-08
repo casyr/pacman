@@ -374,7 +374,7 @@ entities:
 
 animations:
   PacMan.EAST:
-    speed: 50
+    speed: 100
     frames: [pacman_closed, pacman_right_2, pacman_right_1, pacman_right_2]
   PacMan.WEST:
     speed: 100

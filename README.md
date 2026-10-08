@@ -1,6 +1,11 @@
 *This project has been created as part of the 42 curriculum by yriffard, advacher.*
 ## Description
 This project is a playable recreation of the classic arcade game PacMan. Built in Python 3.14, a strict Model-View-Controller (MVC) architecture, and use MiniLibX functions equivalence using Pygame as graphical library. The game features : graphical UI, persistent highscores, autonomous ghost AI, and dynamic level generation.
+
+## Preview
+
+![](ressources/pac_man_gameplay_1.gif)
+
 ## Instructions
 **Installation & Setup:**  
 This project relies on `uv` for package management and uses Python >=3.14 features.  
