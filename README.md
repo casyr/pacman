@@ -127,10 +127,19 @@ The project was managed collaboratively using **GitHub** to ensure structured or
 
 You can find all project management documents, tracking sheets, and related resources in the [dedicated project management directory](https://github.com/users/casyr/projects/3/views/4).
 
-**some numbers**
+---
+
+### some numbers
+
+| contributors| Issues | Pull request |
+| --- | --- | --- |
+| 2 | `112` | 55 |
 
 
 **poject overview**
+
+![](ressources/project_management.png)
+
 
 ## Resources
 
