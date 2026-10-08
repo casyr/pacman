@@ -1,4 +1,3 @@
-import pygame
 from numpy import ndarray
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..model import GameBoard
@@ -12,19 +11,22 @@ class Entities:
 
     def __init__(self, game_board: GameBoard,
                  sprites: SpriteSheetsManager,
-                 window: pygame.Surface):
+                 screen_width: int,
+                 screen_height: int) -> None:
         self.sprites = sprites
         self.maze_grid: list[list[int]] = game_board.maze.grid
         self.utils = DisplayerUtils()
+        self.screen_width = screen_width
+        self.screen_height = screen_height
         self.tile_size = self.utils.get_tile_size_maze(
             game_board.maze.width,
             game_board.maze.height,
-            window.get_width(),
-            window.get_height()
+            self.screen_width,
+            self.screen_height
         )
         self.sprite_size = int(self.tile_size / 3)
-        center_x = int(window.get_width() / 2)
-        center_y = int(window.get_height() / 2)
+        center_x = int(self.screen_width / 2)
+        center_y = int(self.screen_height / 2)
         self.x_start = int(center_x -
                            (game_board.maze.width * self.tile_size) / 2)
         self.y_start = int(center_y - (
@@ -82,9 +84,6 @@ class PacmanView(Entities):
 
 
 class GhostView(Entities):
-
-    # def __init__(self, game_board: GameBoard):
-    #     self.ghost_dict = game_board.ghosts
 
     def render(self, dest_img_buffer: ndarray,
                dest_img_width: int, game_board: GameBoard) -> None:

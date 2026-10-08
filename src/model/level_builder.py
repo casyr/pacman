@@ -43,6 +43,8 @@ class LevelBuilder:
         ghosts = self._setup_entities_ghost(ghosts_spawn_pos, maze, player)
         pacgum_pos = self._setup_collectibles_pacgums(
             super_pacgums_pos, player_spawn_pos, maze, bounds)
+        self.current_game.pacgum_remaining = len(pacgum_pos)
+        self.current_game.super_pacgum_remaining = len(super_pacgums_pos)
         return GameBoard(
             maze=maze,
             player=player,
@@ -84,11 +86,11 @@ class LevelBuilder:
         total_available: int = len(available_positions)
 
         if total_available < super_pacgum:
-            logging.warning(
-                "GameSettingsError: "
-                f"Requested super pacgums {super_pacgum} exceeds available "
-                f"positions {total_available}. "
-                f"Clamped to default: {total_available} ")
+            logging.warning("GameSettingsError: "
+                            f"Requested super pacgums {super_pacgum}"
+                            f"exceeds available "
+                            f"positions {total_available}. "
+                            f"Clamped to default: {total_available} ")
             super_pacgum = total_available
         selected_coords = random.sample(available_positions, k=super_pacgum)
         return set(selected_coords)
@@ -126,7 +128,7 @@ class LevelBuilder:
         ghosts: dict[GhostName, Ghost] = {}
         for name, pos in ghosts_spawn_pos.items():
             new_ghost = GhostFactory.create(
-                name, pos, maze, pacman, ghosts)
+                name, pos, maze, pacman)
             ghosts[name] = new_ghost
         return ghosts
 
@@ -155,8 +157,8 @@ class LevelBuilder:
             self,
             player_spawn_pos: Vector2D,
             maze: MazeAdapter) -> PacMan:
-        return PacMan(int(player_spawn_pos.y),
-                      int(player_spawn_pos.x),
+        return PacMan(player_spawn_pos.y,
+                      player_spawn_pos.x,
                       maze)
 
     def _setup_collectibles_pacgums(
@@ -214,7 +216,7 @@ class LevelBuilder:
             pos: Vector2D,
             maze: MazeAdapter,
             bounds: GridBounds) -> Vector2D | None:
-        if maze.grid[int(pos.y)][int(pos.x)] != 15:
+        if maze.grid[pos.y][pos.x] != 15:
             return pos
         return self._available_space(
             [pos], {pos}, set(), maze, bounds)
@@ -238,7 +240,7 @@ class LevelBuilder:
         while queue:
             current_pos = queue.pop(0)
             if (
-                maze.grid[int(current_pos.y)][int(current_pos.x)] != 15
+                maze.grid[current_pos.y][current_pos.x] != 15
                 and current_pos not in ignore
             ):
                 return current_pos
@@ -247,12 +249,10 @@ class LevelBuilder:
                 ny, nx = (
                     current_pos.y + direction.y, current_pos.x + direction.x)
                 next_pos = Vector2D(ny, nx)
-                if (
-                    0 <= next_pos.y < bounds.height
-                    and 0 <= next_pos.x < bounds.width
-                ):
-                    if next_pos not in seen:
-                        seen.add(next_pos)
-                        queue.append(next_pos)
+                if (0 <= next_pos.y < bounds.height
+                        and 0 <= next_pos.x < bounds.width
+                        and next_pos not in seen):
+                    seen.add(next_pos)
+                    queue.append(next_pos)
 
         raise LevelError("No available space for ")

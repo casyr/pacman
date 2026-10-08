@@ -2,7 +2,7 @@ from . import mlx_wrapper
 from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 from ..parsing.sprite_validator import SpriteData
 from .game_view import GameView
-from .pacgum import Pacgums
+from .pacgum import PacgumsView
 from .menu_main import Menu
 from .menu_highscore import HighScoresView
 from .displayer_utils import DisplayerUtils
@@ -14,7 +14,8 @@ __all__ = [
     "GameView",
     "SpriteSheetsManager",
     "SpriteData",
-    "Pacgums",
+    "PacgumsView",
+    "MazeView",
     "Menu",
     "HighScoresView",
     "DisplayerUtils",

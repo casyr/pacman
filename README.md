@@ -1,14 +1,42 @@
 *This project has been created as part of the 42 curriculum by yriffard, advacher.*
 ## Description
-This project is a playable recreation of the classic arcade game PacMan. Built in Python 3.10, a strict Model-View-Controller (MVC) architecture, and use MiniLibX functions equivalence as graphical library. The game features : graphical UI, persistent highscores, autonomous ghost AI, and dynamic level generation.
+This project is a playable recreation of the classic arcade game PacMan. Built in Python 3.14, a strict Model-View-Controller (MVC) architecture, and use MiniLibX functions equivalence using Pygame as graphical library. The game features : graphical UI, persistent highscores, autonomous ghost AI, and dynamic level generation.
 ## Instructions
 **Installation & Setup:**  
-This project relies on `uv` for package management and uses Python >=3.10 features.  
-Dependencies can be installed via the provided Makefile using `make install`.  
+This project relies on `uv` for package management and uses Python >=3.14 features.  
+Dependencies can be installed via the provided Makefile using 
+```bash
+make install
+```
+
 **Execution:**  
-The game must be launched from the command line, taking exactly one argument (a JSON configuration file).  
-`uv run python3 -m src src/config.json`  
-Use `make run` to execute the main script
+The game must be launched from the command line, taking exactly one argument (a JSON configuration file).
+```bash
+uv run python3 -m src src/config.json #to execute the main script
+```
+Or using
+```bash
+make run 
+```
+
+**Cleaning:**  
+The environment can be clean by the provided Makefile using
+```bash
+make clean
+```
+
+**Packaging:**  
+The Makfile run the package.sh command and build the package using
+```bash
+make package 
+```
+
+**Debugging:**
+Similar to run command the Makefile can run the pdb debugger using
+```bash
+make debug 
+```
+
 
 ## Configuration
 The game is configured via a JSON file that supports inline comments (starting with #). A config.json is furnished. If invalid or missing values are encountered, the game clamps to safe defaults and logs a clear message without crashing or displaying a Python traceback.
@@ -54,7 +82,7 @@ The codebase strictly adheres to the **flake8** coding standard and uses **mypy*
 
 
 ## General Software Architecture
-**Model:** The logic resides in classes like GameSession, LevelBuilder, GameBoard and Entity. 
+### **Model:** The logic resides in classes like GameSession, LevelBuilder, GameBoard and Entity. 
 * The `GameSession` tracks value update during the party, including the current score, remaining lives, active power mode, and level timers.
 
 * `LevelBuilder` acts as interprets configuration data to construct the maze, determine bounds, and instantiate the initial entities for the GameBoard.
@@ -68,7 +96,7 @@ The codebase strictly adheres to the **flake8** coding standard and uses **mypy*
 * `Entity` abstract base class defining base properties, spawn positions, movement vectors, and speed parameters. all entity will herit from this class
 
 
-**Controller:** The GameController acts as the orchestrator.  
+### **Controller:** The GameController acts as the orchestrator.  
 
 * Initialized from main() entry point, it loads the configuration, initializes the LevelBuilder and HighScoreManager, captures real-time, updates session timers, and triggers the update(elapsed_time) loop for all active entities.  
 
@@ -76,9 +104,28 @@ The codebase strictly adheres to the **flake8** coding standard and uses **mypy*
 
 * It independently resolves spatial collisions (detecting intersections between the player, collectibles, and ghosts), manages score accruals via the session manager, handles ghost vulnerability transitions, and coordinates entity respawns.
 
-**View:**   
-The graphical user interface manages the Main Menu, the in-game GUI (Graphical user interface) (displaying score, lives, level, and remaining time), the Pause Menu, and the Game Over / Victory screens.
+### **View:** The GameView is storing all called method that display the game
+The Graphical User Interface (GUI) manages the Main Menu, the HUD (displaying score, lives, current level, and remaining time), the Pause Menu, and the Game Over or Victory screens.
 
+Every visual asset is dynamically extracted and cropped from a single sprite sheet. Each sprite is scaled and rendered by its corresponding scene renderer.
+
+Each scene (e.g., Main Menu, Gameplay) renders its own pixel buffer to the screen. Scenes are structured into a series of layered components. These components are blitted sequentially like stacked layers, using a colorkey mechanism (treating black pixels as transparent) to prevent covering underlying elements.
+
+To optimize rendering, this blitting pipeline relies on a custom MiniLibX-style wrapper built on top of Pygame. On initialization, sprite sheets are loaded into a Pygame/NumPy surface buffer. When a sprite needs to be drawn, the required sub-region is sliced from the array buffer and blitted directly onto the active display window.
+
+## Needed Sprites
+To ensure optimal visual rendering, Pac-Man assets are stored in the sprites/ directory. Each sprite sheet is paired with a corresponding .yaml configuration file storing specific sprite metadata (x/y positions, width, height, animation frame count, frame rate, etc.).
+
+These files are strictly bound to their respective sprite sheets and must not be altered.
+
+## Project Management
+
+The project was managed collaboratively using **GitHub** to ensure structured organization :
+
+* **Planning & Tracking:** The workload was structured and tracked using GitHub **Milestones**, visualized as a Gantt chart style timeline to define key objectives, and manage deliverables.
+* **Development Workflow:** Daily development relied on a strict branch-based workflow utilizing **Pull Requests (PRs)**. This enabled continuous peer review, ensuring code quality, knowledge sharing.
+
+You can find all project management documents, tracking sheets, and related resources in the [dedicated project management directory](https://github.com/users/casyr/projects/3/views/4).
 
 ## Resources
 
@@ -93,36 +140,24 @@ Because MiniLibX relies on an event-driven hook system in C while Pygame uses an
 | `mlx_new_window` | `pygame.display.set_mode((w, h))` | Creates the display window and returns the main screen `Surface`. |
 | `mlx_clear_window` | `screen.fill((R, G, B))` | Fills a Surface (e.g., screen) with a specific color. |
 | `mlx_destroy_window` | `pygame.display.quit()` | Uninitializes the display module and closes the window. |
-| **Util functions** |  |  |
-| `mlx_get_color_value` | `pygame.Color(r, g, b, a)` | Pygame handles colors directly via `(R, G, B)` tuples or the `Color` class. |
-| `mlx_pixel_put` | `surface.set_at((x, y), color)` | Draws a single pixel. (Rarely used directly in Pygame due to performance; array manipulation is preferred). |
-| `mlx_string_put` | `font.render()` then `screen.blit()` | Requires creating a `pygame.font.Font` object, generating a text Surface with `.render()`, then drawing it. |
 | **Image functions** |  |  |
 | `mlx_new_image` | `pygame.Surface((w, h))` | Creates a new blank image/surface in memory. |
 | `mlx_get_data_addr` | `pygame.surfarray.pixels2d()` | Accesses pixel data directly as arrays or raw memory buffers. |
 | `mlx_put_image_to_window` | `screen.blit(image_surface, (x, y))` | Draws one Surface onto another (e.g., onto the screen). Requires calling `pygame.display.flip()` to render. |
 | `mlx_destroy_image` | `del image_surface` | Memory is freed automatically by Python's Garbage Collector when references are removed. |
 | **Hooks / Loop** |  |  |
-| `mlx_mouse_hook` | `pygame.event.get()` loop | Handled via `pygame.MOUSEBUTTONDOWN` and `pygame.MOUSEBUTTONUP` event types. |
 | `mlx_key_hook` | `pygame.event.get()` loop | Handled via `pygame.KEYDOWN` and `pygame.KEYUP` event types. |
 | `mlx_expose_hook` | `pygame.VIDEOEXPOSE` or loop redrawing | Handled explicitly inside your main `while` loop. |
 | `mlx_loop_hook` | `while running:` loop body | Code inside the explicit main loop runs every frame. |
 | `mlx_loop` | `while running:` + `pygame.time.Clock().tick(FPS)` | Pygame does not hide the loop behind a callback framework; you write the explicit `while` loop. |
 | **Image conversions** |  |  |
-| `mlx_xpm_to_image` | N/A (No direct native equivalent) | Requires parsing XPM string data manually or converting via Pillow (`PIL`). |
-| `mlx_xpm_file_to_image` | `pygame.image.load("file.xpm")` | Loads an image file from disk (supports XPM if compiled with SDL_image support). |
 | `mlx_png_file_to_image` | `pygame.image.load("file.png")` | Natively loads PNG images from disk. |
-| **Mouse functions** |  |  |
-| `mlx_mouse_hide` | `pygame.mouse.set_visible(False)` | Hides the mouse cursor. |
-| `mlx_mouse_show` | `pygame.mouse.set_visible(True)` | Shows the mouse cursor. |
-| `mlx_mouse_move` | `pygame.mouse.set_pos((x, y))` | Sets the mouse cursor position to the specified coordinates. |
-| `mlx_mouse_get_pos` | `pygame.mouse.get_pos()` | Returns an `(x, y)` tuple of the mouse's current position. |
 | **Key auto repeat** |  |  |
 | `mlx_do_key_autorepeatoff` | `pygame.key.set_repeat()` | Disables key repetition (default Pygame behavior). |
 | `mlx_do_key_repeaton` | `pygame.key.set_repeat(delay, interval)` | Enables repeating `KEYDOWN` events when holding a key. |
 | **Un-categorized** |  |  |
-| `mlx_do_sync` | `pygame.display.flip()` or `pygame.display.update()` | Updates the full display surface to the screen. |
-| `mlx_get_screen_size` | `pygame.display.Info().current_w`, `.current_h` | Fetches the current display monitor resolution. |
+| `mlx_do_sync` |  `pygame.display.update()` | Updates the full display surface to the screen. |
+
 
 ## Ressources
 
