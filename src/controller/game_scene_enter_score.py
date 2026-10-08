@@ -40,14 +40,9 @@ class ScoreScene:
 
     def render(self, controller: GameContext) -> None:
         controller.view.clear_window()
-        if controller.game_session.game_status == GameStatus.VICTORY:
+        if (controller.game_session.game_status == GameStatus.VICTORY or
+                controller.game_session.game_status == GameStatus.GAME_OVER):
             controller.view.victory.render_enter_score(
                 controller.game_session.score,
                 controller.game_session.player_name
             )
-        else:
-            controller.view.defeat.render_enter_score(
-                controller.game_session.score,
-                controller.game_session.player_name
-            )
-        pass

@@ -1,7 +1,7 @@
 {
   "highscore_filename": "highscore.json",
   "lives": 2,
-  "pacgum": 10000000000,
+  "pacgum": 1,
   "super_pacgum": 1,
   "points_per_pacgum": 10,
   "points_per_super_pacgum": 50,
