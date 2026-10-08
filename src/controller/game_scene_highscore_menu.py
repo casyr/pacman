@@ -21,5 +21,4 @@ class HighscoreMenuScene:
 
     def render(self, controller: GameContext) -> None:
         controller.view.clear_window()
-        controller.view.draw_highscores(
-            controller.highscores.load_score())
+        controller.view.draw_highscores(controller.highscores.scores)
