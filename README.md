@@ -80,6 +80,15 @@ The codebase strictly adheres to the **flake8** coding standard and uses **mypy*
 The graphical user interface manages the Main Menu, the in-game GUI (Graphical user interface) (displaying score, lives, level, and remaining time), the Pause Menu, and the Game Over / Victory screens.
 
 
+## Project Management
+
+The project was managed collaboratively using **GitHub** to ensure structured organization :
+
+* **Planning & Tracking:** The workload was structured and tracked using GitHub **Milestones**, visualized as a Gantt chart style timeline to define key objectives, and manage deliverables.
+* **Development Workflow:** Daily development relied on a strict branch-based workflow utilizing **Pull Requests (PRs)**. This enabled continuous peer review, ensuring code quality, knowledge sharing.
+
+You can find all project management documents, tracking sheets, and related resources in the [dedicated project management directory](https://github.com/users/casyr/projects/3/views/4).
+
 ## Resources
 
 Here is the function-by-function mapping from MiniLibX (mlx) to Pygame.
