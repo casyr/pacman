@@ -124,7 +124,7 @@ class PlayingScene:
             controller.game_board.pacgum_pos.remove(pacgum_pos)
             controller.game_session.consume_pacgum()
             controller.view.playing_view.erase_pacgum(
-                int(pacgum_pos.y), int(pacgum_pos.x))
+                pacgum_pos.y, pacgum_pos.x)
             return True
         return False
 
@@ -136,7 +136,7 @@ class PlayingScene:
             controller.game_board.super_pacgums_pos.remove(super_pacgum_pos)
             controller.game_session.consume_super_pacgum()
             controller.view.playing_view.erase_pacgum(
-                int(super_pacgum_pos.y), int(super_pacgum_pos.x))
+                super_pacgum_pos.y, super_pacgum_pos.x)
             for ghost in controller.game_board.ghosts.values():
                 if ghost.state != GhostState.EATEN:
                     ghost.state = GhostState.FRIGHTENED
