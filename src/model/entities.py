@@ -2,7 +2,7 @@ import logging
 import heapq
 from abc import ABC, abstractmethod
 from .maze_adaptater import MazeAdapter
-from ..shared import GhostName, Vector2D, Direction, GhostState, Wall
+from ..shared import Vector2D, Direction, GhostState, Wall
 
 
 logger = logging.getLogger(__name__)
@@ -26,13 +26,13 @@ class Entity(ABC):
         self.grid: list[list[int]] = maze.grid
         self.width_max: int = maze.width
         self.height_max: int = maze.height
-        self.speed: float = 1.5
+        self.speed: float = 0
         self.move_timer: float = 0.0
         self.center_tolerance: float = 0.05
 
     def respawn(self) -> None:
-        self.current_pos_y = int(self.spawn_pos.y)
-        self.current_pos_x = int(self.spawn_pos.x)
+        self.current_pos_y = self.spawn_pos.y
+        self.current_pos_x = self.spawn_pos.x
         self.move_pixel_y = float(self.spawn_pos.y)
         self.move_pixel_x = float(self.spawn_pos.x)
         self.move_dir = Direction.ZERO.value
@@ -52,8 +52,8 @@ class Entity(ABC):
         if mask is None:
             return False
 
-        cell_value: int = (self.grid[int(self.current_pos_y)]
-                           [int(self.current_pos_x)])
+        cell_value: int = (self.grid[self.current_pos_y]
+                           [self.current_pos_x])
         return not (cell_value & mask)
 
     def move_continuously(self, elapsed_time: float) -> None:
@@ -69,12 +69,12 @@ class Entity(ABC):
         if abs(self.move_pixel_y - self.current_pos_y) >= 1:
             self.previous_pos = Vector2D(
                 self.current_pos_y, self.current_pos_x)
-            self.current_pos_y += int(self.move_dir.y)
+            self.current_pos_y += self.move_dir.y
             self.move_pixel_y = float(self.current_pos_y)
         elif abs(self.move_pixel_x - self.current_pos_x) >= 1:
             self.previous_pos = Vector2D(
                 self.current_pos_y, self.current_pos_x)
-            self.current_pos_x += int(self.move_dir.x)
+            self.current_pos_x += self.move_dir.x
             self.move_pixel_x = float(self.current_pos_x)
 
     def is_moving(self) -> bool:
@@ -85,8 +85,8 @@ class Entity(ABC):
     def is_at_intersection(self) -> bool:
         return (
             abs(self.move_pixel_y - self.current_pos_y) < self.center_tolerance
-            and abs(
-                self.move_pixel_x - self.current_pos_x) < self.center_tolerance
+            and
+            abs(self.move_pixel_x - self.current_pos_x) < self.center_tolerance
         )
 
     def perfectly_aligns(self) -> None:
@@ -150,11 +150,11 @@ class PacMan(Entity):
             self.move_dir = self.desired_dir
             self.move_dir_state = self.desired_state_dir
 
-        if self.is_at_intersection() and self.desired_dir != self.move_dir:
-            if self.can_move(self.desired_dir):
-                self.move_dir = self.desired_dir
-                self.move_dir_state = self.desired_state_dir
-                self.perfectly_aligns()
+        if (self.is_at_intersection() and self.desired_dir != self.move_dir and
+                self.can_move(self.desired_dir)):
+            self.move_dir = self.desired_dir
+            self.move_dir_state = self.desired_state_dir
+            self.perfectly_aligns()
 
         self.move_continuously(elapsed_time)
 
@@ -166,18 +166,15 @@ class Ghost(Entity, ABC):
             y: int,
             x: int,
             maze: MazeAdapter,
-            pacman: PacMan,
-            ghosts: dict[GhostName, 'Ghost'],
-            name: GhostName,
+            pacman: PacMan
             ) -> None:
         super().__init__(y, x, maze)
-        self.name: GhostName = name
         self.pacman: PacMan = pacman
-        self.ghosts: dict[GhostName, Ghost] = ghosts
         self.state: GhostState = GhostState.NORMAL
         self.respawn_timer: float = 0.0
         self.decision_made_on_tile: Vector2D | None = None
         self.animation_timer: float = 0.0
+        self.speed: float = 1.5
         self.possible_directions: list[Direction] = [
             Direction.NORTH, Direction.WEST,
             Direction.SOUTH, Direction.EAST
@@ -250,7 +247,7 @@ class Ghost(Entity, ABC):
                     current_pos, float('inf')):
                 continue
             for direction in self.possible_directions:
-                if (self.grid[int(current_pos.y)][int(current_pos.x)] &
+                if (self.grid[current_pos.y][current_pos.x] &
                         self.wall_check[direction]):
                     continue
                 next_y, next_x = (
@@ -317,7 +314,7 @@ class Ghost(Entity, ABC):
 
         for direction in self.possible_directions:
             if not (
-                self.grid[int(current_pos.y)][int(current_pos.x)] &
+                self.grid[current_pos.y][current_pos.x] &
                     self.wall_check[direction]):
                 self.move_dir = direction.value
                 return
