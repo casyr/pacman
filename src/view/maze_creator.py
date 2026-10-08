@@ -16,24 +16,26 @@ class CornerWall(Enum):
     SOUTH_WEST = Wall.SOUTH.value + Wall.WEST.value
 
 
-class Maze:
+class MazeView:
 
     def __init__(self, game_board: GameBoard,
-                 window: pygame.Surface,
                  maze_sprites: SpriteSheetsManager,
-                 ):
+                 screen_width: int,
+                 screen_height: int) -> None:
         self.maze_sprites = maze_sprites.sprites
         self.maze_grid: list[list[int]] = game_board.maze.grid
         self.utils = DisplayerUtils()
+        self.screen_width = screen_width
+        self.screen_height = screen_height
         self.tile_size = self.utils.get_tile_size_maze(
             game_board.maze.width,
             game_board.maze.height,
-            window.get_width(),
-            window.get_height()
+            self.screen_width,
+            self.screen_height
         )
         self.sprite_size = self.tile_size // 3
-        center_x = window.get_width() // 2
-        center_y = window.get_height() // 2
+        center_x = self.screen_width // 2
+        center_y = self.screen_height // 2
         self.x_start = center_x - (game_board.maze.width * self.tile_size) // 2
         self.y_start = center_y - (
             game_board.maze.height * self.tile_size) // 2

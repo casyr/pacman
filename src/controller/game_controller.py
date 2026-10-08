@@ -51,7 +51,7 @@ class GameController:
                 self.current_fps = self.frame_count / self.fps_timer
                 self.frame_count = 0
                 self.fps_timer = 0.0
-                logger.debug(f"FPS actuels : {self.current_fps:.1f}")
+                logger.debug(f"current FPS : {self.current_fps:.1f}")
             user_input = self.context.view.handle_events()
             self.current_scene = self.current_scene.update(
                 self.context, elapsed_time, user_input)

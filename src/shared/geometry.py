@@ -3,8 +3,8 @@ from typing import NamedTuple
 
 
 class Vector2D(NamedTuple):
-    y: float
-    x: float
+    y: int
+    x: int
 
 
 class Direction(Enum):
