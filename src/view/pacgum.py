@@ -24,7 +24,7 @@ class PacgumsView:
             self.screen_height
         )
         self.sprite_size = self.tile_size // 3
-        center_x = self.screen_width = screen_width // 2
+        center_x = self.screen_width // 2
         center_y = self.screen_height // 2
         self.x_start = center_x - (game_board.maze.width * self.tile_size) // 2
         self.y_start = center_y - (
