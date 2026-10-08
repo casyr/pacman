@@ -3,7 +3,7 @@ from . import mlx_wrapper as mlx
 from .maze_creator import MazeView
 from .pacgum import PacgumsView
 from .entities_view import GhostView, PacmanView
-
+from .displayer_utils import DisplayerUtils
 from .menu import BaseMenuView
 from .session_view import SessionView
 from ..model import GameBoard, GameSession
@@ -31,6 +31,8 @@ class PlayingView(BaseMenuView):
 
         self.dynamic_img = mlx.new_image(
             self.screen_width, self.screen_height).convert_alpha()
+
+        self.utils = DisplayerUtils()
 
     def load_level(self, game_board: GameBoard) -> None:
         self.game_board = game_board
@@ -89,7 +91,14 @@ class PlayingView(BaseMenuView):
         offset = (tile_size - gum_size) // 2
         erase_y = pos_y + offset
         erase_x = pos_x + offset
-        self.maze_img.fill((0, 0, 0), (erase_x, erase_y, gum_size, gum_size))
+        buffer = mlx.to_buffer(self.maze_img, False)
+        sprite = self.sprite_sheets.sprites.get("empty_tile")
+        if sprite is None:
+            raise ViewError("maze_sprites.yaml is missing or invalid")
+        self.utils.put_sprite_in_image(buffer, self.screen_width, erase_x,
+                                       erase_y, gum_size, gum_size,
+                                       self.sprite_sheets.sprites.get("empty_tile"))
+        del buffer
 
     def clear_all_layers(self) -> None:
         mlx.clear_window(self.maze_img)

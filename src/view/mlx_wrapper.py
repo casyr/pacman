@@ -79,7 +79,6 @@ def _get_key_mapping() -> dict[int, str]:
         pygame.K_d: "KEY_D",
         pygame.K_p: "KEY_P",
         pygame.K_c: "KEY_C",
-        pygame.K_t: "KEY_T",
         pygame.K_1: "KEY_1",
         pygame.K_2: "KEY_2",
         pygame.K_3: "KEY_3",

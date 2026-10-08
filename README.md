@@ -127,6 +127,11 @@ The project was managed collaboratively using **GitHub** to ensure structured or
 
 You can find all project management documents, tracking sheets, and related resources in the [dedicated project management directory](https://github.com/users/casyr/projects/3/views/4).
 
+**some numbers**
+
+
+**poject overview**
+
 ## Resources
 
 Here is the function-by-function mapping from MiniLibX (mlx) to Pygame.
@@ -147,14 +152,10 @@ Because MiniLibX relies on an event-driven hook system in C while Pygame uses an
 | `mlx_destroy_image` | `del image_surface` | Memory is freed automatically by Python's Garbage Collector when references are removed. |
 | **Hooks / Loop** |  |  |
 | `mlx_key_hook` | `pygame.event.get()` loop | Handled via `pygame.KEYDOWN` and `pygame.KEYUP` event types. |
-| `mlx_expose_hook` | `pygame.VIDEOEXPOSE` or loop redrawing | Handled explicitly inside your main `while` loop. |
 | `mlx_loop_hook` | `while running:` loop body | Code inside the explicit main loop runs every frame. |
 | `mlx_loop` | `while running:` + `pygame.time.Clock().tick(FPS)` | Pygame does not hide the loop behind a callback framework; you write the explicit `while` loop. |
 | **Image conversions** |  |  |
 | `mlx_png_file_to_image` | `pygame.image.load("file.png")` | Natively loads PNG images from disk. |
-| **Key auto repeat** |  |  |
-| `mlx_do_key_autorepeatoff` | `pygame.key.set_repeat()` | Disables key repetition (default Pygame behavior). |
-| `mlx_do_key_repeaton` | `pygame.key.set_repeat(delay, interval)` | Enables repeating `KEYDOWN` events when holding a key. |
 | **Un-categorized** |  |  |
 | `mlx_do_sync` |  `pygame.display.update()` | Updates the full display surface to the screen. |
 

@@ -23,7 +23,10 @@ class DisplayerUtils:
                             dest_image_width: int,
                             dest_x: int, dest_y: int,
                             dest_w: int, dest_h: int,
-                            sprite_data: SpriteData) -> None:
+                            sprite_data: SpriteData | None) -> None:
+
+        if sprite_data is None:
+            return
 
         x_gap = np.arange(dest_w)
         y_gap = np.arange(dest_h)
