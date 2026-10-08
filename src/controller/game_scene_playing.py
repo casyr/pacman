@@ -137,7 +137,6 @@ class PlayingScene:
                 super_pacgum_pos.y, super_pacgum_pos.x)
             for ghost in controller.game_board.ghosts.values():
                 if ghost.state != GhostState.EATEN:
-                    print("here")
                     ghost.state = GhostState.FRIGHTENED
             return True
 

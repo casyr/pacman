@@ -4,7 +4,7 @@ This project is a playable recreation of the classic arcade game PacMan. Built i
 
 ## Preview
 
-![](ressources/pac_man_gameplay_1.gif)
+![](ressources/pac_man_gameplay.gif)
 
 ## Instructions
 **Installation & Setup:**  
@@ -132,9 +132,8 @@ The project was managed collaboratively using **GitHub** to ensure structured or
 
 You can find all project management documents, tracking sheets, and related resources in the [dedicated project management directory](https://github.com/users/casyr/projects/3/views/4).
 
----
 
-### some numbers
+
 
 | contributors| Issues | Pull request |
 | --- | --- | --- |
@@ -146,7 +145,7 @@ You can find all project management documents, tracking sheets, and related reso
 ![](ressources/project_management.png)
 
 
-## Resources
+## Ressources
 
 Here is the function-by-function mapping from MiniLibX (mlx) to Pygame.
 
@@ -173,8 +172,7 @@ Because MiniLibX relies on an event-driven hook system in C while Pygame uses an
 | **Un-categorized** |  |  |
 | `mlx_do_sync` |  `pygame.display.update()` | Updates the full display surface to the screen. |
 
-
-## Ressources
+### documentation
 
 - [MLX functions](https://harm-smits.github.io/42docs/libs/minilibx/prototypes.html)
 - [pygame documentation](https://www.pygame.org/docs/)
