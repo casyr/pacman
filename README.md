@@ -65,7 +65,7 @@ Key configuration parameters include:
 
 * **seed:** Seed controlling the maze generation (Default: 42).
 
-* **levels:** Array defining multiple levels (Default: 10 levels).
+* **levels:** Array defining multiple levels (Default: 10 levels, Maximum 20).
 
 * **width, height:** Dimensions for each level configuration (Default: 10, Minimum: 10, Maximum: 20).
 

@@ -31,7 +31,7 @@ points_per_super_pacgum: Points awarded for eating a super pacgum (Default: 50, 
 points_per_ghost: Points awarded for eating a vulnerable ghost (Default: 200, Minimum: 1, Maximum: 200).
 level_max_time: Maximum time allowed per level in seconds (Default: 90, Minimum: 40, Maximum: 3600).
 seed: Seed controlling the maze generation (Default: 42).
-levels: Array defining multiple levels (Default: 10 levels).
+levels: Array defining multiple levels (Default: 10 levels, Maximum: 20).
 width, height: Dimensions for each level configuration (Default: 10, Minimum: 10, Maximum: 20).
 
 To know how to play when the game is lunched go on instruction menu.
