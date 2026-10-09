@@ -18,7 +18,7 @@ class JsonModelLoader:
         file_path = folder_path / file_name
         file_path.parent.mkdir(parents=True, exist_ok=True)
         try:
-            with open(file_path, "r+", encoding="utf-8") as output_file:
+            with open(file_path, "w", encoding="utf-8") as output_file:
                 json_string = results.model_dump_json(indent=4)
                 output_file.write(json_string)
         except OSError as e:
