@@ -140,21 +140,21 @@ class GameValidator(BaseGameValidator):
             levels)
 
         nb_levels: int = len(cleaned_levels)
-        if nb_levels > 10:
+        if nb_levels > 20:
             logger.warning(
                 f"Too many levels ({nb_levels}). Maximum is 10. Truncating."
             )
-            cleaned_levels = cleaned_levels[:10]
+            cleaned_levels = cleaned_levels[:20]
         elif nb_levels < 10:
             logger.warning(
                 f"Invalid numbers of level '{nb_levels}' it as "
                 "to be 10. Replaced with default levels."
                 )
-            while len(cleaned_levels) <= 10:
+            while len(cleaned_levels) < 10:
                 cleaned_levels.append({})
 
         for i, lvl_dict in enumerate(cleaned_levels):
-            lvl_dict["level_index"] = i
+            lvl_dict["level_index"] = i + 1
 
         return cleaned_levels
 
