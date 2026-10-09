@@ -32,7 +32,7 @@ class HighScoreManager:
         try:
             self.json_loader.score_save_json_file(self.file_path, data_to_save)
         except JsonLoadError:
-            logger.error("Check disk space.")
+            logger.error("Could not save.")
 
     def _reset_corrupted_file(self, reason: str) -> list[HighScore]:
         logger.warning(
@@ -49,7 +49,7 @@ class HighScoreManager:
             return self._reset_corrupted_file("Missing file")
         try:
             raw_content = self.json_loader.open_json_file(self.file_path)
-        except OSError as e:
+        except (OSError, JsonLoadError) as e:
             return self._reset_corrupted_file(f"Reading error: {e}")
         try:
             validated_data = HighScores.model_validate_json(raw_content)
