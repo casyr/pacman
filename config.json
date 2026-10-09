@@ -1,63 +1,63 @@
 {
   "highscore_filename": "highscore.json",
   "lives": 4,
-  "pacgum": 100,
+  "pacgum": 95,
   "super_pacgum": 4,
   "points_per_pacgum": 10,
   "points_per_super_pacgum": 50,
   "points_per_ghost": 20,
-  "seed" : 0,
+  "seed" : 42,
   "level_max_time" : 100,
   "levels": [
     {
       "level_id": 1,
-      "width": 10,
-      "height": 10
+      "width": 15,
+      "height": 15
     },
     {
       "level_id": 2,
-      "width": 5,
-      "height": 5
+      "width": 15,
+      "height": 15
     },
     {
       "level_id": 3,
-      "width": 10,
-      "height": 10
+      "width": 15,
+      "height": 15
     },
     {
       "level_id": 4,
-      "width": 10,
-      "height": 10
+      "width": 15,
+      "height": 15
     },
     {
       "level_id": 5,
-      "width": 10,
-      "height": 10
+      "width": 15,
+      "height": 15
     },
     {
       "level_id": 6,
-      "width": 10,
-      "height": 10
+      "width": 15,
+      "height": 15
     },
     {
       "level_id": 7,
-      "width": 10,
-      "height": 10
+      "width": 15,
+      "height": 15
     },
     {
       "level_id": 8,
-      "width": 10,
-      "height": 10
+      "width": 15,
+      "height": 15
     },
     {
       "level_id": 9,
-      "width": 10,
-      "height": 10
+      "width": 15,
+      "height": 15
     },
     {
-      "level_id": 10,
-      "width": 10,
-      "height": 10
+      "level_id": 15,
+      "width": 15,
+      "height": 15
     }
   ]
 }

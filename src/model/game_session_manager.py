@@ -23,7 +23,7 @@ class GameSession:
     def __init__(self, settings: GameSettings) -> None:
         self.settings: GameSettings = settings
         self.total_levels: int = len(settings.levels)
-        self.level_index: int = 1
+        self.level_index: int = 0
         self.score: int = 0
         self.lives_remaining: int = settings.lives
         self.speed_multiplier: int = 4
@@ -69,7 +69,7 @@ class GameSession:
 
     def reset_level_data(self) -> None:
         self.game_status = GameStatus.PLAYING
-        self.level_index = 1
+        self.level_index = 0
         self.score = 0
         self.lives_remaining = self.settings.lives
         self.time_remaining = float(self.settings.level_max_time)

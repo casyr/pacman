@@ -55,7 +55,7 @@ class SessionView(BaseMenuView):
     def render_level_id(self, dest_image_buffer: ndarray,
                         game_session: GameSession,
                         ) -> None:
-        level_str = f"LEVEL {int(game_session.level_index)}"
+        level_str = f"LEVEL {int(game_session.level_index + 1)}"
         level_x = self.width - self._calculate_string_width(
             level_str, self.size) - self.margin_pixel
         self._render_text(dest_image_buffer,
