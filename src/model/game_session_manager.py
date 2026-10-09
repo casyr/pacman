@@ -64,7 +64,6 @@ class GameSession:
 
     def update_level_data(self) -> None:
         self.game_status = GameStatus.PLAYING
-        self.time_remaining = float(self.settings.level_max_time)
         self.active_power = False
         self.super_mode_timer = 0.0
         self.reset_cheats()
@@ -72,6 +71,7 @@ class GameSession:
     def reset_level_data(self) -> None:
         self.level_index = 0
         self.score = 0
+        self.time_remaining = float(self.settings.level_max_time)
         self.lives_remaining = self.settings.lives
         self.update_level_data()
 

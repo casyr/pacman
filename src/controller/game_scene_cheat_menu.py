@@ -31,6 +31,8 @@ class CheatScene:
                 return self.victory_scene
             controller.game_board = controller.level_manager.build_level()
             controller.view.playing_view.clear_all_layers()
+            controller.game_session.time_remaining = float(
+                controller.game_session.settings.level_max_time)
             controller.view.load_maze(controller.game_board)
             return self.playing_scene
         elif user_input == "KEY_6":
