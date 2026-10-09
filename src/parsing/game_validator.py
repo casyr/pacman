@@ -1,7 +1,5 @@
 from __future__ import annotations
-import sys
 import logging
-from pathlib import Path
 from pydantic import (
     BaseModel,
     Field,
@@ -87,7 +85,7 @@ class GameValidator(BaseGameValidator):
     points_per_pacgum: int = Field(default=10, ge=1, le=10)
     points_per_super_pacgum: int = Field(default=50, ge=1, le=50)
     points_per_ghost: int = Field(default=200, ge=1, le=200)
-    seed: int = Field(default=42)
+    seed: int = Field(default=42, ge=1, le=100)
     level_max_time: int = Field(default=90, ge=40, le=3600)
 
     def to_dataclass(self) -> GameSettings:
@@ -107,13 +105,7 @@ class GameValidator(BaseGameValidator):
     @field_validator("highscore_filename", mode="before")
     @classmethod
     def check_highscore_extension(cls, name_highscore: Any) -> str:
-        arg_file_name = Path(sys.argv[1]).name
-        if arg_file_name == name_highscore:
-            logger.warning(
-                f"Filename already used '{name_highscore}' "
-                "Falling back to default: 'highscore.json'")
-            return f"1_{sys.argv[1]}"
-        elif (
+        if (
             not isinstance(name_highscore, str)
             or not name_highscore.lower().endswith(".json")
         ):
@@ -149,18 +141,20 @@ class GameValidator(BaseGameValidator):
 
         nb_levels: int = len(cleaned_levels)
         if nb_levels > 10:
-            cleaned_levels = cleaned_levels[:10]
-        if nb_levels < 10:
             logger.warning(
-                f"Invalid numbers of level '{nb_levels}' at least 10 "
-                "Replaced with default levels."
+                f"Too many levels ({nb_levels}). Maximum is 10. Truncating."
+            )
+            cleaned_levels = cleaned_levels[:10]
+        elif nb_levels < 10:
+            logger.warning(
+                f"Invalid numbers of level '{nb_levels}' it as "
+                "to be 10. Replaced with default levels."
                 )
-
-        while len(cleaned_levels) < 10:
-            cleaned_levels.append({})
+            while len(cleaned_levels) <= 10:
+                cleaned_levels.append({})
 
         for i, lvl_dict in enumerate(cleaned_levels):
-            lvl_dict["level_index"] = i + 1
+            lvl_dict["level_index"] = i
 
         return cleaned_levels
 
@@ -171,6 +165,7 @@ class GameValidator(BaseGameValidator):
         "points_per_super_pacgum",
         "points_per_ghost",
         "lives",
+        "seed",
         "level_max_time",
         mode="wrap"
     )
@@ -181,16 +176,6 @@ class GameValidator(BaseGameValidator):
             handler: ValidatorFunctionWrapHandler,
             info: ValidationInfo) -> int:
         return cls.apply_fallback(value_setting_name, handler, info)
-
-    @field_validator("seed", mode="before")
-    @classmethod
-    def adjust_seed(cls, seed: Any) -> int:
-        if not isinstance(seed, int) or seed <= 0:
-            logger.warning(
-                "Seed must be an integer > 0. "
-                "Clamped to default: 42")
-            return 42
-        return seed
 
     @model_validator(mode="after")
     def check_missing_fields(self) -> GameValidator:
