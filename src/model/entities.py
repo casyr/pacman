@@ -378,7 +378,7 @@ class Clyde(Ghost):
             abs(self.current_pos_y - self.pacman.current_pos_y) +
             abs(self.current_pos_x - self.pacman.current_pos_x)
         )
-        if dist_case < 8:
+        if dist_case < 4:
             return self.spawn_pos
         else:
             return Vector2D(

@@ -17,7 +17,7 @@ make install
 **Execution:**  
 The game must be launched from the command line, taking exactly one argument (a JSON configuration file).
 ```bash
-uv run python3 -m src src/config.json
+uv run python3 pac-man.py config.json
 ```
 Or using
 ```bash
