@@ -7,7 +7,10 @@ from ..model import GameStatus
 
 
 class PlayingScene:
+    """Scene that advances gameplay, collisions, and level progression."""
+
     def __init__(self) -> None:
+        """Initialize gameplay and its outcome scenes."""
         from .game_scene_victory import VictoryScene
         from .game_scene_defeat import DefeatScene
         self.victory_scene = VictoryScene()
@@ -18,6 +21,16 @@ class PlayingScene:
             self,
             controller: GameContext,
             elapsed_time: float, user_input: str | None) -> GameScene | None:
+        """Advance gameplay and handle state transitions.
+
+        Args:
+            controller: Shared game state and service dependencies.
+            elapsed_time: Time elapsed since the previous update, in seconds.
+            user_input: Input received during this frame, if any.
+
+        Returns:
+            The active scene, an outcome scene, or None to exit.
+        """
 
         scene = self._check_game_end_conditions(controller)
         if scene is not self:
@@ -52,6 +65,14 @@ class PlayingScene:
             self,
             controller: GameContext
             ) -> GameScene:
+        """Select an outcome scene when the session has ended.
+
+        Args:
+            controller: Shared game state and service dependencies.
+
+        Returns:
+            The outcome scene, or this scene while play continues.
+        """
 
         if controller.game_session.game_status == GameStatus.GAME_OVER:
             return self.defeat_scene
@@ -64,6 +85,15 @@ class PlayingScene:
             user_input: str | None,
             controller: GameContext
             ) -> GameScene:
+        """Apply gameplay controls and handle pause or cheat requests.
+
+        Args:
+            user_input: Input received during this frame, if any.
+            controller: Shared game state and service dependencies.
+
+        Returns:
+            The resulting scene.
+        """
 
         if user_input == "KEY_P":
             controller.game_session.switch_status_paused()
@@ -88,12 +118,26 @@ class PlayingScene:
             self,
             elapsed_time: float,
             controller: GameContext) -> None:
+        """Advance session timers and player movement.
+
+        Args:
+            elapsed_time: Time elapsed since the previous update, in seconds.
+            controller: Shared game state and service dependencies.
+        """
 
         controller.game_session.update_timers(elapsed_time)
         controller.game_board.player.update(
             elapsed_time * controller.game_session.speed_multiplier)
 
     def _get_player_position(self, controller: GameContext) -> Vector2D:
+        """Return the player's current grid position.
+
+        Args:
+            controller: Shared game state and service dependencies.
+
+        Returns:
+            The player's grid coordinates.
+        """
         return Vector2D(
             y=controller.game_board.player.current_pos_y,
             x=controller.game_board.player.current_pos_x
@@ -101,6 +145,14 @@ class PlayingScene:
 
     def _get_player_pixel_position(
             self, controller: GameContext) -> tuple[float, float]:
+        """Return the player's current pixel coordinates.
+
+        Args:
+            controller: Shared game state and service dependencies.
+
+        Returns:
+            The player's vertical and horizontal pixel positions.
+        """
         player = controller.game_board.player
         return player.move_pixel_y, player.move_pixel_x
 
@@ -109,6 +161,15 @@ class PlayingScene:
             positions: set[Vector2D],
             player_pixel_pos: tuple[float, float]
             ) -> Vector2D | None:
+        """Find a grid position close to the player's pixel position.
+
+        Args:
+            positions: Candidate grid positions.
+            player_pixel_pos: Player's vertical and horizontal pixel values.
+
+        Returns:
+            A nearby candidate, or None if no candidate is close enough.
+        """
         player_y, player_x = player_pixel_pos
         center_y = round(player_y)
         center_x = round(player_x)
@@ -120,6 +181,15 @@ class PlayingScene:
 
     def handle_pacgums(self, controller: GameContext,
                        player_pixel_pos: tuple[float, float]) -> bool:
+        """Consume a regular pacgum at the player's position.
+
+        Args:
+            controller: Shared game state and service dependencies.
+            player_pixel_pos: Player's vertical and horizontal pixel values.
+
+        Returns:
+            Whether a pacgum was consumed.
+        """
         pacgum_pos = self._find_nearby_position(
             controller.game_board.pacgum_pos, player_pixel_pos)
         if pacgum_pos is not None:
@@ -132,6 +202,15 @@ class PlayingScene:
 
     def handle_super_pacgums(self, controller: GameContext,
                              player_pixel_pos: tuple[float, float]) -> bool:
+        """Consume a super pacgum and frighten active ghosts.
+
+        Args:
+            controller: Shared game state and service dependencies.
+            player_pixel_pos: Player's vertical and horizontal pixel values.
+
+        Returns:
+            Whether a super pacgum was consumed.
+        """
         super_pacgum_pos = self._find_nearby_position(
             controller.game_board.super_pacgums_pos, player_pixel_pos)
         if super_pacgum_pos is not None:
@@ -150,6 +229,15 @@ class PlayingScene:
             self,
             controller: GameContext,
             player_pixel_pos: tuple[float, float]) -> bool:
+        """Check for and consume a pacgum near the player.
+
+        Args:
+            controller: Shared game state and service dependencies.
+            player_pixel_pos: Player's vertical and horizontal pixel values.
+
+        Returns:
+            Whether a consumable was collected.
+        """
 
         return (self.handle_super_pacgums(
                     controller, player_pixel_pos) or
@@ -161,6 +249,13 @@ class PlayingScene:
             controller: GameContext,
             player_pixel_pos: tuple[float, float],
             elapsed_time: float) -> None:
+        """Update ghosts and resolve collisions with the player.
+
+        Args:
+            controller: Shared game state and service dependencies.
+            player_pixel_pos: Player's vertical and horizontal pixel values.
+            elapsed_time: Time elapsed since the previous update, in seconds.
+        """
 
         if controller.game_session.power_just_expired:
             for ghost in controller.game_board.ghosts.values():
@@ -191,6 +286,11 @@ class PlayingScene:
                         return
 
     def _check_update_level(self, controller: GameContext) -> None:
+        """Load the current level or rebuild the board after progression.
+
+        Args:
+            controller: Shared game state and service dependencies.
+        """
 
         if self.current_level_index is None:
             self.current_level_index = controller.game_session.level_index
@@ -207,5 +307,10 @@ class PlayingScene:
             self.current_level_index = session_level
 
     def render(self, controller: GameContext) -> None:
+        """Draw the current game state.
+
+        Args:
+            controller: Shared game state and service dependencies.
+        """
         controller.view.draw_game(
             controller.game_board, controller.game_session)

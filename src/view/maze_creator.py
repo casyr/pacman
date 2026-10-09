@@ -10,6 +10,8 @@ from .displayer_utils import DisplayerUtils
 
 
 class CornerWall(Enum):
+    """Bit masks identifying the four maze tile corners."""
+
     NORTH_WEST = Wall.NORTH.value + Wall.WEST.value
     NORTH_EAST = Wall.NORTH.value + Wall.EAST.value
     SOUTH_EAST = Wall.SOUTH.value + Wall.EAST.value
@@ -17,11 +19,20 @@ class CornerWall(Enum):
 
 
 class MazeView:
+    """Choose and draw maze wall sprites on a centered tile grid."""
 
     def __init__(self, game_board: GameBoard,
                  maze_sprites: SpriteSheetsManager,
                  screen_width: int,
                  screen_height: int) -> None:
+        """Prepare maze geometry and sprite references.
+
+        Args:
+            game_board: Board defining the maze grid and dimensions.
+            maze_sprites: Sprite sheet containing maze tiles.
+            screen_width: Display width in pixels.
+            screen_height: Display height in pixels.
+        """
         self.maze_sprites = maze_sprites.sprites
         self.maze_grid: list[list[int]] = game_board.maze.grid
         self.utils = DisplayerUtils()
@@ -43,6 +54,15 @@ class MazeView:
     def straight_wall_chooser(self, sprites: list[Any],
                               is_top: bool, is_bottom: bool,
                               is_left: bool, is_right: bool) -> None:
+        """Select sprites for the four straight tile edges.
+
+        Args:
+            sprites: Mutable tile sprite slots to populate.
+            is_top: Whether the tile is on the top maze edge.
+            is_bottom: Whether the tile is on the bottom maze edge.
+            is_left: Whether the tile is on the left maze edge.
+            is_right: Whether the tile is on the right maze edge.
+        """
         if is_left:
             sprite = self.maze_sprites["wall_double_vertical_left"]
         else:
@@ -70,6 +90,15 @@ class MazeView:
     def corner_wall_chooser(self, sprites: list[Any],
                             is_top: bool, is_bottom: bool,
                             is_left: bool, is_right: bool) -> None:
+        """Select sprites for the four tile corners.
+
+        Args:
+            sprites: Mutable tile sprite slots to populate.
+            is_top: Whether the tile is on the top maze edge.
+            is_bottom: Whether the tile is on the bottom maze edge.
+            is_left: Whether the tile is on the left maze edge.
+            is_right: Whether the tile is on the right maze edge.
+        """
 
         if is_top and is_left:
             sprite = self.maze_sprites["wall_double_outer_corner_top_left"]
@@ -114,6 +143,15 @@ class MazeView:
         sprites[CornerWall.SOUTH_EAST.value] = sprite
 
     def sprites_chooser(self, x: int, y: int) -> list[SpriteData]:
+        """Build the sprite lookup slots for a maze tile.
+
+        Args:
+            x: Tile column in the maze grid.
+            y: Tile row in the maze grid.
+
+        Returns:
+            The sprite slots for tile edges and corners.
+        """
         sprites = [self.maze_sprites["empty_tile"] for _ in range(15)]
 
         is_top = y == 0
@@ -132,6 +170,18 @@ class MazeView:
                            avoid_wall: list[int],
                            mandatory_wall: list[int],
                            corner_value: int) -> int:
+        """Determine whether a small corner sprite is required.
+
+        Args:
+            current_square: Wall flags for the current grid square.
+            next_square: Wall flags for the neighboring square.
+            avoid_wall: Wall flags that suppress the corner sprite.
+            mandatory_wall: Wall flags that require the corner sprite.
+            corner_value: Corner bit mask to return when needed.
+
+        Returns:
+            The corner bit mask, or zero when no corner is needed.
+        """
 
         if current_square & avoid_wall[0] or current_square & avoid_wall[1]:
             return 0
@@ -141,6 +191,16 @@ class MazeView:
         return corner_value
 
     def need_little_corners(self, x: int, y: int, corner: CornerWall) -> int:
+        """Check neighboring maze squares for a small corner sprite.
+
+        Args:
+            x: Tile column in the maze grid.
+            y: Tile row in the maze grid.
+            corner: Corner being checked.
+
+        Returns:
+            The corner bit mask when needed, or zero otherwise.
+        """
         is_top = y == 0
         is_bottom = y == len(self.maze_grid) - 1
         is_left = x == 0
@@ -184,6 +244,14 @@ class MazeView:
         return 0
 
     def little_corner_handle(self, corner_value: int) -> SpriteData:
+        """Return the sprite for a required small corner.
+
+        Args:
+            corner_value: Bit mask identifying the corner orientation.
+
+        Returns:
+            The matching small-corner sprite.
+        """
         if corner_value == CornerWall.NORTH_EAST.value:
             return self.maze_sprites["wall_small_corner_bottom_left"]
 
@@ -198,6 +266,19 @@ class MazeView:
     def handle_corner(self, w1: int, w2: int,
                       sprites: list[SpriteData], y: int, x: int,
                       corner: CornerWall) -> SpriteData:
+        """Choose the sprite for a tile corner.
+
+        Args:
+            w1: First wall bit at the corner.
+            w2: Second wall bit at the corner.
+            sprites: Sprite lookup slots for the tile.
+            y: Tile row in the maze grid.
+            x: Tile column in the maze grid.
+            corner: Corner being resolved.
+
+        Returns:
+            The sprite that fills the corner.
+        """
         corner_needed = self.need_little_corners(x, y, corner)
         if corner_needed > 0:
             return self.little_corner_handle(corner_needed)
@@ -210,6 +291,15 @@ class MazeView:
         return sprites[0]
 
     def sprite_filler(self, x: int, y: int) -> list[list[SpriteData]]:
+        """Assemble a tile's nine wall and empty-space sprites.
+
+        Args:
+            x: Tile column in the maze grid.
+            y: Tile row in the maze grid.
+
+        Returns:
+            A 3-by-3 grid of sprites for the tile.
+        """
         n = self.maze_grid[y][x] & Wall.NORTH.value
         e = self.maze_grid[y][x] & Wall.EAST.value
         s = self.maze_grid[y][x] & Wall.SOUTH.value
@@ -241,6 +331,15 @@ class MazeView:
     def put_tile_in_image(self, tile: list[list[SpriteData]],
                           x: int, y: int, dest_img_buffer: ndarray,
                           dest_img_width: int) -> None:
+        """Draw a 3-by-3 sprite tile into the destination buffer.
+
+        Args:
+            tile: Three-by-three sprite grid to draw.
+            x: Tile column in the maze grid.
+            y: Tile row in the maze grid.
+            dest_img_buffer: Destination pixel buffer.
+            dest_img_width: Width of the destination image.
+        """
 
         tile_x_start = self.x_start + int(x * self.tile_size)
         tile_y_start = self.y_start + int(y * self.tile_size)
@@ -260,6 +359,14 @@ class MazeView:
                dest_img_width: int,
                game_board: GameBoard,
                window: pygame.Surface) -> None:
+        """Draw every maze tile into the destination image buffer.
+
+        Args:
+            dest_img_buffer: Destination pixel buffer.
+            dest_img_width: Width of the destination image.
+            game_board: Board whose maze is rendered.
+            window: Display surface associated with the view.
+        """
 
         for y in range(len(self.maze_grid)):
             for x in range(len(self.maze_grid[y])):

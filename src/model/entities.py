@@ -1,19 +1,28 @@
-import logging
 import heapq
+import logging
 from abc import ABC, abstractmethod
+from ..shared import Direction, GhostState, Vector2D, Wall
 from .maze_adaptater import MazeAdapter
-from ..shared import Vector2D, Direction, GhostState, Wall
 
 
 logger = logging.getLogger(__name__)
 
 
 class Entity(ABC):
+    """Common position and movement state for maze entities."""
+
     def __init__(
             self,
             current_y: int,
             current_x: int,
             maze: MazeAdapter) -> None:
+        """Initialize entity coordinates and movement state.
+
+        Args:
+            current_y: Initial row in the maze.
+            current_x: Initial column in the maze.
+            maze: Maze providing the grid and its dimensions.
+        """
 
         self.current_pos_y: int = current_y
         self.current_pos_x: int = current_x
@@ -31,6 +40,7 @@ class Entity(ABC):
         self.center_tolerance: float = 0.05
 
     def respawn(self) -> None:
+        """Restore the entity to its spawn position and stop its movement."""
         self.current_pos_y = self.spawn_pos.y
         self.current_pos_x = self.spawn_pos.x
         self.move_pixel_y = float(self.spawn_pos.y)
@@ -40,6 +50,14 @@ class Entity(ABC):
         self.is_dying: bool = False
 
     def can_move(self, direction: Vector2D) -> bool:
+        """Check whether the entity can move in a direction.
+
+        Args:
+            direction: Direction vector to check.
+
+        Returns:
+            Whether the current tile permits movement that way.
+        """
 
         move_masks: dict[Vector2D, int] = {
             Direction.NORTH.value: Wall.NORTH.value,
@@ -57,6 +75,11 @@ class Entity(ABC):
         return not (cell_value & mask)
 
     def move_continuously(self, elapsed_time: float) -> None:
+        """Advance the entity's pixel position by elapsed time.
+
+        Args:
+            elapsed_time: Time elapsed since the previous update.
+        """
         if (self.move_dir == Direction.ZERO.value
                 or not self.can_move(self.move_dir)):
             self.move_pixel_y = float(self.current_pos_y)
@@ -78,11 +101,21 @@ class Entity(ABC):
             self.move_pixel_x = float(self.current_pos_x)
 
     def is_moving(self) -> bool:
+        """Check whether the entity can currently move.
+
+        Returns:
+            Whether its current direction is nonzero and unobstructed.
+        """
         if self.move_dir == Direction.ZERO.value:
             return False
         return self.can_move(self.move_dir)
 
     def is_at_intersection(self) -> bool:
+        """Check whether the entity is aligned with its current tile.
+
+        Returns:
+            Whether both pixel coordinates are within center tolerance.
+        """
         return (
             abs(self.move_pixel_y - self.current_pos_y) < self.center_tolerance
             and
@@ -90,21 +123,34 @@ class Entity(ABC):
         )
 
     def perfectly_aligns(self) -> None:
+        """Snap the pixel coordinates to the current tile coordinates."""
         self.move_pixel_y = float(self.current_pos_y)
         self.move_pixel_x = float(self.current_pos_x)
 
     @abstractmethod
     def update(self, elapsed_time: float) -> None:
-        pass
+        """Update the entity for one time step.
+
+        Args:
+            elapsed_time: Time elapsed since the previous update.
+        """
 
 
 class PacMan(Entity):
+    """Player-controlled character and its movement state."""
 
     def __init__(
             self,
             y: int,
             x: int,
             maze: MazeAdapter) -> None:
+        """Initialize Pac-Man at a maze position.
+
+        Args:
+            y: Initial row in the maze.
+            x: Initial column in the maze.
+            maze: Maze providing the grid and its dimensions.
+        """
         super().__init__(y, x, maze)
         self.speed = 2
         self.desired_dir: Vector2D = Direction.ZERO.value
@@ -115,28 +161,54 @@ class PacMan(Entity):
         self.animation_timer: float = 0.0
 
     def start_death_animation(self) -> None:
+        """Begin the death animation and stop movement."""
         self.is_dying = True
         self.death_elapsed = 0.0
         self.move_dir = Direction.ZERO.value
 
     def death_animation_finished(self) -> bool:
+        """Check whether the death animation duration has elapsed.
+
+        Returns:
+            Whether the death animation is complete.
+        """
         return self.death_elapsed >= self.death_duration
 
     def set_direction(self, direction: Direction) -> None:
+        """Set Pac-Man's requested movement direction.
+
+        Args:
+            direction: Direction requested by the player.
+        """
         self.desired_dir = direction.value
         self.desired_state_dir = direction
 
     def is_reversing(self) -> bool:
+        """Check whether the requested direction reverses current movement.
+
+        Returns:
+            Whether the requested direction is opposite the current one.
+        """
         return (
             self.desired_dir.y == -self.move_dir.y
             and self.desired_dir.x == -self.move_dir.x
         )
 
     def handle_death_animation(self, elapsed_time: float) -> None:
+        """Advance the death timer and reset the animation timer.
+
+        Args:
+            elapsed_time: Time elapsed since the previous update.
+        """
         self.death_elapsed += elapsed_time
         self.animation_timer = 0.0
 
     def update(self, elapsed_time: float) -> None:
+        """Update animation and movement for one time step.
+
+        Args:
+            elapsed_time: Time elapsed since the previous update.
+        """
 
         if self.is_dying:
             self.handle_death_animation(elapsed_time)
@@ -150,8 +222,11 @@ class PacMan(Entity):
             self.move_dir = self.desired_dir
             self.move_dir_state = self.desired_state_dir
 
-        if (self.is_at_intersection() and self.desired_dir != self.move_dir and
-                self.can_move(self.desired_dir)):
+        if (
+            self.is_at_intersection()
+            and self.desired_dir != self.move_dir
+            and self.can_move(self.desired_dir)
+        ):
             self.move_dir = self.desired_dir
             self.move_dir_state = self.desired_state_dir
             self.perfectly_aligns()
@@ -160,6 +235,7 @@ class PacMan(Entity):
 
 
 class Ghost(Entity, ABC):
+    """Base class for ghosts with chase and flee behavior."""
 
     def __init__(
             self,
@@ -168,6 +244,14 @@ class Ghost(Entity, ABC):
             maze: MazeAdapter,
             pacman: PacMan
             ) -> None:
+        """Initialize a ghost and its relationship to Pac-Man.
+
+        Args:
+            y: Initial row in the maze.
+            x: Initial column in the maze.
+            maze: Maze providing the grid and its dimensions.
+            pacman: Player character the ghost tracks.
+        """
         super().__init__(y, x, maze)
         self.pacman: PacMan = pacman
         self.state: GhostState = GhostState.NORMAL
@@ -187,16 +271,27 @@ class Ghost(Entity, ABC):
             }
 
     def get_eaten(self, respawn_delay: float = 1.0) -> None:
+        """Mark the ghost as eaten until its respawn delay expires.
+
+        Args:
+            respawn_delay: Seconds to wait before respawning.
+        """
         self.state = GhostState.EATEN
         self.respawn_timer = respawn_delay
 
     def respawn(self) -> None:
+        """Restore the ghost to its spawn state."""
         super().respawn()
         self.state = GhostState.NORMAL
         self.respawn_timer = 0.0
         self.decision_made_on_tile = None
 
     def update(self, elapsed_time: float) -> None:
+        """Update ghost timers, decisions, and movement.
+
+        Args:
+            elapsed_time: Time elapsed since the previous update.
+        """
         if self.state == GhostState.EATEN:
             self.respawn_timer -= elapsed_time
             if self.respawn_timer <= 0:
@@ -222,13 +317,24 @@ class Ghost(Entity, ABC):
 
     @abstractmethod
     def get_target(self) -> Vector2D:
-        pass
+        """Return the tile this ghost should pursue.
+
+        Returns:
+            Target tile coordinates.
+        """
 
     def chase_behavior(
             self,
             current_pos_y: int,
             current_pos_x: int,
             target: Vector2D) -> None:
+        """Find a shortest path and select its first movement direction.
+
+        Args:
+            current_pos_y: Current row of the ghost.
+            current_pos_x: Current column of the ghost.
+            target: Tile the ghost is pursuing.
+        """
 
         start: Vector2D = Vector2D(current_pos_y, current_pos_x)
         distances: dict[Vector2D, int] = {start: 0}
@@ -265,6 +371,12 @@ class Ghost(Entity, ABC):
             self,
             came_from: dict[Vector2D, Vector2D | None],
             target: Vector2D) -> None:
+        """Reconstruct a path and select its first step.
+
+        Args:
+            came_from: Map of each visited tile to its predecessor.
+            target: Destination tile for the path.
+        """
         current: Vector2D | None = target
         path = []
         while current is not None:
@@ -279,6 +391,14 @@ class Ghost(Entity, ABC):
             self.fallback_movement(path[0])
 
     def best_dir(self, vector: Vector2D) -> Direction:
+        """Convert a unit movement vector to its direction enum.
+
+        Args:
+            vector: Movement vector to convert.
+
+        Returns:
+            Matching cardinal direction, or zero for an unknown vector.
+        """
         x, y = vector.x, vector.y
 
         if x == 0 and y == 0:
@@ -302,6 +422,15 @@ class Ghost(Entity, ABC):
             self,
             current: Vector2D,
             next_pos: Vector2D) -> Vector2D:
+        """Get the direction vector from one adjacent tile to another.
+
+        Args:
+            current: Starting tile coordinates.
+            next_pos: Next tile coordinates in the path.
+
+        Returns:
+            Unit vector toward the next tile, or zero if not adjacent.
+        """
 
         diff_y = next_pos.y - current.y
         diff_x = next_pos.x - current.x
@@ -311,6 +440,11 @@ class Ghost(Entity, ABC):
         return Direction.ZERO.value
 
     def fallback_movement(self, current_pos: Vector2D) -> None:
+        """Choose the first available direction from a tile.
+
+        Args:
+            current_pos: Tile from which to choose movement.
+        """
 
         for direction in self.possible_directions:
             if not (
@@ -320,6 +454,10 @@ class Ghost(Entity, ABC):
                 return
 
     def flee_behavior(self) -> None:
+        """Choose an available direction that maximizes distance.
+
+        The chosen direction moves the ghost farther from Pac-Man.
+        """
         best_direction: Vector2D = Direction.ZERO.value
         best_score = float('-inf')
 
@@ -350,30 +488,54 @@ class Ghost(Entity, ABC):
 
 
 class Blinky(Ghost):
+    """Ghost that targets Pac-Man's current tile."""
 
     def get_target(self) -> Vector2D:
+        """Return Pac-Man's current tile.
+
+        Returns:
+            Pac-Man's current row and column.
+        """
         return Vector2D(self.pacman.current_pos_y, self.pacman.current_pos_x)
 
 
 class Pinky(Ghost):
+    """Ghost that targets a tile four steps ahead of Pac-Man."""
 
     def get_target(self) -> Vector2D:
+        """Return a tile four steps ahead of Pac-Man.
+
+        Returns:
+            Projected target row and column.
+        """
         target_y = self.pacman.current_pos_y + (self.pacman.move_dir.y * 4)
         target_x = self.pacman.current_pos_x + (self.pacman.move_dir.x * 4)
         return Vector2D(target_y, target_x)
 
 
 class Inky(Ghost):
+    """Ghost that targets a tile two steps ahead of Pac-Man."""
 
     def get_target(self) -> Vector2D:
+        """Return a tile two steps ahead of Pac-Man.
+
+        Returns:
+            Projected target row and column.
+        """
         target_y = self.pacman.current_pos_y + (self.pacman.move_dir.y * 2)
         target_x = self.pacman.current_pos_x + (self.pacman.move_dir.x * 2)
         return Vector2D(target_y, target_x)
 
 
 class Clyde(Ghost):
+    """Ghost that retreats when near Pac-Man and chases when far away."""
 
     def get_target(self) -> Vector2D:
+        """Select Clyde's spawn tile nearby, otherwise Pac-Man's tile.
+
+        Returns:
+            The selected target row and column.
+        """
         dist_case = (
             abs(self.current_pos_y - self.pacman.current_pos_y) +
             abs(self.current_pos_x - self.pacman.current_pos_x)

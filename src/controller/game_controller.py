@@ -21,6 +21,14 @@ class GameController:
             highscore_manager: HighScoreManager,
             game_session: GameSession,
             game_view: GameView):
+        """Create a controller with the game services.
+
+        Args:
+            level_manager: Builder used to create game levels.
+            highscore_manager: Manager for stored high scores.
+            game_session: Session state and settings.
+            game_view: Display and input handler.
+        """
 
         self.context = GameContext(
             game_session,
@@ -39,6 +47,7 @@ class GameController:
         self.frame_duration: float = 1.0 / self.target_fps
 
     def run(self) -> None:
+        """Run the game loop until the active scene exits."""
 
         while self.current_scene is not None:
 

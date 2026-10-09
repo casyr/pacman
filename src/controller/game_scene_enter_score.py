@@ -6,10 +6,22 @@ from ..model import GameStatus
 
 
 class ScoreScene:
+    """Scene for entering and saving the player's high-score name."""
+
     def update(
             self,
             controller: GameContext,
             elapsed_time: float, user_input: str | None) -> GameScene | None:
+        """Process name-entry input and save valid scores.
+
+        Args:
+            controller: Shared game state and service dependencies.
+            elapsed_time: Time elapsed since the previous update, in seconds.
+            user_input: Input received during this frame, if any.
+
+        Returns:
+            The menu scene after saving, or this scene otherwise.
+        """
 
         if user_input is None:
             return self
@@ -39,6 +51,11 @@ class ScoreScene:
         return self
 
     def render(self, controller: GameContext) -> None:
+        """Draw the score-entry screen for the game outcome.
+
+        Args:
+            controller: Shared game state and service dependencies.
+        """
         controller.view.clear_window()
         if (controller.game_session.game_status == GameStatus.VICTORY):
             controller.view.victory.render_enter_score(

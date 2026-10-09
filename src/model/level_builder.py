@@ -12,15 +12,35 @@ logger = logging.getLogger(__name__)
 
 
 class LevelBuilder:
+    """Construct a board and its entities for the active level."""
 
     def __init__(self, current_game: GameSession):
+        """Initialize the builder with its active game session.
+
+        Args:
+            current_game: Session supplying settings and level progress.
+        """
         self.current_game = current_game
 
     def _seed_using(self, seed: int, level_index: int) -> int:
+        """Use the configured seed only for the first level.
+
+        Args:
+            seed: Configured maze seed.
+            level_index: Zero-based index of the active level.
+
+        Returns:
+            The configured seed for level zero, otherwise zero.
+        """
         seed_to_use: int = seed if level_index == 0 else 0
         return seed_to_use
 
     def build_level(self) -> GameBoard:
+        """Generate the maze, entities, collectibles, and game board.
+
+        Returns:
+            The completed board for the active level.
+        """
         level_index = self.current_game.level_index
         lvl_data = self.current_game.settings.levels[level_index]
         width = lvl_data.width
@@ -61,6 +81,15 @@ class LevelBuilder:
             maze: MazeAdapter,
             bounds: GridBounds
             ) -> set[Vector2D]:
+        """Choose valid corner positions for super pacgums.
+
+        Args:
+            maze: Generated maze in which to place collectibles.
+            bounds: Maze bounds and corner coordinates.
+
+        Returns:
+            Positions selected for super pacgums.
+        """
 
         available_positions: list[Vector2D] = []
 
@@ -82,6 +111,15 @@ class LevelBuilder:
             super_pacgum: int,
             available_positions: list[Vector2D]
             ) -> set[Vector2D]:
+        """Select the requested number of super pacgum positions.
+
+        Args:
+            super_pacgum: Number of super pacgums requested.
+            available_positions: Valid positions available for selection.
+
+        Returns:
+            Randomly selected available positions.
+        """
 
         total_available: int = len(available_positions)
 
@@ -102,6 +140,17 @@ class LevelBuilder:
             maze: MazeAdapter,
             bounds: GridBounds
             ) -> dict[GhostName, Vector2D]:
+        """Find available corner spawn positions for the ghosts.
+
+        Args:
+            super_pacgums_pos: Positions reserved for super pacgums.
+            player_spawn_pos: Position reserved for the player.
+            maze: Generated maze used to find open tiles.
+            bounds: Maze bounds and corner coordinates.
+
+        Returns:
+            Available spawn positions keyed by ghost type.
+        """
 
         ghosts_spawn_pos: dict[GhostName, Vector2D] = {}
         ignore: set[Vector2D] = set()
@@ -124,6 +173,16 @@ class LevelBuilder:
             maze: MazeAdapter,
             pacman: PacMan
             ) -> dict[GhostName, Ghost]:
+        """Create ghosts at their selected spawn positions.
+
+        Args:
+            ghosts_spawn_pos: Initial positions keyed by ghost type.
+            maze: Generated maze the ghosts will use.
+            pacman: Player character tracked by the ghosts.
+
+        Returns:
+            Ghost instances keyed by ghost type.
+        """
 
         ghosts: dict[GhostName, Ghost] = {}
         for name, pos in ghosts_spawn_pos.items():
@@ -139,6 +198,16 @@ class LevelBuilder:
             maze: MazeAdapter,
             bounds: GridBounds
             ) -> Vector2D:
+        """Find an open, unreserved player spawn near the maze center.
+
+        Args:
+            super_pacgums_pos: Positions reserved for super pacgums.
+            maze: Generated maze used to find an open tile.
+            bounds: Maze dimensions.
+
+        Returns:
+            The selected player spawn position.
+        """
         player_spawn_pos: Vector2D = Vector2D(0, 0)
         ignore: set[Vector2D] = set()
         ignore.update(super_pacgums_pos)
@@ -158,6 +227,15 @@ class LevelBuilder:
             self,
             player_spawn_pos: Vector2D,
             maze: MazeAdapter) -> PacMan:
+        """Create Pac-Man at the selected spawn position.
+
+        Args:
+            player_spawn_pos: Initial row and column for Pac-Man.
+            maze: Generated maze Pac-Man will use.
+
+        Returns:
+            The initialized player character.
+        """
         return PacMan(player_spawn_pos.y,
                       player_spawn_pos.x,
                       maze)
@@ -169,6 +247,17 @@ class LevelBuilder:
             maze: MazeAdapter,
             bounds: GridBounds
             ) -> set[Vector2D]:
+        """Find and select valid regular pacgum positions.
+
+        Args:
+            super_pacgums_pos: Positions reserved for super pacgums.
+            player_spawn_pos: Position reserved for the player.
+            maze: Generated maze in which to place collectibles.
+            bounds: Maze dimensions.
+
+        Returns:
+            Positions selected for regular pacgums.
+        """
 
         ignore: set[Vector2D] = set()
         available_positions: list[Vector2D] = []
@@ -198,6 +287,15 @@ class LevelBuilder:
             pacgum: int,
             available_positions: list[Vector2D]
             ) -> set[Vector2D]:
+        """Select the requested number of regular pacgum positions.
+
+        Args:
+            pacgum: Number of regular pacgums requested.
+            available_positions: Valid positions available for selection.
+
+        Returns:
+            Randomly selected available positions.
+        """
 
         total_available: int = len(available_positions)
 
@@ -217,6 +315,16 @@ class LevelBuilder:
             pos: Vector2D,
             maze: MazeAdapter,
             bounds: GridBounds) -> Vector2D | None:
+        """Use a corner if open, otherwise search outward for an open tile.
+
+        Args:
+            pos: Corner position to check first.
+            maze: Generated maze used to check tile availability.
+            bounds: Maze dimensions.
+
+        Returns:
+            An available tile, or None if the search finds none.
+        """
         if maze.grid[pos.y][pos.x] != 15:
             return pos
         return self._available_space(
@@ -229,6 +337,18 @@ class LevelBuilder:
             ignore: set[Vector2D],
             maze: MazeAdapter,
             bounds: GridBounds) -> Vector2D | None:
+        """Search outward from queued positions for an unreserved open tile.
+
+        Args:
+            queue: Starting positions for the breadth-first search.
+            seen: Positions already visited by the search.
+            ignore: Positions that cannot be selected.
+            maze: Generated maze to search.
+            bounds: Maze dimensions that constrain the search.
+
+        Returns:
+            The first available tile found by the search.
+        """
 
         directions: list[Vector2D] = [
             Direction.NORTH.value,

@@ -8,11 +8,20 @@ from ..model.entities import Entity
 
 
 class Entities:
+    """Share maze-relative layout and drawing behavior for entities."""
 
     def __init__(self, game_board: GameBoard,
                  sprites: SpriteSheetsManager,
                  screen_width: int,
                  screen_height: int) -> None:
+        """Set up entity rendering relative to the maze.
+
+        Args:
+            game_board: Board that defines maze dimensions.
+            sprites: Sprite sheet for entity images and animations.
+            screen_width: Display width in pixels.
+            screen_height: Display height in pixels.
+        """
         self.sprites = sprites
         self.maze_grid: list[list[int]] = game_board.maze.grid
         self.utils = DisplayerUtils()
@@ -35,16 +44,39 @@ class Entities:
 
     def render(self, dest_img_buffer: ndarray,
                dest_img_width: int, game_board: GameBoard) -> None:
-        pass
+        """Render entities into an image buffer.
+
+        Args:
+            dest_img_buffer: Destination pixel buffer.
+            dest_img_width: Width of the destination image.
+            game_board: Board containing the entities.
+        """
 
     def select_animation(self, dir: Direction, entity: Entity) -> str:
+        """Build the animation key for an entity and direction.
+
+        Args:
+            dir: Direction whose animation is requested.
+            entity: Entity to animate.
+
+        Returns:
+            The animation key in sprite-sheet form.
+        """
         return f"{entity.__class__.__name__}.{dir._name_}"
 
 
 class PacmanView(Entities):
+    """Render Pac-Man and its current animation frame."""
 
     def render(self, dest_img_buffer: ndarray,
                dest_img_width: int, game_board: GameBoard) -> None:
+        """Draw Pac-Man at its current maze-relative position.
+
+        Args:
+            dest_img_buffer: Destination pixel buffer.
+            dest_img_width: Width of the destination image.
+            game_board: Board containing Pac-Man's current state.
+        """
 
         pacman = game_board.player
 
@@ -84,9 +116,17 @@ class PacmanView(Entities):
 
 
 class GhostView(Entities):
+    """Render ghosts using state-specific animation frames."""
 
     def render(self, dest_img_buffer: ndarray,
                dest_img_width: int, game_board: GameBoard) -> None:
+        """Draw every ghost at its current maze-relative position.
+
+        Args:
+            dest_img_buffer: Destination pixel buffer.
+            dest_img_width: Width of the destination image.
+            game_board: Board containing the ghosts' current states.
+        """
 
         ghost_dict = game_board.ghosts
 

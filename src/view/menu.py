@@ -9,11 +9,21 @@ logger = logging.getLogger(__name__)
 
 
 class BaseMenuView:
+    """Render text and shared menu elements into a window."""
+
     def __init__(self,
                  width: int,
                  height: int,
                  window: pygame.Surface,
                  text_sprites: SpriteSheetsManager) -> None:
+        """Initialize shared menu rendering state.
+
+        Args:
+            width: Width of the display in pixels.
+            height: Height of the display in pixels.
+            window: Surface that receives rendered menu images.
+            text_sprites: Sprite sheet containing text characters.
+        """
         self.width: int = width
         self.height: int = height
         self.window: pygame.Surface = window
@@ -27,6 +37,15 @@ class BaseMenuView:
         self.utils = DisplayerUtils()
 
     def _calculate_string_width(self, text: str, size: int) -> int:
+        """Measure the rendered width of a string.
+
+        Args:
+            text: String to measure.
+            size: Character height in pixels.
+
+        Returns:
+            The calculated width in pixels.
+        """
         total_w = 0
         for char in text:
             if char == " ":
@@ -45,6 +64,18 @@ class BaseMenuView:
             current_x: int,
             current_y: int,
             size: int) -> int:
+        """Draw one character and return its rendered width.
+
+        Args:
+            dest_image_buffer: Pixel buffer to draw into.
+            char: Character to render.
+            current_x: Horizontal drawing position.
+            current_y: Vertical drawing position.
+            size: Character height in pixels.
+
+        Returns:
+            The rendered character width in pixels.
+        """
         if char == " ":
             return size // 2
 
@@ -76,6 +107,15 @@ class BaseMenuView:
             text: str,
             size: int,
             start_x: int | None = None) -> None:
+        """Render text centered by default or from a given x position.
+
+        Args:
+            dest_image_buffer: Pixel buffer to draw into.
+            current_y: Vertical drawing position.
+            text: Text to render.
+            size: Character height in pixels.
+            start_x: Optional horizontal starting position.
+        """
 
         if start_x is None:
             total_str_w = self._calculate_string_width(text, size)
@@ -100,6 +140,15 @@ class BaseMenuView:
             text: str,
             size: int,
             start_x: int | None = None) -> None:
+        """Render text from the left edge of the image buffer.
+
+        Args:
+            dest_image_buffer: Pixel buffer to draw into.
+            current_y: Vertical drawing position.
+            text: Text to render.
+            size: Character height in pixels.
+            start_x: Retained optional argument; currently unused.
+        """
 
         current_x = 0
 

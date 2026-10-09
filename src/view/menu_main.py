@@ -7,12 +7,21 @@ from ..errors import ViewError
 
 
 class Menu(BaseMenuView):
+    """Render the main menu and its logo."""
 
     def __init__(self,
                  width: int,
                  height: int,
                  window: pygame.Surface,
                  menu_sprites: SpriteSheetsManager,) -> None:
+        """Initialize the main menu view.
+
+        Args:
+            width: Display width in pixels.
+            height: Display height in pixels.
+            window: Surface that receives the menu image.
+            menu_sprites: Sprite sheet containing menu graphics.
+        """
 
         super().__init__(width, height, window, menu_sprites)
         self.menu: SpriteSheetsManager = menu_sprites
@@ -27,6 +36,16 @@ class Menu(BaseMenuView):
 
     def _render_logo(self, dest_image_buffer: np.ndarray,
                      dest_img_width: int, dest_img_height: int) -> int:
+        """Draw the menu logo and return its vertical space.
+
+        Args:
+            dest_image_buffer: Destination pixel buffer.
+            dest_img_width: Width of the destination image.
+            dest_img_height: Height of the destination image.
+
+        Returns:
+            The y offset after the logo, or zero if it is absent.
+        """
         logo_name = "logo"
         logo_sprite = self.menu.sprites.get(logo_name, None)
         if logo_sprite is None:
@@ -55,6 +74,14 @@ class Menu(BaseMenuView):
                       dest_img_width: int,
                       dest_img_height: int,
                       start_y: int) -> None:
+        """Draw each menu option below the logo.
+
+        Args:
+            dest_image_buffer: Destination pixel buffer.
+            dest_img_width: Width of the destination image.
+            dest_img_height: Height of the destination image.
+            start_y: Vertical position at which menu options begin.
+        """
 
         menu_h = int(dest_img_height * 0.05)
         current_y = start_y + self.padding_pixel
@@ -82,6 +109,15 @@ class Menu(BaseMenuView):
             self,
             dest_width: int,
             dest_height: int) -> pygame.Surface:
+        """Create or return the cached main-menu image.
+
+        Args:
+            dest_width: Image width in pixels.
+            dest_height: Image height in pixels.
+
+        Returns:
+            The cached menu surface.
+        """
 
         if self._cached_menu_image is None:
             self._cached_menu_image = mlx.new_image(
@@ -101,6 +137,7 @@ class Menu(BaseMenuView):
         return self._cached_menu_image
 
     def render(self) -> None:
+        """Blit the main menu to the window and refresh it."""
 
         cached_image = self._create_cache_menu(self.width, self.height)
         mlx.blit_img(cached_image, self.window, (0, 0))

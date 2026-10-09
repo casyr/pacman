@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseGameValidator(BaseModel, ABC):
+    """Base model for validators that convert settings to dataclasses."""
 
     @classmethod
     def apply_fallback(
@@ -24,6 +25,16 @@ class BaseGameValidator(BaseModel, ABC):
         handler: ValidatorFunctionWrapHandler,
         info: ValidationInfo
     ) -> int:
+        """Validate a setting or replace it with its declared default.
+
+        Args:
+            value_setting_name: Raw setting value to validate.
+            handler: Pydantic validation handler for the setting.
+            info: Context identifying the field being validated.
+
+        Returns:
+            The validated integer value or the field's default.
+        """
         try:
             validated_value = handler(value_setting_name)
             return int(validated_value)
@@ -39,15 +50,27 @@ class BaseGameValidator(BaseModel, ABC):
 
     @abstractmethod
     def to_dataclass(self) -> Any:
+        """Convert validated data to its application settings dataclass.
+
+        Returns:
+            The corresponding settings dataclass.
+        """
         pass
 
 
 class LevelValidator(BaseGameValidator):
+    """Validate dimensions and defaults for a single level."""
+
     level_index: int = Field(default=0)
     width: int = Field(default=10, ge=10, le=20)
     height: int = Field(default=10, ge=10, le=20)
 
     def to_dataclass(self) -> LevelSettings:
+        """Create level settings from validated dimensions.
+
+        Returns:
+            The validated level settings.
+        """
         return LevelSettings(
             width=self.width,
             height=self.height)
@@ -59,10 +82,25 @@ class LevelValidator(BaseGameValidator):
             value_setting_name: Any,
             handler: ValidatorFunctionWrapHandler,
             info: ValidationInfo) -> int:
+        """Validate a level dimension, falling back to its default.
+
+        Args:
+            value_setting_name: Raw width or height value.
+            handler: Pydantic validation handler for the field.
+            info: Context identifying the field being validated.
+
+        Returns:
+            The validated dimension or its default value.
+        """
         return cls.apply_fallback(value_setting_name, handler, info)
 
     @model_validator(mode="after")
     def check_missing_fields(self) -> LevelValidator:
+        """Log omitted fields and retain their defaults.
+
+        Returns:
+            This validated level model.
+        """
         missing_fields = (
             set(self.__class__.model_fields.keys()) - self.model_fields_set)
         for field in missing_fields:
@@ -75,6 +113,8 @@ class LevelValidator(BaseGameValidator):
 
 
 class GameValidator(BaseGameValidator):
+    """Validate game-wide settings and normalize the level list."""
+
     highscore_filename: str = Field(default="highscore.json")
     levels: list[LevelValidator] = Field(
         default_factory=lambda: [LevelValidator() for _ in range(10)]
@@ -89,6 +129,11 @@ class GameValidator(BaseGameValidator):
     level_max_time: int = Field(default=90, ge=40, le=3600)
 
     def to_dataclass(self) -> GameSettings:
+        """Create game settings from validated fields.
+
+        Returns:
+            The validated game settings.
+        """
         return GameSettings(
             highscore_filename=self.highscore_filename,
             levels=[lvl.to_dataclass() for lvl in self.levels],
@@ -105,6 +150,14 @@ class GameValidator(BaseGameValidator):
     @field_validator("highscore_filename", mode="before")
     @classmethod
     def check_highscore_extension(cls, name_highscore: Any) -> str:
+        """Require a JSON filename for high scores.
+
+        Args:
+            name_highscore: Candidate high-score filename.
+
+        Returns:
+            The supplied filename or the default JSON filename.
+        """
         if (
             not isinstance(name_highscore, str)
             or not name_highscore.lower().endswith(".json")
@@ -118,6 +171,14 @@ class GameValidator(BaseGameValidator):
 
     @staticmethod
     def _check_level_isinstance(levels: Any) -> list[dict[str, Any]]:
+        """Keep level entries that are mappings and replace others.
+
+        Args:
+            levels: Raw level-list value.
+
+        Returns:
+            A list containing only dictionaries.
+        """
         if not isinstance(levels, list):
             logger.warning(
                 "Levels format is not a list. Resetting to default.")
@@ -136,6 +197,14 @@ class GameValidator(BaseGameValidator):
     @field_validator("levels", mode="before")
     @classmethod
     def adjust_levels_count(cls, levels: Any) -> list[dict[str, Any]]:
+        """Normalize level entries to the supported count.
+
+        Args:
+            levels: Raw level-list value.
+
+        Returns:
+            Ten or more normalized level dictionaries, capped at twenty.
+        """
         cleaned_levels: list[dict[str, Any]] = cls._check_level_isinstance(
             levels)
 
@@ -175,10 +244,25 @@ class GameValidator(BaseGameValidator):
             value_setting_name: Any,
             handler: ValidatorFunctionWrapHandler,
             info: ValidationInfo) -> int:
+        """Validate a game setting, falling back to its default.
+
+        Args:
+            value_setting_name: Raw setting value to validate.
+            handler: Pydantic validation handler for the field.
+            info: Context identifying the field being validated.
+
+        Returns:
+            The validated integer value or the field's default.
+        """
         return cls.apply_fallback(value_setting_name, handler, info)
 
     @model_validator(mode="after")
     def check_missing_fields(self) -> GameValidator:
+        """Log omitted fields and retain their defaults.
+
+        Returns:
+            This validated game model.
+        """
         missing_fields = (
             set(self.__class__.model_fields.keys()) - self.model_fields_set)
         for field in missing_fields:

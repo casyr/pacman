@@ -10,10 +10,25 @@ logger = logging.getLogger(__name__)
 
 
 class ConfigParser:
+    """Load and validate game settings from a commented JSON file."""
+
     def __init__(self, config_file_path: str):
+        """Store the path to the configuration file.
+
+        Args:
+            config_file_path: Path to the JSON configuration file.
+        """
         self.config_file_path = config_file_path
 
     def _remove_all_comments(self, raw_text: str) -> str:
+        """Remove supported comments while preserving quoted strings.
+
+        Args:
+            raw_text: Source text that may contain comments.
+
+        Returns:
+            The source text with comments removed.
+        """
         result: list[str] = []
         i = 0
         length = len(raw_text)
@@ -36,6 +51,17 @@ class ConfigParser:
     def _handle_string(
             self, raw_text: str,
             i: int, length: int, result: list[str]) -> int:
+        """Copy a quoted string and return the next source index.
+
+        Args:
+            raw_text: Source text being scanned.
+            i: Index of the opening quote.
+            length: Length of the source text.
+            result: Output characters collected so far.
+
+        Returns:
+            The index immediately after the string, or the end of the text.
+        """
         result.append(raw_text[i])
         i += 1
 
@@ -55,7 +81,18 @@ class ConfigParser:
 
         return i
 
-    def _handle_block_comment(self, raw_text: str, i: int, length: int) -> int:
+    def _handle_block_comment(
+            self, raw_text: str, i: int, length: int) -> int:
+        """Skip a block comment and return the next source index.
+
+        Args:
+            raw_text: Source text being scanned.
+            i: Index of the comment's opening slash.
+            length: Length of the source text.
+
+        Returns:
+            The index after the comment, or the end of the text.
+        """
         i += 2
 
         while i < length:
@@ -70,6 +107,16 @@ class ConfigParser:
 
     def _handle_single_comment(
             self, raw_text: str, i: int, length: int) -> int:
+        """Skip a line comment and return its newline index.
+
+        Args:
+            raw_text: Source text being scanned.
+            i: Index where the comment starts.
+            length: Length of the source text.
+
+        Returns:
+            The newline index or the end of the text.
+        """
         while i < length:
             char = raw_text[i]
             if char == '\n':
@@ -78,6 +125,11 @@ class ConfigParser:
         return i
 
     def load(self) -> GameSettings:
+        """Read, validate, and convert the game configuration.
+
+        Returns:
+            Validated game settings.
+        """
         parser_json = JsonModelLoader(file=self.config_file_path)
         file_path: Path = parser_json.check_json_format()
         raw_text: str = parser_json.open_json_file(file_path)

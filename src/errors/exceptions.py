@@ -1,39 +1,34 @@
 class PacmanError(Exception):
-    """Application base exception."""
+    """Base exception for application-specific failures."""
 
 
 class GameSettingsError(PacmanError):
-    """Raised during a data read or validation error."""
+    """Raised when game settings cannot be read or validated."""
 
 
 class ModelError(PacmanError):
-    """Raised during a rule are not allowed."""
+    """Raised when game-model operations fail."""
 
 
 class JsonLoadError(PacmanError):
-    """Raised during write a Json file."""
+    """Raised when JSON data cannot be accessed or written."""
 
 
 class MazeError(ModelError):
-    """Raised during call to maze_generator"""
+    """Raised when maze generation fails."""
 
 
 class LevelError(ModelError):
-    """Raised during build a level"""
+    """Raised when a game level cannot be built."""
 
 
 class ViewError(PacmanError):
-    """Raised during an initialization or graphics rendering failure."""
+    """Raised when view initialization or rendering fails."""
 
 
 class SpriteSheetError(ViewError):
-    """
-    This error type in inheritance to ViewError
-    and raised his own error in case of:
-        - fail to laod sprite data
-        - malformed file
-    """
+    """Raised when sprite assets are missing or malformed."""
 
 
 class ControllerError(PacmanError):
-    """Raised during n controller failure."""
+    """Raised when a controller operation fails."""

@@ -7,12 +7,21 @@ from ..parsing.sprite_sheet_manager import SpriteSheetsManager
 
 
 class HighScoresView(BaseMenuView):
+    """Render the high-score list and its navigation prompt."""
 
     def __init__(self,
                  width: int,
                  height: int,
                  window: pygame.Surface,
                  text_sprites: SpriteSheetsManager,) -> None:
+        """Initialize the high-score screen.
+
+        Args:
+            width: Display width in pixels.
+            height: Display height in pixels.
+            window: Surface that receives the rendered screen.
+            text_sprites: Sprite sheet containing text characters.
+        """
 
         super().__init__(width, height, window, text_sprites)
         self.scores_in_session: list[HighScore] = []
@@ -25,6 +34,14 @@ class HighScoresView(BaseMenuView):
     def _render_titles(
             self,
             dest_image_buffer: np.ndarray) -> int:
+        """Draw the screen title and return the next y position.
+
+        Args:
+            dest_image_buffer: Destination pixel buffer.
+
+        Returns:
+            The vertical position after the title.
+        """
 
         current_y = 0 + self.margin_pixel
 
@@ -43,6 +60,16 @@ class HighScoresView(BaseMenuView):
                        dest_image_buffer: np.ndarray,
                        start_y: int,
                        scores: list[HighScore]) -> int:
+        """Draw score entries and return the next y position.
+
+        Args:
+            dest_image_buffer: Destination pixel buffer.
+            start_y: Vertical position at which entries begin.
+            scores: High scores to display.
+
+        Returns:
+            The vertical position after the score entries.
+        """
 
         total_scores = len(scores)
         if total_scores == 0:
@@ -65,6 +92,15 @@ class HighScoresView(BaseMenuView):
     def _render_play_instruction(self,
                                  dest_image_buffer: np.ndarray,
                                  start_y: int) -> int:
+        """Draw the play instruction below the score list.
+
+        Args:
+            dest_image_buffer: Destination pixel buffer.
+            start_y: Vertical position at which the prompt begins.
+
+        Returns:
+            The vertical position after the prompt.
+        """
 
         start_y += self.margin_pixel
         play_str = "Press space to play or press 1 to return menu"
@@ -79,6 +115,14 @@ class HighScoresView(BaseMenuView):
     def _create_cache_menu(
             self,
             scores: list[HighScore]) -> pygame.Surface:
+        """Create or return a cached screen for the given scores.
+
+        Args:
+            scores: High scores to include in the image.
+
+        Returns:
+            The cached high-score surface.
+        """
 
         if (self.scores_in_session != scores or
                 self._cached_menu_image is None):
@@ -101,6 +145,11 @@ class HighScoresView(BaseMenuView):
 
     def render(self,
                scores: list[HighScore]) -> None:
+        """Blit the high-score screen to the window and refresh it.
+
+        Args:
+            scores: High scores to display.
+        """
 
         cached_image = self._create_cache_menu(scores)
         mlx.blit_img(cached_image, self.window, (0, 0))

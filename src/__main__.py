@@ -13,6 +13,11 @@ from .view import GameView
 
 
 def initialize_graphics() -> tuple[int, int]:
+    """Initialize graphics and return the primary screen dimensions.
+
+    Returns:
+        A tuple containing the screen width and height.
+    """
     mlx.initialisation()
     monitors = get_monitors()
     if not monitors:
@@ -21,6 +26,11 @@ def initialize_graphics() -> tuple[int, int]:
 
 
 def main() -> int:
+    """Load the game configuration and run the application.
+
+    Returns:
+        The process exit status.
+    """
     setup_logging()
     logger = logging.getLogger(__name__)
     logger.info("Starting the application Pacman...")

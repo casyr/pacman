@@ -5,11 +5,20 @@ from .displayer_utils import DisplayerUtils
 
 
 class PacgumsView:
+    """Render regular and power pacgums on the maze."""
 
     def __init__(self, game_board: GameBoard,
                  pacgums_sprites: SpriteSheetsManager,
                  screen_width: int,
                  screen_height: int) -> None:
+        """Prepare pacgum positions and sprite layout.
+
+        Args:
+            game_board: Board containing pacgum positions and maze size.
+            pacgums_sprites: Sprite sheet with pacgum images.
+            screen_width: Display width in pixels.
+            screen_height: Display height in pixels.
+        """
 
         self.pacgums_pos = game_board.pacgum_pos
         self.super_pacgums_pos = game_board.super_pacgums_pos
@@ -32,6 +41,12 @@ class PacgumsView:
 
     def render(self, dest_image_buffer: ndarray,
                dest_img_width: int) -> None:
+        """Draw all regular and power pacgums into an image buffer.
+
+        Args:
+            dest_image_buffer: Destination pixel buffer.
+            dest_img_width: Width of the destination image.
+        """
 
         pos_x = self.x_start + self.sprite_size
         pos_y = self.y_start + self.sprite_size
