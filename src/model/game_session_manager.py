@@ -48,7 +48,7 @@ class GameSession:
     def _next_level(self) -> None:
         if self.level_index + 1 < self.total_levels:
             self.level_index += 1
-            self.next_level_data()
+            self.update_level_data()
         else:
             self.game_status = GameStatus.VICTORY
 
@@ -56,30 +56,24 @@ class GameSession:
         if self.pacgum_remaining <= 0 and self.super_pacgum_remaining <= 0:
             self._next_level()
 
-    def next_level_data(self) -> None:
+    def reset_cheats(self) -> None:
+        self.cheat_mode.invincibility = False
+        self.cheat_mode.freeze = False
+        self.cheat_mode.speed = False
+        self.speed_multiplier = 1
+
+    def update_level_data(self) -> None:
         self.game_status = GameStatus.PLAYING
         self.time_remaining = float(self.settings.level_max_time)
         self.active_power = False
         self.super_mode_timer = 0.0
-        self.speed_multiplier = 1
-
-        self.cheat_mode.invincibility = False
-        self.cheat_mode.freeze = False
-        self.cheat_mode.speed = False
+        self.reset_cheats()
 
     def reset_level_data(self) -> None:
-        self.game_status = GameStatus.PLAYING
         self.level_index = 0
         self.score = 0
         self.lives_remaining = self.settings.lives
-        self.time_remaining = float(self.settings.level_max_time)
-        self.active_power = False
-        self.super_mode_timer = 0.0
-        self.speed_multiplier = 1
-
-        self.cheat_mode.invincibility = False
-        self.cheat_mode.freeze = False
-        self.cheat_mode.speed = False
+        self.update_level_data()
 
     def update_timers(self, elapsed_time: float) -> None:
         if self.game_status != GameStatus.PLAYING:
@@ -102,8 +96,6 @@ class GameSession:
         self.active_power = True
 
     def lose_life(self) -> bool:
-        if self.cheat_mode.invincibility:
-            return False
         self.lives_remaining -= 1
         if self.lives_remaining <= 0:
             self.game_status = GameStatus.GAME_OVER

@@ -30,9 +30,13 @@ class PlayingScene:
         self._update_player_and_timers(elapsed_time, controller)
         player = controller.game_board.player
         if player.is_dying:
-            if player.death_animation_finished():
-                controller.game_session.lose_life()
-                controller.game_board.reset_entities()
+            if not player.death_animation_finished():
+                return self
+            controller.game_session.lose_life()
+            if controller.game_session.game_status == GameStatus.GAME_OVER:
+                return self.defeat_scene
+            controller.game_session.update_level_data()
+            controller.game_board.reset_entities()
             return self
 
         player_pixel_pos = self._get_player_pixel_position(controller)
